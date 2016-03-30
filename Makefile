@@ -10,7 +10,11 @@ SRC_MK=$(BENCH_DIR)/src/Makefile
 include $(SRC_MK)
 
 $(BENCH_DIR)/build/$(BENCH_NAME):
+ifeq ($(TGT_ARCH),gpu)
 	make compile
+else
+	make compileSimple
+endif
 
 $(BENCH_DIR)/build:
 	mkdir $(BENCH_DIR)/build
@@ -34,6 +38,14 @@ compile: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	rm -f _kernel*.cl~
 	mv _kernel* $(BENCH_DIR)/build/; \
+	echo ""
+
+compileSimple: $(BENCH_DIR)/build $(BENCH_DIR)/log
+	echo "Compiling" $(BENCH_NAME); \
+	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
+	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	echo ""
 
 run: $(BENCH_DIR)/build/$(BENCH_NAME)
