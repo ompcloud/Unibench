@@ -21,7 +21,7 @@ typedef struct Node
 
 #define bool int
 #define true 1
-#define false 0	
+#define false 0
 
 #define ERROR_THRESHOLD 0.05
 #define GPU_DEVICE 1
@@ -36,7 +36,7 @@ fprintf(stderr,"Usage: %s <num_threads> <input_file>\n", argv[0]);
 ////////////////////////////////////////////////////////////////////////////////
 // Main Program
 ////////////////////////////////////////////////////////////////////////////////
-int main( int argc, char** argv) 
+int main( int argc, char** argv)
 {
 	no_of_nodes=0;
 	edge_list_size=0;
@@ -44,7 +44,7 @@ int main( int argc, char** argv)
 }
 
 
-void compareResults(int* h_cost, int* h_cost_gpu, no_of_nodes) {
+void compareResults(int* h_cost, int* h_cost_gpu, int no_of_nodes) {
   int i,fail;
   fail = 0;
 
@@ -62,19 +62,20 @@ void compareResults(int* h_cost, int* h_cost_gpu, no_of_nodes) {
 ////////////////////////////////////////////////////////////////////////////////
 //Apply BFS on a Graph using CUDA
 ////////////////////////////////////////////////////////////////////////////////
-void BFSGraph( int argc, char** argv) 
+void BFSGraph( int argc, char** argv)
 {
+	int i;
     char *input_f;
 	int	 num_omp_threads;
-	
+
 	if(argc!=3){
 	Usage(argc, argv);
 	exit(0);
 	}
-    
+
 	num_omp_threads = atoi(argv[1]);
 	input_f = argv[2];
-	
+
 	printf("Reading File\n");
 	//Read in Graph from a file
 	fp = fopen(input_f,"r");
@@ -87,7 +88,7 @@ void BFSGraph( int argc, char** argv)
 	int source = 0;
 
 	fscanf(fp,"%d",&no_of_nodes);
-   
+
 	// allocate host memory
 	Node* h_graph_nodes = (Node*) malloc(sizeof(Node)*no_of_nodes);
 	bool *h_graph_mask = (bool*) malloc(sizeof(bool)*no_of_nodes);
@@ -97,9 +98,9 @@ void BFSGraph( int argc, char** argv)
 	bool *h_graph_visited = (bool*) malloc(sizeof(bool)*no_of_nodes);
 	bool *h_graph_visited_gpu = (bool*) malloc(sizeof(bool)*no_of_nodes);
 
-	int start, edgeno;   
+	int start, edgeno;
 	// initalize the memory
-	for( unsigned int i = 0; i < no_of_nodes; i++) 
+	for(i = 0; i < no_of_nodes; i++)
 	{
 		fscanf(fp,"%d %d",&start,&edgeno);
 		h_graph_nodes[i].starting = start;
@@ -126,7 +127,7 @@ void BFSGraph( int argc, char** argv)
 
 	int id,cost;
 	int* h_graph_edges = (int*) malloc(sizeof(int)*edge_list_size);
-	for(int i=0; i < edge_list_size ; i++)
+	for(i=0; i < edge_list_size ; i++)
 	{
 		fscanf(fp,"%d",&id);
 		fscanf(fp,"%d",&cost);
@@ -134,23 +135,23 @@ void BFSGraph( int argc, char** argv)
 	}
 
 	if(fp)
-	fclose(fp);    
+	fclose(fp);
 
 
 	// allocate mem for the result on host side
 	int* h_cost = (int*) malloc( sizeof(int)*no_of_nodes);
 	int* h_cost_gpu = (int*) malloc( sizeof(int)*no_of_nodes);
-	for(int i=0;i<no_of_nodes;i++){
+	for(i=0;i<no_of_nodes;i++){
 		h_cost[i]=-1;
 		h_cost_gpu[i]=-1;
 	}
 	h_cost[source]=0;
 	h_cost_gpu[source]=0;
-	
+
 	printf("Start traversing the tree\n");
-	
+
 	int k=0, tid;
-    
+
 	bool stop;
 	double t_start, t_end;
 
@@ -169,9 +170,9 @@ void BFSGraph( int argc, char** argv)
 			#pragma omp parallel for
 			for(tid = 0; tid < no_of_nodes; tid++ )
 			{
-				if (h_graph_mask_gpu[tid] == true){ 
+				if (h_graph_mask_gpu[tid] == true){
 				h_graph_mask_gpu[tid]=false;
-				for(int i=h_graph_nodes[tid].starting; i<(h_graph_nodes[tid].no_of_edges + h_graph_nodes[tid].starting); i++)
+				for(i=h_graph_nodes[tid].starting; i<(h_graph_nodes[tid].no_of_edges + h_graph_nodes[tid].starting); i++)
 					{
 					int id = h_graph_edges[i];
 					if(!h_graph_visited_gpu[id])
@@ -184,7 +185,7 @@ void BFSGraph( int argc, char** argv)
 			}
 		}
 
-  		for(int tid=0; tid< no_of_nodes ; tid++ )
+  		for(tid=0; tid< no_of_nodes ; tid++ )
 		{
 			if (h_updating_graph_mask_gpu[tid] == true){
 			h_graph_mask_gpu[tid]=true;
@@ -209,9 +210,9 @@ void BFSGraph( int argc, char** argv)
 
 		for(tid = 0; tid < no_of_nodes; tid++ )
 		{
-			if (h_graph_mask[tid] == true){ 
+			if (h_graph_mask[tid] == true){
 			h_graph_mask[tid]=false;
-			for(int i=h_graph_nodes[tid].starting; i<(h_graph_nodes[tid].no_of_edges + h_graph_nodes[tid].starting); i++)
+			for(i=h_graph_nodes[tid].starting; i<(h_graph_nodes[tid].no_of_edges + h_graph_nodes[tid].starting); i++)
 				{
 				int id = h_graph_edges[i];
 				if(!h_graph_visited[id])
@@ -223,7 +224,7 @@ void BFSGraph( int argc, char** argv)
 			}
 		}
 
-  		for(int tid=0; tid< no_of_nodes ; tid++ )
+  		for(tid=0; tid< no_of_nodes ; tid++ )
 		{
 			if (h_updating_graph_mask[tid] == true){
 			h_graph_mask[tid]=true;
@@ -242,7 +243,7 @@ void BFSGraph( int argc, char** argv)
 
 	//Store the result into a file
 	FILE *fpo = fopen("result.txt","w");
-	for(int i=0;i<no_of_nodes;i++)
+	for(i=0;i<no_of_nodes;i++)
 		fprintf(fpo,"%d) cost:%d\n",i,h_cost[i]);
 	fclose(fpo);
 	printf("Result stored in result.txt\n");
@@ -257,4 +258,3 @@ void BFSGraph( int argc, char** argv)
 	free( h_cost);
 
 }
-
