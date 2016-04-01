@@ -1850,7 +1850,7 @@ destroy_tree(node* root)
 //	MAIN FUNCTION
 //========================================================================================================================================================================================================200
 
-void compareResults(long *offset_cpu, long *offset_gpu, long *currKnode_cpu, long *currKnode_gpu, record *ans_cpu, record *ans_gpu, count) {
+void compareResults(long *offset_cpu, long *offset_gpu, long *currKnode_cpu, long *currKnode_gpu, record *ans_cpu, record *ans_gpu, int count) {
   int i,j,fail;
   fail = 0;
 
