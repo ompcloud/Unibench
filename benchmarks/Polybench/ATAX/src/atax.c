@@ -26,7 +26,7 @@
 #define NX 8192
 #define NY 8192
 
-#define GPU_DEVICE 1
+
 
 #ifndef M_PI
 #define M_PI 3.14159
@@ -100,7 +100,7 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
       y[i] = 0;
     }
   
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: A[:NX*NY], x[:NY]) map(from: tmp[:NX]) 
   #pragma omp parallel for
   for (i = 0; i < NX; i++)

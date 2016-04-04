@@ -7,7 +7,7 @@
 #define STR_SIZE	256
 
 /* mptogpu */
-#define GPU_DEVICE 1
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
 /* maximum power density possible (say 300W for a 10mm x 10mm chip)	*/
@@ -42,7 +42,7 @@ void single_iteration_gpu(double *result, double *temp, double *power, int row, 
 	int r, c;
 	double amb_temp = 80.0;
 
-	#pragma omp target device (GPU_DEVICE)
+	#pragma omp target device (DEVICE_ID)
         #pragma omp target map(to: power[0:row*col], temp[0:row*col]) map(tofrom: result[0:row*col])
 	{
 		#pragma omp parallel for collapse(2)

@@ -20,7 +20,7 @@
 #include "../../common/mgbenchUtilFunctions.h"
 
 #define SIZE 1000
-#define GPU_DEVICE 0
+
 #define ERROR_THRESHOLD 0.05
 
 
@@ -50,7 +50,7 @@ void cholesky_GPU(float *A, float *B)
     
     float t;
 
-    #pragma omp target device(GPU_DEVICE)
+    #pragma omp target device(DEVICE_ID)
     #pragma omp target map(to: A[0:SIZE*SIZE]) map(tofrom: B[0:SIZE*SIZE])
     {
 	#pragma omp parallel for collapse(1)

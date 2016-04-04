@@ -22,7 +22,7 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 10.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define tmax 500
@@ -126,7 +126,7 @@ void runFdtd_OMP(DATA_TYPE* _fict_, DATA_TYPE* ex, DATA_TYPE* ey, DATA_TYPE* hz)
 {
   int t, i, j;
 
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: _fict_[:tmax], ex[:(NX*(NY+1))], ey[:((NX+1)*NY)])
   #pragma omp target map(tofrom: hz[:(NX*(NY+1))])
   {

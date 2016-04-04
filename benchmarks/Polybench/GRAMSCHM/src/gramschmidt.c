@@ -31,7 +31,7 @@
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
-#define GPU_DEVICE 1
+
 
 void gramschmidt(DATA_TYPE* A, DATA_TYPE* R, DATA_TYPE* Q)
 {
@@ -81,7 +81,7 @@ void gramschmidt_OMP(DATA_TYPE* A, DATA_TYPE* R, DATA_TYPE* Q)
 	}
       R[k*N + k] = sqrt(nrm);
 
-      #pragma omp target device (GPU_DEVICE)
+      #pragma omp target device (DEVICE_ID)
       #pragma omp target map(to: A[:M*N], R[:M*N]) map(from: Q[:M*N])
       #pragma omp parallel for
       for (i = 0; i < M; i++)

@@ -40,7 +40,7 @@
 
 
 #define ERROR_THRESHOLD 0.1
-#define GPU_DEVICE 1
+
 double t_start, t_end, t_start_GPU, t_end_GPU;
 
 float *Qr_GPU, *Qi_GPU;		/* Q signal (complex) */

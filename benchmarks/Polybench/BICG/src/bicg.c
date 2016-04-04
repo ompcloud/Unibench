@@ -25,7 +25,7 @@
 #define NX 8192
 #define NY 8192
 
-#define GPU_DEVICE 1
+
 
 #ifndef M_PI
 #define M_PI 3.14159
@@ -109,7 +109,7 @@ void bicg_OMP(DATA_TYPE* A, DATA_TYPE* r, DATA_TYPE* s, DATA_TYPE* p, DATA_TYPE*
       s[i] = 0.0;
     }
 
-  #pragma omp target device (GPU_DEVICE) map(to: A[:NX*NY], p[:NY], r[:NX]) map(tofrom: s[:NY], q[:NX])
+  #pragma omp target device (DEVICE_ID) map(to: A[:NX*NY], p[:NY], r[:NX]) map(tofrom: s[:NY], q[:NX])
   {
 	  #pragma omp parallel for collapse(1)
 	  for (j = 0; j < NY; j++)

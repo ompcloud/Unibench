@@ -21,7 +21,7 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define N 8192

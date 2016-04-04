@@ -22,7 +22,7 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define N 4096
@@ -75,7 +75,7 @@ void runMvt_OMP(DATA_TYPE* a, DATA_TYPE* x1, DATA_TYPE* x2, DATA_TYPE* y1, DATA_
   int i;
   
   //Note that you must collapse only outer loop to avoid conflicts
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: a[:N*N], y1[:N]) map(tofrom: x1[:N])	
   #pragma omp parallel for collapse(1)
   for (i=0; i<N; i++) 

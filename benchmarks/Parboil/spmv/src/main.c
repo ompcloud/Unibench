@@ -18,7 +18,7 @@
 
 
 #define ERROR_THRESHOLD 0.05
-#define GPU_DEVICE 1
+
 double t_start, t_end, t_start_GPU, t_end_GPU;
 
 float *h_Ax_vector_GPU, *h_Ax_vector_CPU;

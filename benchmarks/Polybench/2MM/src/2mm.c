@@ -22,7 +22,7 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size. */
 # define NI 1024
@@ -123,7 +123,7 @@ void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
 {
   int i, j;
 
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(from: C[:NI*NJ])
   #pragma omp parallel for
   for (i = 0; i < NI; i++)

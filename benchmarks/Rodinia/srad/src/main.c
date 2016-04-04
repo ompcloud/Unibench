@@ -34,7 +34,7 @@
 #include <sys/time.h>
 #include "../../common/rodiniaUtilFunctions.h"
 
-#define GPU_DEVICE 1
+
 #define ERROR_THRESHOLD 0.05
 
 
@@ -346,7 +346,7 @@ int main(int argc, char *argv[]) {
 
 	//GPU
 	t_start = rtclock();
-	        #pragma omp target device(GPU_DEVICE)
+	        #pragma omp target device(DEVICE_ID)
 		#pragma omp target map(to: iN[:Nr], iS[:Nr], jW[:Nc], jE[:Nc] ) \
                 map(tofrom: dN[:Ne], dS[:Ne], dW[:Ne], dE[:Ne], c[:Ne], image[:Ne])
 
@@ -370,7 +370,7 @@ int main(int argc, char *argv[]) {
 
 		// directional derivatives, ICOV, diffusion coefficent
 	
-	//	#pragma omp target device(GPU_DEVICE)
+	//	#pragma omp target device(DEVICE_ID)
 	//	#pragma omp target map(to: iN[:Nr], iS[:Nr], jW[:Nc], jE[:Nc], image[:Ne] ) \
 	//	map(tofrom: dN[:Ne], dS[:Ne], dW[:Ne], dE[:Ne], c[:Ne])
 	//	{
@@ -418,7 +418,7 @@ int main(int argc, char *argv[]) {
 	//	}
 		
 		// divergence & image update
-	//	#pragma omp target device(GPU_DEVICE)
+	//	#pragma omp target device(DEVICE_ID)
 	//	#pragma omp target map(to: c[:Ne], iS[:Nr], jE[:Nc], dN[:Ne], dS[:Ne],  dW[:Ne], dE[:Ne] ) \
 		map(tofrom: image[:Ne])
 	//	{

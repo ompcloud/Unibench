@@ -23,7 +23,7 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define NI 8192
@@ -61,7 +61,7 @@ void conv2D_OMP(DATA_TYPE* A, DATA_TYPE* B)
   c12 = -0.3;  c22 = +0.6;  c32 = -0.9;
   c13 = +0.4;  c23 = +0.7;  c33 = +0.10;
 
-  #pragma omp target map(to: A[:NI*NJ]) map (from: B[:NI*NJ]) device (GPU_DEVICE)
+  #pragma omp target map(to: A[:NI*NJ]) map (from: B[:NI*NJ]) device (DEVICE_ID)
   #pragma omp parallel for
   for (i = 1; i < NI - 1; ++i)
     {

@@ -23,7 +23,7 @@
 
 #define SIZE 128
 #define SIZE_2 SIZE/2
-#define GPU_DEVICE 0
+
 #define ERROR_THRESHOLD 0.05
 #define default_v 100000.00
 
@@ -68,7 +68,7 @@ void k_nearest_gpu(point *pivots, point *the_points, sel_points *selected)
 {
     int i,j,m;
  
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: pivots[0: SIZE_2], the_points[0:SIZE]) map(tofrom: selected[0:SIZE*SIZE])
     {
 	#pragma omp parallel for collapse(2)

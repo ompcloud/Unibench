@@ -23,7 +23,7 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define N 8192
@@ -57,7 +57,7 @@ void gesummv_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *x, DATA_TYPE *y, DATA_TY
 {
   int i, j;
 	
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: A[:N*N], B[:N*N], x[:N], tmp[:N]) map(tofrom: y[:N])
   #pragma omp parallel for
   for (i = 0; i < N; i++)

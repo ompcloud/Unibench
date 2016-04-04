@@ -10,7 +10,7 @@
 #include "../../common/rodiniaUtilFunctions.h"
 
 
-#define GPU_DEVICE 1
+
 #define ERROR_THRESHOLD 0.05
 
 //#define NUM_THREAD 4
@@ -140,7 +140,7 @@ void init(int *input_itemsets_cpu, int *input_itemsets_gpu, int *referrence_cpu,
 
 void runTest_GPU(int max_cols, int max_rows, int *input_itemsets, int *referrence, int penalty){
 	int index, i, idx;
-	#pragma omp target device (GPU_DEVICE)
+	#pragma omp target device (DEVICE_ID)
 	#pragma omp target map(to: referrence[0:max_rows*max_cols]) map(tofrom: input_itemsets[0:max_rows * max_cols])
 	{	
 		for( i = 0 ; i < max_cols-2 ; i++){
@@ -164,7 +164,7 @@ void runTest_GPU(int max_cols, int max_rows, int *input_itemsets, int *referrenc
 	}
         
         //Compute bottom-right matrix 
-       	#pragma omp target device (GPU_DEVICE)
+       	#pragma omp target device (DEVICE_ID)
 	#pragma omp target map(to: referrence[0:max_rows * max_cols]) map(tofrom: input_itemsets[0:max_rows * max_cols])
 	{
 		for( i = max_cols - 4 ; i >= 0 ; i--){

@@ -20,7 +20,7 @@
 #include "../../common/mgbenchUtilFunctions.h"
 
 #define SIZE 1000
-#define GPU_DEVICE 0
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 
 // Initialize matrices.
@@ -45,7 +45,7 @@ void sum_GPU(float *a, float *b, float *c)
 {
     int i, j;
 
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: a[0:SIZE*SIZE], b[0:SIZE*SIZE]) map(tofrom: c[0:SIZE*SIZE])
     {
 	#pragma omp parallel for collapse(2)

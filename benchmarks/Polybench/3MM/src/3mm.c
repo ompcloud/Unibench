@@ -29,7 +29,7 @@
 # define NL 512
 # define NM 512
 
-# define GPU_DEVICE 1
+# define DEVICE_ID 1
 
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
@@ -140,7 +140,7 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *
   int i,j,k;
 	
   /* E := A*B */
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(from: E[:NI*NJ])	
   #pragma omp parallel for
   for (i = 0; i < NI; i++)

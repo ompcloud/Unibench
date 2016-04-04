@@ -22,7 +22,7 @@
 #include "../../common/mgbenchUtilFunctions.h"
 
 
-#define GPU_DEVICE 0
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 #define SIZE 500
 #define points 250
@@ -49,7 +49,7 @@ void Crout_GPU(int s, float *a, float *b){
     int k,j,i;
     float sum;
 
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: a[0:SIZE*SIZE]) map(tofrom: b[0:SIZE*SIZE])
     {
         #pragma omp parallel for

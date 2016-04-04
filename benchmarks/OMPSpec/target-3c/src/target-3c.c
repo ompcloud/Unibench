@@ -21,7 +21,7 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define N 8192
@@ -50,7 +50,7 @@ void vec_mult(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C) {
 void vec_mult_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C) {
 	int i;
 
-	#pragma omp target map(to: A[:N], B[:N]) map(from: C[:N]) device(GPU_DEVICE)
+	#pragma omp target map(to: A[:N], B[:N]) map(from: C[:N]) device(DEVICE_ID)
 	#pragma omp parallel for
 	for (i=0; i<N; i++)
 		C[i] = A[i] * B[i];

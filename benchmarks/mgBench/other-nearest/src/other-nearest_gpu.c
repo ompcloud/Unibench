@@ -25,7 +25,7 @@ typedef struct sel_points
 #define points 250
 #define var SIZE/points
 #define default_v 100000.00
-#define GPU_DEVICE 0
+
 #define ERROR_THRESHOLD 0.01
 
 void init(int s, point *vector, sel_points *selected)
@@ -51,7 +51,7 @@ void k_nearest_gpu(int s, point *vector, sel_points *selected)
     int i,j,m,q;
     q = s*s;
 
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: vector[0: s]) map(tofrom: selected[0:q])
     {
 	#pragma omp parallel for collapse(2) 

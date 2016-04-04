@@ -23,7 +23,7 @@
 
 #define SIZE 1000
 #define SIZE2 500
-#define GPU_DEVICE 0
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 
 /// initialize the two strings
@@ -62,7 +62,7 @@ int string_matching_GPU(char *frase, char *palavra)
     	vector[i] = 0;
     }
 
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: frase[0:SIZE], palavra[0:SIZE2]) map(tofrom: vector[0:parallel_size])
     {
 	#pragma omp parallel for

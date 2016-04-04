@@ -26,7 +26,7 @@
 #define N 2048
 #define M 2048
 
-#define GPU_DEVICE 1
+
 
 /* Declared constant values for ALPHA and BETA (same as values in PolyBench 2.0) */
 #define ALPHA 12435
@@ -84,7 +84,7 @@ void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 {
   int i, j, k;
 	
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: A[:N*M], B[:N*M]) map(tofrom: C[:N*N])
   #pragma omp parallel for collapse(2) 
   for (i = 0; i < N; i++)

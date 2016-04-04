@@ -22,7 +22,7 @@
 #include "../../common/mgbenchUtilFunctions.h"
 
 #define SIZE 1000
-#define GPU_DEVICE 0
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 	
 // Initialize matrices.
@@ -40,7 +40,7 @@ void product_GPU(float *A, float *B, float *C)
 {
     int i;
     
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: A[0:SIZE], B[0:SIZE]) map(from: C[0:SIZE])
     {
 	#pragma omp parallel for

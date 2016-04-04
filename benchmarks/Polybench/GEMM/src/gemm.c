@@ -35,7 +35,7 @@
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
-#define GPU_DEVICE 1
+
 
 void gemm(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 {
@@ -59,7 +59,7 @@ void gemm_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 {
   int i,j,k;
 	
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(tofrom: C[:NI*NJ])
   #pragma omp parallel for collapse(2)
   for (i = 0; i < NI; i++)

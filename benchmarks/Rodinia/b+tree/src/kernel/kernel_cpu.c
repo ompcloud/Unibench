@@ -27,7 +27,7 @@
 #include "../util/timer/timer.h"					// (in directory provided here)
 
 
-#define GPU_DEVICE 1
+
 
 //========================================================================================================================================================================================================200
 //	KERNEL_CPU FUNCTION
@@ -81,7 +81,7 @@ kernel_gpu(	int cores_arg,
 
 	// process number of querries
 
-	#pragma omp target device (GPU_DEVICE)
+	#pragma omp target device (DEVICE_ID)
 	#pragma omp target map(to: keys[:count], knodes[:knodes_elem], records[:records_elem]) map(tofrom: offset[:count], ans[:count], currKnode[:count])
 	{
 		#pragma omp parallel for

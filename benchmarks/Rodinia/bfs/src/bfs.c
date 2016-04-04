@@ -24,7 +24,7 @@ typedef struct Node
 #define false 0
 
 #define ERROR_THRESHOLD 0.05
-#define GPU_DEVICE 1
+
 
 void BFSGraph(int argc, char** argv);
 
@@ -162,7 +162,7 @@ void BFSGraph( int argc, char** argv)
 		//if no thread changes this value then the loop stops
 		stop=false;
 
-		#pragma omp target  device (GPU_DEVICE)
+		#pragma omp target  device (DEVICE_ID)
 		#pragma omp target map(to: h_graph_nodes[:no_of_nodes], h_graph_edges[:edge_list_size], \
 		h_graph_visited_gpu[:no_of_nodes])map(tofrom: h_graph_mask_gpu[:no_of_nodes], h_cost_gpu[:no_of_nodes], \
 		h_updating_graph_mask_gpu[:no_of_nodes])

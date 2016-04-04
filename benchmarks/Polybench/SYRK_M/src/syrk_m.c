@@ -20,7 +20,7 @@
 
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define N 1024
@@ -93,7 +93,7 @@ void syrkGPU() {
 
   t_start = rtclock();
 
-#pragma omp target map(to: A) map(tofrom: D) device (GPU_DEVICE)
+#pragma omp target map(to: A) map(tofrom: D) device (DEVICE_ID)
 #pragma omp parallel for collapse(2)
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {

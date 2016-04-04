@@ -25,7 +25,7 @@
 #include "../../common/mgbenchUtilFunctions.h"
 
 #define SIZE 400
-#define GPU_DEVICE 0
+
 #define ERROR_THRESHOLD 0.05
 
 /// initialize the cartesian map
@@ -73,7 +73,7 @@ void Knearest_GPU(int *matrix, int *matrix_dist)
     }
 
     /// opportunity of parallelism here
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(tofrom: matrix_dist[:SIZE*SIZE])
     {
         for(i=0;i<SIZE;i++)

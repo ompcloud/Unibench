@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <omp.h>
-#define GPU_DEVICE 1
+
 
 void lud_omp_cpu(float *a, int size)
 {
@@ -29,7 +29,7 @@ void lud_omp_gpu(float *a, int size)
      int i,j,k;
      float sum;
 
-     #pragma omp target device (GPU_DEVICE)
+     #pragma omp target device (DEVICE_ID)
      #pragma omp target map(tofrom: a[0:size*size])
      {
 	     for (i=0; i <size; i++){

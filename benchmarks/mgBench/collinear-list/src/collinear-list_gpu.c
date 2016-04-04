@@ -22,7 +22,7 @@
 #include "../../common/mgbenchUtilFunctions.h"
 
 #define SIZE 1024
-#define GPU_DEVICE 0
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
 typedef struct point
@@ -58,7 +58,7 @@ int colinear_list_points_GPU()
         parallel_lines[i] = 0;	
     }
 
-    #pragma omp target device (GPU_DEVICE)
+    #pragma omp target device (DEVICE_ID)
     #pragma omp target map(to: points[0:SIZE]) map(tofrom: parallel_lines[0:p])	
     {
         #pragma omp parallel for collapse(3)

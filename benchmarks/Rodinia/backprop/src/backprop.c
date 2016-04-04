@@ -16,7 +16,7 @@
 #include "../../common/rodiniaUtilFunctions.h"
 
 #define OPEN
-#define GPU_DEVICE 1
+
 #define ERROR_THRESHOLD 0.00
 
 #define ABS(x)          (((x) > 0.0) ? (x) : (-(x)))
@@ -273,7 +273,7 @@ int n1, n2;
   l1[0] = 1.0;
    
   t_start = rtclock();
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: conn_gpu[:(n1+1)*(n2+1)], l1[:n1+1]) map(tofrom: l2_gpu[:n2+1])
   {
 	  #pragma omp parallel for
@@ -396,7 +396,7 @@ float *delta, *ly, **w, **oldw;
   int size = (ndelta+1)*(nly+1);
 
   t_start = rtclock();
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   #pragma omp target map(to: ly[:(nly+1)], delta[:(ndelta+1)]) map(tofrom: oldw_gpu[:size], w_gpu[:size])
   {
 	  #pragma omp parallel for collapse(1)

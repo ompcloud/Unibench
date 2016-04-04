@@ -21,7 +21,7 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 1.05
 
-#define GPU_DEVICE 1
+
 
 /* Problem size */
 #define M 1024
@@ -121,7 +121,7 @@ void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_T
 	
   // Determine mean of column vectors of input data matrix 
   //Maps data once.
-  #pragma omp target device (GPU_DEVICE) map (to: data[:(M+1)*(N+1)], mean[:(M+1)], stddev[:(M+1)]) map (tofrom: symmat[:(M+1)*(N+1)])
+  #pragma omp target device (DEVICE_ID) map (to: data[:(M+1)*(N+1)], mean[:(M+1)], stddev[:(M+1)]) map (tofrom: symmat[:(M+1)*(N+1)])
   {
   	  #pragma omp parallel for
 	  for (j = 1; j < (M+1); j++)
