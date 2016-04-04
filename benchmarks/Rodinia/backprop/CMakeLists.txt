@@ -1,9 +1,11 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/backprop.c
-  src/backprop_kernel.c
-  src/facetrain.c
-  src/imagenet.c
+  ${SRC_DIR}/backprop.c
+  ${SRC_DIR}/backprop_kernel.c
+  ${SRC_DIR}/facetrain.c
+  ${SRC_DIR}/imagenet.c
 )
 
 add_executable(backprop ${SRC_FILES})

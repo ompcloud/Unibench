@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/gramschmidt.c
+  ${SRC_DIR}/gramschmidt.c
 )
 
 add_executable(GRAMSCHM ${SRC_FILES})

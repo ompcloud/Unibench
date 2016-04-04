@@ -1,8 +1,13 @@
+
 set(SRC_DIR src)
 
 set(SRC_FILES
   ${SRC_DIR}/file.cc
   ${SRC_DIR}/main.c
+)
+
+include_directories(
+  ${SRC_DIR}
 )
 
 add_executable(mri-q ${SRC_FILES})

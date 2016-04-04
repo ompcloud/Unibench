@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/covariance.c
+  ${SRC_DIR}/covariance.c
 )
 
 add_executable(COVAR ${SRC_FILES})

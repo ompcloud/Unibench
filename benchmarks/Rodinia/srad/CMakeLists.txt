@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/main.c
+  ${SRC_DIR}/main.c
 )
 
 add_executable(srad ${SRC_FILES})

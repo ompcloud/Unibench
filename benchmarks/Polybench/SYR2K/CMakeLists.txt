@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/syr2k.c
+  ${SRC_DIR}/syr2k.c
 )
 
 add_executable(SYR2K ${SRC_FILES})

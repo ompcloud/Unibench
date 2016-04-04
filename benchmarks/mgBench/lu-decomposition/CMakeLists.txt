@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/lu-decomposition_gpu.c
+  ${SRC_DIR}/lu-decomposition_gpu.c
 )
 
 add_executable(lu-decomposition ${SRC_FILES})

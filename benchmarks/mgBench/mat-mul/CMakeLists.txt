@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/mat-mul_gpu.c
+  ${SRC_DIR}/mat-mul_gpu.c
 )
 
 add_executable(mat-mul ${SRC_FILES})

@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/needle.cpp
+  ${SRC_DIR}/needle.cpp
 )
 
 add_executable(nw ${SRC_FILES})

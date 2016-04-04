@@ -1,10 +1,12 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/main.c
-  src/util/num/num.c
-  src/util/timer/timer.c
-  src/kernel/kernel_cpu.c
-  src/kernel/kernel_cpu_2.c
+  ${SRC_DIR}/main.c
+  ${SRC_DIR}/util/num/num.c
+  ${SRC_DIR}/util/timer/timer.c
+  ${SRC_DIR}/kernel/kernel_cpu.c
+  ${SRC_DIR}/kernel/kernel_cpu_2.c
 )
 
 add_executable(b+tree ${SRC_FILES})

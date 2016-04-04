@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/gemm.c
+  ${SRC_DIR}/gemm.c
 )
 
 add_executable(GEMM ${SRC_FILES})

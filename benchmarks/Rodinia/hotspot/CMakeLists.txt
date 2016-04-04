@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/hotspot_openmp.cpp
+  ${SRC_DIR}/hotspot_openmp.cpp
 )
 
 add_executable(hotspot ${SRC_FILES})

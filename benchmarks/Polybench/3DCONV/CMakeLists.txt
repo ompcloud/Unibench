@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/3DConvolution.c
+  ${SRC_DIR}/3DConvolution.c
 )
 
 add_executable(3DCONV ${SRC_FILES})

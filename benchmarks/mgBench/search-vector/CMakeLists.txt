@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/search-vector_gpu.c
+  ${SRC_DIR}/search-vector_gpu.c
 )
 
 add_executable(search-vector ${SRC_FILES})

@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/gesummv.c
+  ${SRC_DIR}/gesummv.c
 )
 
 add_executable(GESUMMV ${SRC_FILES})

@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/target-data-2c.c
+  ${SRC_DIR}/target-data-2c.c
 )
 
 add_executable(target-data-2c ${SRC_FILES})

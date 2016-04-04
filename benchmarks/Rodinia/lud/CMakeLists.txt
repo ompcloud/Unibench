@@ -1,8 +1,10 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/lud.c
-  src/lud_omp.c
-  src/common/common.c
+  ${SRC_DIR}/lud.c
+  ${SRC_DIR}/lud_omp.c
+  ${SRC_DIR}/common/common.c
 )
 
 add_executable(lud ${SRC_FILES})

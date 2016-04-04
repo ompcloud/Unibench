@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/target-3c.c
+  ${SRC_DIR}/target-3c.c
 )
 
 add_executable(target-3c ${SRC_FILES})

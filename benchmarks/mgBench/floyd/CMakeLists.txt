@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/floyd_gpu.c
+  ${SRC_DIR}/floyd_gpu.c
 )
 
 add_executable(floyd ${SRC_FILES})

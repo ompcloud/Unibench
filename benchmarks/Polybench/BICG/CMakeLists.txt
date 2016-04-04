@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/bicg.c
+  ${SRC_DIR}/bicg.c
 )
 
 add_executable(BICG ${SRC_FILES})

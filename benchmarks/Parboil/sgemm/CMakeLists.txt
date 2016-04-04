@@ -1,7 +1,9 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/main.cc
-  src/io.cc
+  ${SRC_DIR}/main.cc
+  ${SRC_DIR}/io.cc
 )
 
 add_executable(sgemm ${SRC_FILES})

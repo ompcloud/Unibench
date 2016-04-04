@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/fdtd2d.c
+  ${SRC_DIR}/fdtd2d.c
 )
 
 add_executable(FDTD-2D ${SRC_FILES})

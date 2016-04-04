@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/k-nearest_gpu.c
+  ${SRC_DIR}/k-nearest_gpu.c
 )
 
 add_executable(k-nearest ${SRC_FILES})

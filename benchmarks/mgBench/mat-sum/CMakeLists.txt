@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/mat-sum_gpu.c
+  ${SRC_DIR}/mat-sum_gpu.c
 )
 
 add_executable(mat-sum ${SRC_FILES})

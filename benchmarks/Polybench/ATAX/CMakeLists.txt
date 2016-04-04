@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/atax.c
+  ${SRC_DIR}/atax.c
 )
 
 add_executable(ATAX ${SRC_FILES})

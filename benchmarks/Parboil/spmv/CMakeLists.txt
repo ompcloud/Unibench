@@ -1,9 +1,15 @@
 
+set(SRC_DIR src)
+
+include_directories(
+  ${SRC_DIR}
+)
+
 set(SRC_FILES
-  src/convert_dataset.c
-  src/file.c
-  src/main.c
-  src/mmio.c
+  ${SRC_DIR}/convert_dataset.c
+  ${SRC_DIR}/file.c
+  ${SRC_DIR}/main.c
+  ${SRC_DIR}/mmio.c
 )
 
 add_executable(spmv ${SRC_FILES})

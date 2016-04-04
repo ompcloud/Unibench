@@ -1,6 +1,8 @@
 
+set(SRC_DIR src)
+
 set(SRC_FILES
-  src/syrk_m.c
+  ${SRC_DIR}/syrk_m.c
 )
 
 add_executable(SYRK_M ${SRC_FILES})

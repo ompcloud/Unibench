@@ -1,6 +1,7 @@
+set(SRC_DIR src)
 
 set(SRC_FILES
-  src/cholesky_gpu.c
+  ${SRC_DIR}/cholesky_gpu.c
 )
 
 add_executable(cholesky ${SRC_FILES})
