@@ -13,6 +13,6 @@ include_directories(
 add_executable(mri-q ${SRC_FILES})
 target_link_libraries(mri-q parboil m)
 
-file(COPY input DESTINATION input)
+file(COPY input DESTINATION .)
 
 add_test(Parboil_mri-q mri-q "-i" "input/64_64_64_dataset.bin" "-o" "64_64_64_dataset.out")

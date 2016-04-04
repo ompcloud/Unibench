@@ -7,6 +7,6 @@ set(SRC_FILES
 
 add_executable(hotspot ${SRC_FILES})
 
-file(COPY input DESTINATION input)
+file(COPY input DESTINATION .)
 
 add_test(Rodinia_hotspot hotspot 512 512 2 4 "input/temp_512" "input/power_512")

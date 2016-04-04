@@ -14,6 +14,6 @@ set(SRC_FILES
 add_executable(stencil ${SRC_FILES})
 target_link_libraries(stencil parboil)
 
-file(COPY input DESTINATION input)
+file(COPY input DESTINATION .)
 
 add_test(Parboil_stencil stencil "-i" "input/512x512x64x100.bin" "-o" "512x512x64.out" "--" "512" "512" "64" "100")

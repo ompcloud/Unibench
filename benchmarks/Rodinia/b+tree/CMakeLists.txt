@@ -12,6 +12,6 @@ set(SRC_FILES
 add_executable(b+tree ${SRC_FILES})
 target_link_libraries(b+tree m)
 
-file(COPY input DESTINATION input)
+file(COPY input DESTINATION .)
 
 add_test(Rodinia_b+tree b+tree "core" "2" "file" "input/mil.txt" "command" "input/command.txt")
