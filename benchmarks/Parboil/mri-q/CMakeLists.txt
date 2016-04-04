@@ -10,4 +10,4 @@ target_link_libraries(mri-q parboil m)
 
 file(COPY input DESTINATION input)
 
-add_test(mri-q mri-q "-i" "input/64_64_64_dataset.bin" "-o" "64_64_64_dataset.out")
+add_test(Parboil_mri-q mri-q "-i" "input/64_64_64_dataset.bin" "-o" "64_64_64_dataset.out")

@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(COVAR ${SRC_FILES})
 
-add_test(COVAR COVAR)
+add_test(Polybench_COVAR COVAR)

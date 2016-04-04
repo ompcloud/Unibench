@@ -9,4 +9,4 @@ set(SRC_FILES
 add_executable(backprop ${SRC_FILES})
 target_link_libraries(backprop m)
 
-add_test(backprop backprop 65536)
+add_test(Rodinia_backprop backprop 65536)

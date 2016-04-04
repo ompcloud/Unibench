@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(search-vector ${SRC_FILES})
 
-add_test(search-vector search-vector)
+add_test(mgBench_search-vector search-vector)

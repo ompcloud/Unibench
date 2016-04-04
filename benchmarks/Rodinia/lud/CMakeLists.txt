@@ -8,4 +8,4 @@ set(SRC_FILES
 add_executable(lud ${SRC_FILES})
 target_link_libraries(lud m)
 
-add_test(lud lud "-s" "1024" "-v")
+add_test(Rodinia_lud lud "-s" "1024" "-v")

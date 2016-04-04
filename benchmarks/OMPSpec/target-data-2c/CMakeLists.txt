@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(target-data-2c ${SRC_FILES})
 
-add_test(target-data-2c target-data-2c)
+add_test(OMPSpec_target-data-2c target-data-2c)

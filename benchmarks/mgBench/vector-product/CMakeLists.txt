@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(vector-product ${SRC_FILES})
 
-add_test(vector-product vector-product)
+add_test(mgBench_vector-product vector-product)

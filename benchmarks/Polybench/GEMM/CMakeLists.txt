@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(GEMM ${SRC_FILES})
 
-add_test(GEMM GEMM)
+add_test(Polybench_GEMM GEMM)

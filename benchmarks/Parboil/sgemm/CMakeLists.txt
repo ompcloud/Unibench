@@ -9,4 +9,4 @@ target_link_libraries(sgemm parboil)
 
 file(COPY input DESTINATION input)
 
-add_test(sgemm sgemm "-i" "input/matrix1.txt,input/matrix2.txt,input/matrix2t.txt" "-o" "matrix3.txt")
+add_test(Parboil_sgemm sgemm "-i" "input/matrix1.txt,input/matrix2.txt,input/matrix2t.txt" "-o" "matrix3.txt")

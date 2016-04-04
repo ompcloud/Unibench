@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(MVT ${SRC_FILES})
 
-add_test(MVT MVT)
+add_test(Polybench_MVT MVT)

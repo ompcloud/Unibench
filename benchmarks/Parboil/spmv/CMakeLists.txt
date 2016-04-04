@@ -11,4 +11,4 @@ target_link_libraries(spmv parboil m)
 
 file(COPY input DESTINATION input)
 
-add_test(spmv spmv "-i" "input/Dubcova3.mtx.bin,input/vector.bin" "-o" "output.out")
+add_test(Parboil_spmv spmv "-i" "input/Dubcova3.mtx.bin,input/vector.bin" "-o" "output.out")

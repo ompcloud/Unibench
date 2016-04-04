@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(FDTD-2D ${SRC_FILES})
 
-add_test(FDTD-2D FDTD-2D)
+add_test(Polybench_FDTD-2D FDTD-2D)

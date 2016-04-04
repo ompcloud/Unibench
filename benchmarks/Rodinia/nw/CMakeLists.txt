@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(nw ${SRC_FILES})
 
-add_test(nw nw 2048 10 2)
+add_test(Rodinia_nw nw 2048 10 2)

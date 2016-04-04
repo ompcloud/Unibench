@@ -7,9 +7,9 @@ set(SRC_FILES
   src/kernel/kernel_cpu_2.c
 )
 
-add_executable(btree ${SRC_FILES})
-target_link_libraries(btree m)
+add_executable(b+tree ${SRC_FILES})
+target_link_libraries(b+tree m)
 
 file(COPY input DESTINATION input)
 
-add_test(btree btree "core" "2" "file" "input/mil.txt" "command" "input/command.txt")
+add_test(Rodinia_b+tree b+tree "core" "2" "file" "input/mil.txt" "command" "input/command.txt")

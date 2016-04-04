@@ -5,4 +5,4 @@ set(SRC_FILES
 
 add_executable(ATAX ${SRC_FILES})
 
-add_test(ATAX ATAX)
+add_test(Polybench_ATAX ATAX)
