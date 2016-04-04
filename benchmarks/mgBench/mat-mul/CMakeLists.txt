@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(mat-mul ${SRC_FILES})
+add_dependencies(mgBench mat-mul)
 
 add_test(mgBench_mat-mul mat-mul)

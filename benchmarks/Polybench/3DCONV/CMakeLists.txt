@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(3DCONV ${SRC_FILES})
+add_dependencies(Polybench 3DCONV)
 
 add_test(Polybench_3DCONV 3DCONV)

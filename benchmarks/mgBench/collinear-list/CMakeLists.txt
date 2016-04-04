@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(collinear-list ${SRC_FILES})
+add_dependencies(mgBench collinear-list)
 
 add_test(mgBench_collinear-list collinear-list)

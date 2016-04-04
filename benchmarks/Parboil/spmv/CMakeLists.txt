@@ -14,6 +14,7 @@ set(SRC_FILES
 
 add_executable(spmv ${SRC_FILES})
 target_link_libraries(spmv parboil m)
+add_dependencies(Parboil spmv)
 
 file(COPY input DESTINATION .)
 

@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(MVT ${SRC_FILES})
+add_dependencies(Polybench MVT)
 
 add_test(Polybench_MVT MVT)

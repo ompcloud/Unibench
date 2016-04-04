@@ -7,5 +7,6 @@ set(SRC_FILES
 
 add_executable(CORR ${SRC_FILES})
 target_link_libraries(CORR m)
+add_dependencies(Polybench CORR)
 
 add_test(Polybench_CORR CORR)

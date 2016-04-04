@@ -13,6 +13,7 @@ set(SRC_FILES
 
 add_executable(stencil ${SRC_FILES})
 target_link_libraries(stencil parboil)
+add_dependencies(Parboil stencil)
 
 file(COPY input DESTINATION .)
 

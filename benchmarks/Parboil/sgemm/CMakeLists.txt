@@ -8,6 +8,7 @@ set(SRC_FILES
 
 add_executable(sgemm ${SRC_FILES})
 target_link_libraries(sgemm parboil)
+add_dependencies(Parboil sgemm)
 
 file(COPY input DESTINATION .)
 

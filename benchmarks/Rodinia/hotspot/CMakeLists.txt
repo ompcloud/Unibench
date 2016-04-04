@@ -6,6 +6,7 @@ set(SRC_FILES
 )
 
 add_executable(hotspot ${SRC_FILES})
+add_dependencies(Rodinia hotspot)
 
 file(COPY input DESTINATION .)
 

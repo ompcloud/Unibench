@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(2MM ${SRC_FILES})
+add_dependencies(Polybench 2MM)
 
 add_test(Polybench_2MM 2MM)

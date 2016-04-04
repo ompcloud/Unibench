@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(ATAX ${SRC_FILES})
+add_dependencies(Polybench ATAX)
 
 add_test(Polybench_ATAX ATAX)

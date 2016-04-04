@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(SYRK ${SRC_FILES})
+add_dependencies(Polybench SYRK)
 
 add_test(Polybench_SYRK SYRK)

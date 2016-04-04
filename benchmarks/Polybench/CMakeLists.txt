@@ -1,6 +1,8 @@
 
 include_directories(common)
 
+add_custom_target(Polybench)
+
 add_subdirectory(2DCONV)
 add_subdirectory(2MM)
 add_subdirectory(3DCONV)

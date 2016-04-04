@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(floyd ${SRC_FILES})
+add_dependencies(mgBench floyd)
 
 add_test(mgBench_floyd floyd)

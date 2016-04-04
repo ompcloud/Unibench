@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(nw ${SRC_FILES})
+add_dependencies(Rodinia nw)
 
 add_test(Rodinia_nw nw 2048 10 2)

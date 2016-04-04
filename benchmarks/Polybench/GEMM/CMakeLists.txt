@@ -6,5 +6,6 @@ set(SRC_FILES
 )
 
 add_executable(GEMM ${SRC_FILES})
+add_dependencies(Polybench GEMM)
 
 add_test(Polybench_GEMM GEMM)

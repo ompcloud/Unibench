@@ -6,6 +6,7 @@ set(SRC_FILES
 )
 
 add_executable(bfs ${SRC_FILES})
+add_dependencies(Rodinia bfs)
 
 file(COPY input DESTINATION .)
 

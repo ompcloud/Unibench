@@ -9,5 +9,6 @@ set(SRC_FILES
 
 add_executable(lud ${SRC_FILES})
 target_link_libraries(lud m)
+add_dependencies(Rodinia lud)
 
 add_test(Rodinia_lud lud "-s" "1024" "-v")
