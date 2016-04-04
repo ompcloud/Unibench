@@ -4,3 +4,7 @@ set(SRC_FILES
 )
 
 add_executable(hotspot ${SRC_FILES})
+
+file(COPY input DESTINATION input)
+
+add_test(hotspot hotspot 512 512 2 4 "input/temp_512" "input/power_512")

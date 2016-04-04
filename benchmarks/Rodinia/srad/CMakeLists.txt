@@ -5,3 +5,5 @@ set(SRC_FILES
 
 add_executable(srad ${SRC_FILES})
 target_link_libraries(srad m)
+
+add_test(srad srad 1000 0.5 1024 1024 4)

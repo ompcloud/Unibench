@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(ATAX ${SRC_FILES})
+
+add_test(ATAX ATAX)

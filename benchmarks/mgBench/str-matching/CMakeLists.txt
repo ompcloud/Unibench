@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(str-matching ${SRC_FILES})
+
+add_test(str-matching str-matching)

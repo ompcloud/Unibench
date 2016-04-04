@@ -5,3 +5,5 @@ set(SRC_FILES
 
 add_executable(k-nearest ${SRC_FILES})
 target_link_libraries(k-nearest m)
+
+add_test(k-nearest k-nearest)

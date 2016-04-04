@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(mat-mul ${SRC_FILES})
+
+add_test(mat-mul mat-mul)

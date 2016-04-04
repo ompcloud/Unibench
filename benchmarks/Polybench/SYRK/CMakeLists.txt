@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(SYRK ${SRC_FILES})
+
+add_test(SYRK SYRK)

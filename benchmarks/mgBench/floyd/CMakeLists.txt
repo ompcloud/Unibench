@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(floyd ${SRC_FILES})
+
+add_test(floyd floyd)

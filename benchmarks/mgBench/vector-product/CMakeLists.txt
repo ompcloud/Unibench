@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(vector-product ${SRC_FILES})
+
+add_test(vector-product vector-product)

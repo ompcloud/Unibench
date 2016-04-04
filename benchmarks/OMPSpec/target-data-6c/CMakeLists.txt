@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(target-data-6c ${SRC_FILES})
+
+add_test(target-data-6c target-data-6c)

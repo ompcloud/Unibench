@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(mat-sum ${SRC_FILES})
+
+add_test(mat-sum mat-sum)

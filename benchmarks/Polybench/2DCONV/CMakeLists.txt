@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(2DConvolution ${SRC_FILES})
+
+add_test(2DConvolution 2DConvolution)

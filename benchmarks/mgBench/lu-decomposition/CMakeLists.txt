@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(lu-decomposition ${SRC_FILES})
+
+#add_test(lu-decomposition lu-decomposition)

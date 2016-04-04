@@ -4,3 +4,5 @@ set(SRC_FILES
 )
 
 add_executable(BICG ${SRC_FILES})
+
+add_test(BICG BICG)
