@@ -44,15 +44,12 @@ cleanlog:
 
 cleanall: cleanbin cleanlog
 
-compile: $(BENCH_DIR)/build $(BENCH_DIR)/log
-	echo "Compiling" $(BENCH_NAME); \
-	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
-	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	rm -f _kernel*.cl~
-	mv _kernel* $(BENCH_DIR)/build/; \
-	echo ""
+compile:
+ifeq ($(TGT_ARCH),gpu)
+	make compileGPU
+else
+	make compileSimple
+endif
 
 compileSimple: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	echo "Compiling" $(BENCH_NAME); \
@@ -60,6 +57,16 @@ compileSimple: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
 	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo ""
+
+compileGPU: $(BENCH_DIR)/build $(BENCH_DIR)/log
+	echo "Compiling" $(BENCH_NAME); \
+	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
+	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	rm -f _kernel*.cl~
+	mv _kernel* $(BENCH_DIR)/build/; \
 	echo ""
 
 run: $(BENCH_DIR)/build/$(BENCH_NAME)
