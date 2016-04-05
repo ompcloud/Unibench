@@ -9,6 +9,20 @@ include $(BENCH_MK)
 SRC_MK=$(BENCH_DIR)/src/Makefile
 include $(SRC_MK)
 
+LD_PRELOAD=$(GOMP_LIB)
+
+ifeq ($(OMP_LIB),gomp)
+LD_PRELOAD=$(GOMP_LIB)
+endif
+
+ifeq ($(OMP_LIB),iomp)
+LD_PRELOAD=$(IOMP_LIB)
+endif
+
+ifeq ($(OMP_LIB),mtsp)
+LD_PRELOAD=$(MTSP_LIB)
+endif
+
 $(BENCH_DIR)/build/$(BENCH_NAME):
 ifeq ($(TGT_ARCH),gpu)
 	make compile
