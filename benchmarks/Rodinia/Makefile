@@ -1,5 +1,2 @@
 TGT_ARCH=gpu
 COMMON_FLAGS+=-omptargets=opencl-unknown-unknown
-GOMP_LIB=/PATH/TO/GOMP/LIB
-IOMP_LIB=/PATH/TO/IOMP/LIB
-MTSP_LIB=/PATH/TO/MTSP/LIB
