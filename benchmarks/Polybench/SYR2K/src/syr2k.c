@@ -20,11 +20,11 @@
 #include "../../common/polybenchUtilFuncts.h"
 
 //define the error threshold for the results "not matching"
-#define PERCENT_DIFF_ERROR_THRESHOLD 0.05
+#define PERCENT_DIFF_ERROR_THRESHOLD 0.10
 
 /* Problem size */
-#define N 2048
-#define M 2048
+#define N 1024
+#define M 1024
 
 #define GPU_DEVICE 1
 
@@ -35,7 +35,7 @@
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
-void init_arrays(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *C_GPU)
+void init_arrays(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 {
   int i, j;
   
@@ -44,7 +44,6 @@ void init_arrays(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *C_GPU)
       for (j = 0; j < N; j++)
 	{
 	  C[i*N + j] = ((DATA_TYPE) i*j + 2) / N;
-	  C_GPU[i*N + j] = C[i*N + j];
 	}
       	
       for (j = 0; j < M; j++)
@@ -84,23 +83,31 @@ void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 {
   int i, j, k;
 	
-  #pragma omp target device (GPU_DEVICE)
-  #pragma omp target map(to: A[:N*M], B[:N*M]) map(tofrom: C[:N*N])
-  #pragma omp parallel for collapse(2) 
   for (i = 0; i < N; i++)
     {
       for (j = 0; j < N; j++)
 	{
 	  C[i*N + j] *= BETA;
+	}
+    }
+
+  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target map(to: A[:N*M], B[:N*M]) map(tofrom: C[:N*N])
+#pragma omp parallel for collapse(2)
+  for (i = 0; i < N; i++)
+    {
+      for (j = 0; j < N; j++)
+	{
 	  for (k = 0; k < M; k++)
 	    {
-	      C[i*N + j] += ALPHA * A[i*M + k] * B[j*M + k] + ALPHA * B[i*M + k] * A[j*M + k];
+	      C[i*N + j] += ALPHA * A[i*M + k] * B[j*M + k];
+	      C[i*N + j] += ALPHA * B[i*M + k] * A[j*M + k];
 	    }
 	}
     }
 }
 
-void compareResults(DATA_TYPE *C, DATA_TYPE *C_outputFromGpu)
+void compareResults(DATA_TYPE *C, DATA_TYPE *C_Gpu)
 {
   int i,j,fail;
   fail = 0;
@@ -110,7 +117,7 @@ void compareResults(DATA_TYPE *C, DATA_TYPE *C_outputFromGpu)
     {
       for (j=0; j<N; j++)
 	{
-	  if (percentDiff(C[i*N + j], C_outputFromGpu[i*N + j]) > PERCENT_DIFF_ERROR_THRESHOLD)
+	  if (percentDiff(C[i*N + j], C_Gpu[i*N + j]) > PERCENT_DIFF_ERROR_THRESHOLD)
 	    { 
 	      fail++;
 	    }
@@ -128,33 +135,35 @@ int main()
   DATA_TYPE* A;
   DATA_TYPE* B;
   DATA_TYPE* C;
-  DATA_TYPE* C_outputFromGpu;
+  DATA_TYPE* C_Gpu;
 
   A = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   B = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   C = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
-  C_outputFromGpu = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  C_Gpu = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Symmetric rank-2k operations >>\n");
 
-  init_arrays(A, B, C, C_outputFromGpu);
+  init_arrays(A, B, C_Gpu);
     
   t_start = rtclock();
-  syr2k_OMP(A, B, C_outputFromGpu);
+  syr2k_OMP(A, B, C_Gpu);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 	
+  init_arrays(A, B, C);
+
   t_start = rtclock();
   syr2k(A, B, C);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-  compareResults(C, C_outputFromGpu);
+  compareResults(C, C_Gpu);
 
   free(A);
   free(B);
   free(C);
-  free(C_outputFromGpu);
+  free(C_Gpu);
   
   return 0;
 }

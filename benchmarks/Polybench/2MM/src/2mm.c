@@ -121,7 +121,7 @@ void mm2_cpu(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
 
 void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* E)
 {
-  int i, j;
+  int i, j, k;
 
   #pragma omp target device (GPU_DEVICE)
   #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(from: C[:NI*NJ])
@@ -131,7 +131,6 @@ void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
       for (j = 0; j < NJ; j++)
 	{
 	  C[i*NJ + j] = 0.0;
-	  int k;
 	  for (k = 0; k < NK; ++k)
 	    {
 	      C[i*NJ + j] += A[i*NK + k] * B[k*NJ + j];
@@ -146,7 +145,6 @@ void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
       for (j = 0; j < NL; j++)
 	{
 	  E[i*NL + j] = 0.0;
-	  int k;
 	  for (k = 0; k < NJ; ++k)
 	    {
 	      E[i*NL + j] += C[i*NJ + k] * D[k*NL + j];

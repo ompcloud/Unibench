@@ -71,6 +71,7 @@ void gramschmidt_OMP(DATA_TYPE* A, DATA_TYPE* R, DATA_TYPE* Q)
   int i,j,k;
   DATA_TYPE nrm;
 	
+  #pragma omp target device (GPU_DEVICE)
   for (k = 0; k < N; k++)
     {
       //CPU
@@ -81,16 +82,13 @@ void gramschmidt_OMP(DATA_TYPE* A, DATA_TYPE* R, DATA_TYPE* Q)
 	}
       R[k*N + k] = sqrt(nrm); 
       
-      #pragma omp target device (GPU_DEVICE)
-      #pragma omp target map(to: A[:M*N], R[:M*N]) map(from: Q[:M*N])
-      #pragma omp parallel for 
       for (i = 0; i < M; i++)
 	{
 	  Q[i*N + k] = A[i*N + k] / R[k*N + k];
 	}
       
       #pragma omp target map(to: R[:M*N], Q[:M*N]) map(tofrom: A[:M*N])
-      #pragma omp parallel for
+      #pragma omp parallel for schedule(static,16)
       for (j = k + 1; j < N; j++)
 	{
 	  R[k*N + j] = 0;
