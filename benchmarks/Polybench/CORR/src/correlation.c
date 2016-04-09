@@ -126,7 +126,6 @@ void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_T
   for (j = 1; j < (M+1); j++)
     {
       mean[j] = 0.0;
-      int i;
       for (i = 1; i < (N+1); i++)
 	{
 	  mean[j] += data[i*(M+1) + j];
@@ -138,7 +137,6 @@ void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_T
   for (j = 1; j < (M+1); j++)
     {
       stddev[j] = 0.0;
-      int i;
       for (i = 1; i < (N+1); i++)
 	{
 	  stddev[j] += (data[i*(M+1) + j] - mean[j]) * (data[i*(M+1) + j] - mean[j]);
@@ -164,7 +162,7 @@ void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_T
 
   // Calculate the m * m correlation matrix. 
   #pragma omp target map (to: data[:(M+1)*(N+1)]) map (from: symmat[:(M+1)*(N+1)])
-  #pragma omp parallel for collapse(1) schedule(static, 16)
+  #pragma omp parallel for collapse(1) schedule(static, 32)
   for (k = 1; k < M; k++)
     {	
       symmat[k*(M+1) + k] = 1.0;
@@ -229,6 +227,8 @@ int main()
   t_end = rtclock();
 
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
+
+  init_arrays(data);
 
   t_start = rtclock();
   correlation(data, mean, stddev, symmat);
