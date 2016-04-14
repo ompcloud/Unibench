@@ -1,0 +1,4 @@
+CC=gcc
+SRC_DIR=$(BENCH_DIR)/src
+SRC_OBJS=$(SRC_DIR)/strassen.c
+INPUT_FLAGS=-n 1024 -b
