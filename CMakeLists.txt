@@ -15,5 +15,3 @@ enable_testing()
 add_subdirectory(benchmarks)
 
 #add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
-
-configure_file(unibench2 unibench2 COPYONLY)
