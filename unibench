@@ -14,6 +14,19 @@ if('-mali' in sys.argv):
 else:
 	target = 'x86'
 
+if('-iomp' in sys.argv):
+	omplib = 'iomp'
+	sys.argv.remove('-iomp')
+elif('-mtsp' in sys.argv):
+	omplib = 'mtsp'
+	sys.argv.remove('-mtsp')
+elif('-gomp' in sys.argv):
+	omplib = 'gomp'
+	sys.argv.remove('-gomp')
+else:
+	omplib = 'gomp'
+
+
 for d in dirs:
 	for root2, dirs2, files2 in os.walk("./benchmarks/" + d):
 		break
@@ -66,6 +79,8 @@ elif(len(sys.argv) == 3):
 		print("Use \"./unibench list\" to list the available benchmarks.")
 		exit(0)
 
+	omp_lib="OMP_LIB=" + omplib
+
 	if(opt1 == "clean"):
 		if(opt2 == "all"):
 			os.popen("BENCH_DIR=./benchmarks/*/* make -s cleanall", 'w')
@@ -76,12 +91,12 @@ elif(len(sys.argv) == 3):
 	elif(opt1 == "compile"):
 		if(opt2 == "all"):
 			for b in argBench:
-				os.popen("BENCH_DIR=./benchmarks/" + b + " BENCH_NAME=" + b.split('/')[1] + " make -s compile", 'w')
+				os.popen(omp_lib + " BENCH_DIR=./benchmarks/" + b + " BENCH_NAME=" + b.split('/')[1] + " make -s compile", 'w')
 		elif(len(opt) == 1 and opt[0] in benchs):
 			for b in benchs[opt[0]]:
-				os.popen("BENCH_DIR=./benchmarks/" + opt[0] + "/" + b + " BENCH_NAME=" + b + " make -s compile", 'w')
+				os.popen(omp_lib + " BENCH_DIR=./benchmarks/" + opt[0] + "/" + b + " BENCH_NAME=" + b + " make -s compile", 'w')
 		elif(len(opt) == 2 and opt[0] in benchs and opt2 in argBench):
-			os.popen("BENCH_DIR=./benchmarks/" + opt2 + " BENCH_NAME=" + opt2.split('/')[1] + " make -s compile", 'w')
+			os.popen(omp_lib + " BENCH_DIR=./benchmarks/" + opt2 + " BENCH_NAME=" + opt2.split('/')[1] + " make -s compile", 'w')
 	elif(opt1 == "run"):
 		if(opt2 == "all"):
 			if(target == 'mali'):

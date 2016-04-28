@@ -106,7 +106,6 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
   for (i = 0; i < NX; i++)
     {
       tmp[i] = 0;
-      int j;
       for (j = 0; j < NY; j++)
 	{
 	  tmp[i] = tmp[i] + A[i*NY + j] * x[j];

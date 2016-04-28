@@ -1,0 +1,6 @@
+CC=gcc
+SRC_DIR=$(BENCH_DIR)/src
+SRC_OBJS=$(SRC_DIR)/fft.c -lm
+INPUT_FLAGS=-n 3000000 -s
+
+
