@@ -346,9 +346,8 @@ int main(int argc, char *argv[]) {
 
 	//GPU
 	t_start = rtclock();
-	        #pragma omp target device(DEVICE_ID)
 		#pragma omp target map(to: iN[:Nr], iS[:Nr], jW[:Nc], jE[:Nc] ) \
-                map(tofrom: dN[:Ne], dS[:Ne], dW[:Ne], dE[:Ne], c[:Ne], image[:Ne])
+                map(tofrom: dN[:Ne], dS[:Ne], dW[:Ne], dE[:Ne], c[:Ne], image[:Ne]) device(DEVICE_ID)
 
 	{
 	for (iter = 0; iter < niter; iter++) {// do for the number of iterations input parameter
@@ -374,7 +373,7 @@ int main(int argc, char *argv[]) {
 	//	#pragma omp target map(to: iN[:Nr], iS[:Nr], jW[:Nc], jE[:Nc], image[:Ne] ) \
 	//	map(tofrom: dN[:Ne], dS[:Ne], dW[:Ne], dE[:Ne], c[:Ne])
 	//	{
-		#pragma omp parallel for collapse(2)
+		#pragma omp parallel for collapse(1)
 		for (j = 0; j < Nc; j++) {		// do for the range of columns in IMAGE
 			for (i = 0; i < Nr; i++) {	// do for the range of rows in IMAGE 
 				// current index/pixel
@@ -422,7 +421,7 @@ int main(int argc, char *argv[]) {
 	//	#pragma omp target map(to: c[:Ne], iS[:Nr], jE[:Nc], dN[:Ne], dS[:Ne],  dW[:Ne], dE[:Ne] ) \
 		map(tofrom: image[:Ne])
 	//	{
-		#pragma omp parallel for collapse(2)
+		#pragma omp parallel for collapse(1)
 		for (j = 0; j < Nc; j++) {		// do for the range of columns in IMAGE
 
 			// printf("NUMBER OF THREADS: %d\n", omp_get_num_threads());

@@ -41,8 +41,7 @@ int search_GPU(float *a, float c)
 
 	find2 = &find;
 
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(to: a[:SIZE]) map(from: find2[:1])
+    #pragma omp target map(to: a[:SIZE]) map(from: find2[:1]) device(DEVICE_ID)
     {
         #pragma omp parallel for
         for (i = 0; i < SIZE; ++i)

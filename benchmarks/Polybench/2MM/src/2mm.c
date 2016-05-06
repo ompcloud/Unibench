@@ -123,8 +123,7 @@ void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
 {
   int i, j, k;
 
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(from: C[:NI*NJ])
+  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(from: C[:NI*NJ]) device(DEVICE_ID)
   #pragma omp parallel for
   for (i = 0; i < NI; i++)
     {

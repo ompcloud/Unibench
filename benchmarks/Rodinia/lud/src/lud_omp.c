@@ -29,8 +29,7 @@ void lud_omp_gpu(float *a, int size)
      int i,j,k;
      float sum;
 
-     #pragma omp target device (DEVICE_ID)
-     #pragma omp target map(tofrom: a[0:size*size])
+     #pragma omp target map(tofrom: a[0:size*size]) device (DEVICE_ID)
      {
 	     for (i=0; i <size; i++){
 		 #pragma omp parallel for

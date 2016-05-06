@@ -42,8 +42,7 @@ void single_iteration_gpu(double *result, double *temp, double *power, int row, 
 	int r, c;
 	double amb_temp = 80.0;
 
-	#pragma omp target device (DEVICE_ID)
-        #pragma omp target map(to: power[0:row*col], temp[0:row*col]) map(tofrom: result[0:row*col])
+        #pragma omp target map(to: power[0:row*col], temp[0:row*col]) map(tofrom: result[0:row*col]) device (DEVICE_ID)
 	{
 		#pragma omp parallel for collapse(2)
 		for (r = 0; r < row; r++) {

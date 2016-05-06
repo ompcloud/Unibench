@@ -162,10 +162,9 @@ void BFSGraph( int argc, char** argv)
 		//if no thread changes this value then the loop stops
 		stop=false;
 
-		#pragma omp target  device (DEVICE_ID)
 		#pragma omp target map(to: h_graph_nodes[:no_of_nodes], h_graph_edges[:edge_list_size], \
 		h_graph_visited_gpu[:no_of_nodes])map(tofrom: h_graph_mask_gpu[:no_of_nodes], h_cost_gpu[:no_of_nodes], \
-		h_updating_graph_mask_gpu[:no_of_nodes])
+		h_updating_graph_mask_gpu[:no_of_nodes]) device (DEVICE_ID)
 		{
 			#pragma omp parallel for
 			for(tid = 0; tid < no_of_nodes; tid++ )

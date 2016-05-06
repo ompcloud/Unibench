@@ -49,8 +49,7 @@ void Crout_GPU(int s, float *a, float *b){
     int k,j,i;
     float sum;
 
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(to: a[0:SIZE*SIZE]) map(tofrom: b[0:SIZE*SIZE])
+    #pragma omp target map(to: a[0:SIZE*SIZE]) map(tofrom: b[0:SIZE*SIZE]) device(DEVICE_ID)
     {
         #pragma omp parallel for
         for(k=0;k<s;++k)

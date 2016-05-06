@@ -25,8 +25,7 @@ void basicSgemmGPU( char transa, char transb, int m, int n, int k, float alpha, 
   }
 
 	int mm, nn, i;
-	#pragma omp target device(1)
-	#pragma omp target map(to: A[:m*k], B[:n*k]) map(tofrom: C[:m*n])
+	#pragma omp target map(to: A[:m*k], B[:n*k]) map(tofrom: C[:m*n])  device(DEVICE_ID)
   #pragma omp parallel for
   for (mm = 0; mm < m; ++mm) {
     for (nn = 0; nn < n; ++nn) {

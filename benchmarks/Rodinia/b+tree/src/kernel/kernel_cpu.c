@@ -81,8 +81,7 @@ kernel_gpu(	int cores_arg,
 
 	// process number of querries
 
-	#pragma omp target device (DEVICE_ID)
-	#pragma omp target map(to: keys[:count], knodes[:knodes_elem], records[:records_elem]) map(tofrom: offset[:count], ans[:count], currKnode[:count])
+	#pragma omp target map(to: keys[:count], knodes[:knodes_elem], records[:records_elem]) map(tofrom: offset[:count], ans[:count], currKnode[:count]) device (DEVICE_ID)
 	{
 		#pragma omp parallel for
 		for(bid = 0; bid < count; bid++){

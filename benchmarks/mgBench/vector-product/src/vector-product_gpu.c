@@ -40,8 +40,7 @@ void product_GPU(float *A, float *B, float *C)
 {
     int i;
     
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(to: A[0:SIZE], B[0:SIZE]) map(from: C[0:SIZE])
+    #pragma omp target map(to: A[0:SIZE], B[0:SIZE]) map(from: C[0:SIZE]) device(DEVICE_ID)
     {
 	#pragma omp parallel for
         for (i = 0; i < SIZE; ++i)

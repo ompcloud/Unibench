@@ -147,8 +147,7 @@ double spmvGPU(int argc, char** argv) {
   int p, i;
 	t_start_GPU = rtclock();
 	//main execution
-	#pragma omp target device(1)
-	#pragma omp target map(to: h_nzcnt[:nzcnt_len], h_ptr[:col_count], h_indices[:len], h_data[:len], h_perm[:col_count], h_x_vector[:dim]) map(from: h_Ax_vector[:dim])
+	#pragma omp target map(to: h_nzcnt[:nzcnt_len], h_ptr[:col_count], h_indices[:len], h_data[:len], h_perm[:col_count], h_x_vector[:dim]) map(from: h_Ax_vector[:dim]) device(DEVICE_ID)
 	for(p=0;p<50;p++)
 	{
     #pragma omp parallel for

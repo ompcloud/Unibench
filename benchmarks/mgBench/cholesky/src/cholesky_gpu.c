@@ -50,8 +50,7 @@ void cholesky_GPU(float *A, float *B)
     
     float t;
 
-    #pragma omp target device(DEVICE_ID)
-    #pragma omp target map(to: A[0:SIZE*SIZE]) map(tofrom: B[0:SIZE*SIZE])
+    #pragma omp target map(to: A[0:SIZE*SIZE]) map(tofrom: B[0:SIZE*SIZE]) device(DEVICE_ID)
     {
 	#pragma omp parallel for collapse(1)
         for(i = 0; i < SIZE; i++)

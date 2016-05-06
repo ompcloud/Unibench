@@ -51,10 +51,9 @@ void k_nearest_gpu(int s, point *vector, sel_points *selected)
     int i,j,m,q;
     q = s*s;
 
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(to: vector[0: s]) map(tofrom: selected[0:q])
+    #pragma omp target map(to: vector[0: s]) map(tofrom: selected[0:q]) device(DEVICE_ID)
     {
-	#pragma omp parallel for collapse(2) 
+	#pragma omp parallel for collapse(1) 
         for(i=0;i<s;i++)
         {
             for(j=i+1;j<s;j++)

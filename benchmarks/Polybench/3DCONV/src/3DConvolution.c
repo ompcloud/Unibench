@@ -71,7 +71,7 @@ void conv3D_OMP(DATA_TYPE* A, DATA_TYPE* B)
   c13 = +4;  c23 = +7;  c33 = +10;
 
 #pragma omp target map(to: A[:NI*NJ*NK]) map (from: B[:NI*NJ*NK]) device (GPU_DEVICE)
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(1)
   for (j = 1; j < NJ - 1; ++j)
     {
       for (i = 1; i < NI - 1; ++i)

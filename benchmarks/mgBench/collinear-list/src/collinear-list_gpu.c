@@ -58,10 +58,9 @@ int colinear_list_points_GPU()
         parallel_lines[i] = 0;	
     }
 
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(to: points[0:SIZE]) map(tofrom: parallel_lines[0:p])	
+    #pragma omp target map(to: points[0:SIZE]) map(tofrom: parallel_lines[0:p])	device(DEVICE_ID)
     {
-        #pragma omp parallel for collapse(3)
+        #pragma omp parallel for collapse(1)
 	for(i = 0; i < SIZE; i++)
 	{
 	    for(j = 0; j < SIZE; j++)

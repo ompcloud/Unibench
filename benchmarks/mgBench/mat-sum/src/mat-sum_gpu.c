@@ -45,10 +45,9 @@ void sum_GPU(float *a, float *b, float *c)
 {
     int i, j;
 
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(to: a[0:SIZE*SIZE], b[0:SIZE*SIZE]) map(tofrom: c[0:SIZE*SIZE])
+    #pragma omp target map(to: a[0:SIZE*SIZE], b[0:SIZE*SIZE]) map(tofrom: c[0:SIZE*SIZE]) device(DEVICE_ID) 
     {
-	#pragma omp parallel for collapse(2)
+	#pragma omp parallel for collapse(1)
         for (i = 0; i < SIZE; ++i)
         {
 	    for (j = 0; j < SIZE; ++j)

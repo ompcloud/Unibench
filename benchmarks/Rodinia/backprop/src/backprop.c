@@ -273,8 +273,7 @@ int n1, n2;
   l1[0] = 1.0;
    
   t_start = rtclock();
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: conn_gpu[:(n1+1)*(n2+1)], l1[:n1+1]) map(tofrom: l2_gpu[:n2+1])
+  #pragma omp target map(to: conn_gpu[:(n1+1)*(n2+1)], l1[:n1+1]) map(tofrom: l2_gpu[:n2+1]) device (DEVICE_ID)
   {
 	  #pragma omp parallel for
 	  for (j = 1; j <= n2; j++) {
@@ -396,8 +395,7 @@ float *delta, *ly, **w, **oldw;
   int size = (ndelta+1)*(nly+1);
 
   t_start = rtclock();
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: ly[:(nly+1)], delta[:(ndelta+1)]) map(tofrom: oldw_gpu[:size], w_gpu[:size])
+  #pragma omp target map(to: ly[:(nly+1)], delta[:(ndelta+1)]) map(tofrom: oldw_gpu[:size], w_gpu[:size]) device (DEVICE_ID)
   {
 	  #pragma omp parallel for collapse(1)
 	  for (j = 1; j <= ndelta; j++) {

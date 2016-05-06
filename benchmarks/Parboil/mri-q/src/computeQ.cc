@@ -43,8 +43,7 @@ ComputeQGPU(int numK, int numX,
 //  float sinArg;
 
   int indexK, indexX;
-	#pragma omp target device(1)
-  #pragma omp target map(to: kVals[:numK], x[:numX], y[:numX], z[:numX]) map(tofrom: Qr[:numX], Qi[:numX])
+  #pragma omp target map(to: kVals[:numK], x[:numX], y[:numX], z[:numX]) map(tofrom: Qr[:numX], Qi[:numX])  device(DEVICE_ID)
   for (indexK = 0; indexK < numK; indexK++) {
     #pragma omp parallel for
     for (indexX = 0; indexX < numX; indexX++) {

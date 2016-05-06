@@ -73,8 +73,7 @@ void Knearest_GPU(int *matrix, int *matrix_dist)
     }
 
     /// opportunity of parallelism here
-    #pragma omp target device (DEVICE_ID)
-    #pragma omp target map(tofrom: matrix_dist[:SIZE*SIZE])
+    #pragma omp target map(tofrom: matrix_dist[:SIZE*SIZE]) device(DEVICE_ID)
     {
         for(i=0;i<SIZE;i++)
         {
