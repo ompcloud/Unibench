@@ -4,6 +4,7 @@ set(SRC_DIR src)
 set(SRC_FILES
   ${SRC_DIR}/file.cc
   ${SRC_DIR}/main.c
+  ${SRC_DIR}/computeQ.cc
 )
 
 include_directories(
