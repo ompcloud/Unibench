@@ -116,13 +116,11 @@ void correlation(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_TYPE*
 
 void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_TYPE* symmat)
 {
-  int i, j, k;	
-	
-  #pragma omp target device (GPU_DEVICE)
+  int i, j, k;
 
   // Determine mean of column vectors of input data matrix 
-  #pragma omp target map (tofrom: data[:(M+1)*(N+1)]) map (from: mean[:(M+1)])
-  #pragma omp parallel for schedule(auto)
+  #pragma omp target map (tofrom: data[:(M+1)*(N+1)], mean[:(M+1)]) device (DEVICE_ID)
+  #pragma omp parallel for //schedule(auto)
   for (j = 1; j < (M+1); j++)
     {
       mean[j] = 0.0;
@@ -161,8 +159,8 @@ void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_T
     }
 
   // Calculate the m * m correlation matrix. 
-  #pragma omp target map (to: data[:(M+1)*(N+1)]) map (from: symmat[:(M+1)*(N+1)])
-  #pragma omp parallel for collapse(1) schedule(static, 32)
+  #pragma omp target map (to: data[:(M+1)*(N+1)]) map (tofrom: symmat[:(M+1)*(N+1)]) device (DEVICE_ID)
+  #pragma omp parallel for //collapse(1) schedule(static, 32)
   for (k = 1; k < M; k++)
     {	
       symmat[k*(M+1) + k] = 1.0;

@@ -24,9 +24,13 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
 /* Problem size */
-#define NI 512
-#define NJ 512
-#define NK 512
+#define NI SIZE
+#define NJ SIZE
+#define NK SIZE
+
+
+#define SIZE 9600
+#define SIZE2 128
 
 /* Declared constant values for ALPHA and BETA (same as values in PolyBench 2.0) */
 #define ALPHA 32412.0f
@@ -55,18 +59,21 @@ void gemm(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
     }
 }
 
-void gemm_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
+void gemm_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit)
 {
   int i,j,k;
+  int ii, iii;
 	
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(tofrom: C[:NI*NJ])
-  #pragma omp parallel for collapse(2)
-  for (i = 0; i < NI; i++)
+  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], Cinit[:NI*NJ]) map(tofrom: C[:NI*NJ]) device (DEVICE_ID)
+  #pragma omp parallel for //collapse(2)
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (i = 0; i < NI; i++)
     {
+      i = iii * SIZE/SIZE2 + ii;
       for (j = 0; j < NJ; j++)
 	{
-	  C[i*NJ + j] *= BETA;
+	  C[i*NJ + j] = Cinit[i*NJ + j] * BETA;
 	
 	  for (k = 0; k < NK; ++k)
 	    {
@@ -74,6 +81,7 @@ void gemm_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 	    }
 	}
     }
+  }
 }
 
 
@@ -137,23 +145,25 @@ int main(int argc, char *argv[])
   DATA_TYPE* B;  
   DATA_TYPE* C;  
   DATA_TYPE* C_outputFromGpu; 
+  DATA_TYPE* Cinit_outputFromGpu; 
 
   A = (DATA_TYPE*)malloc(NI*NK*sizeof(DATA_TYPE)); 
   B = (DATA_TYPE*)malloc(NK*NJ*sizeof(DATA_TYPE));   
   C = (DATA_TYPE*)malloc(NI*NJ*sizeof(DATA_TYPE)); 
-  C_outputFromGpu = (DATA_TYPE*)malloc(NI*NJ*sizeof(DATA_TYPE)); 
+  C_outputFromGpu = (DATA_TYPE*)calloc(NI*NJ,sizeof(DATA_TYPE));
+  Cinit_outputFromGpu = (DATA_TYPE*)malloc(NI*NJ*sizeof(DATA_TYPE)); 
 
   fprintf(stdout, "<< Matrix-multiply C=alpha.A.B+beta.C >>\n");
 
-  init(A, B, C, C_outputFromGpu);
+  init(A, B, C, Cinit_outputFromGpu);
   
   t_start = rtclock();	
-  gemm_OMP(A, B, C_outputFromGpu);
+  gemm_OMP(A, B, C_outputFromGpu, Cinit_outputFromGpu);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
   t_start = rtclock();	
-  gemm(A, B, C);
+  //gemm(A, B, C);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 	

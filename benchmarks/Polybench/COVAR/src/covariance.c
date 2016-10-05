@@ -22,11 +22,12 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 1.05
 
-
+#define SIZE 9600
+#define SIZE2 128
 
 /* Problem size */
-#define M 2048
-#define N 2048
+#define M SIZE
+#define N SIZE
 
 #define sqrt_of_array_cell(x,j) sqrt(x[j])
 
@@ -106,17 +107,21 @@ void covariance(DATA_TYPE* data, DATA_TYPE* symmat, DATA_TYPE* mean)
     }
 }
 
-void covariance_OMP(DATA_TYPE* data, DATA_TYPE* symmat, DATA_TYPE* mean)
+void covariance_OMP(DATA_TYPE* data, DATA_TYPE* data2, DATA_TYPE* symmat, DATA_TYPE* mean)
 {
   int i, j, j1,j2;
+  int ii, iii;
 
   /* Determine mean of column vectors of input data matrix */
-	
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: data[:(M+1)*(N+1)]) map(from: mean[:(M+1)])
+	 
+  #pragma omp target map(to: data[:(M+1)*(N+1)]) map(tofrom: mean[:(M+1)], data2[:(M+1)*(N+1)], symmat[:(M+1)*(N+1)]) device (DEVICE_ID) 
+  {
   #pragma omp parallel for
-  for (j = 1; j < (M+1); j++)
+    for (iii = 0; iii < SIZE2; ++iii) {
+      for (ii = 0; ii < SIZE/SIZE2; ++ii)
+      //for (j = 1; j < (M+1); j++)
     {
+      j = iii * SIZE/SIZE2 + ii + 1;
       mean[j] = 0.0;
       for (i = 1; i < (N+1); i++)
 	{
@@ -124,33 +129,41 @@ void covariance_OMP(DATA_TYPE* data, DATA_TYPE* symmat, DATA_TYPE* mean)
 	}
       mean[j] /= FLOAT_N;
     }
-  
-  /* Center the column vectors. */
-  #pragma omp target map(to: mean[:(M+1)]) map(tofrom: data[:(M+1)*(N+1)])
-  #pragma omp parallel for collapse(2)
-  for (i = 1; i < (N+1); i++)
-    {
-      for (j = 1; j < (M+1); j++)
-	{
-	  data[i*(M+1) + j] -= mean[j];
-	}
     }
   
-  /* Calculate the m * m covariance matrix. */
-  #pragma omp target map(to: data[:(M+1)*(M+1)]) map(from: symmat[:(M+1)*(N+1)])
-  #pragma omp parallel for collapse(2) schedule(dynamic,8)
-  for (j1 = 1; j1 < (M+1); j1++)
+  /* Center the column vectors. */
+  #pragma omp parallel for //collapse(2)
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (i = 1; i < (N+1); i++)
     {
+      i = iii * SIZE/SIZE2 + ii + 1;
+      for (j = 1; j < (M+1); j++)
+	{
+	  data2[i*(M+1) + j] = data[i*(M+1) + j] - mean[j];
+	}
+    }
+  }
+  
+  /* Calculate the m * m covariance matrix. */
+  #pragma omp parallel for //collapse(2) schedule(dynamic,8)
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (j1 = 1; j1 < (M+1); j1++)
+    {
+      j1 = iii * SIZE/SIZE2 + ii + 1;
       for (j2 = j1; j2 < (M+1); j2++)
 	{
 	  symmat[j1*(M+1) + j2] = 0.0;
 	  for (i = 1; i < N+1; i++)
 	    {
-	      symmat[j1*(M+1) + j2] += data[i*(M+1) + j1] * data[i*(M+1) + j2];
+	      symmat[j1*(M+1) + j2] += data2[i*(M+1) + j1] * data2[i*(M+1) + j2];
 	    }
 	  symmat[j2*(M+1) + j1] = symmat[j1*(M+1) + j2];
 	}
     }
+  }
+  }
 }
 
 int main()
@@ -158,25 +171,30 @@ int main()
   double t_start, t_end;
 
   DATA_TYPE* data;
+  DATA_TYPE* data_GPU;
+  DATA_TYPE* data2_GPU;
   DATA_TYPE* symmat;
   DATA_TYPE* mean;
+  DATA_TYPE* mean_GPU;
   DATA_TYPE* symmat_outputFromGpu;	
 
-  data = (DATA_TYPE*)malloc((M+1)*(N+1)*sizeof(DATA_TYPE));
-  symmat = (DATA_TYPE*)malloc((M+1)*(M+1)*sizeof(DATA_TYPE));
-  mean = (DATA_TYPE*)malloc((M+1)*sizeof(DATA_TYPE));
-  symmat_outputFromGpu = (DATA_TYPE*)malloc((M+1)*(M+1)*sizeof(DATA_TYPE));	
+  data = (DATA_TYPE*)calloc((M+1)*(N+1),sizeof(DATA_TYPE));
+  data_GPU = (DATA_TYPE*)calloc((M+1)*(N+1),sizeof(DATA_TYPE));
+  data2_GPU = (DATA_TYPE*)calloc((M+1)*(N+1),sizeof(DATA_TYPE));
+  symmat = (DATA_TYPE*)calloc((M+1)*(M+1),sizeof(DATA_TYPE));
+  mean = (DATA_TYPE*)calloc((M+1),sizeof(DATA_TYPE));
+  symmat_outputFromGpu = (DATA_TYPE*)calloc((M+1)*(M+1),sizeof(DATA_TYPE));
+  mean_GPU = (DATA_TYPE*)calloc((M+1),sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Covariance Computation >>\n");
 
   init_arrays(data);
+  init_arrays(data_GPU);
     
   t_start = rtclock();
-  covariance_OMP(data, symmat_outputFromGpu, mean);
+  covariance_OMP(data_GPU, data2_GPU, symmat_outputFromGpu, mean_GPU);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
-
-  init_arrays(data);
 
   t_start = rtclock();
   covariance(data, symmat, mean);

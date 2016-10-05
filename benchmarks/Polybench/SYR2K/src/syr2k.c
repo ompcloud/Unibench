@@ -23,10 +23,10 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.10
 
 /* Problem size */
-#define N 1024
-#define M 1024
-
-#define GPU_DEVICE 1
+#define N SIZE
+#define M SIZE
+#define SIZE 9600
+#define SIZE2 128
 
 /* Declared constant values for ALPHA and BETA (same as values in PolyBench 2.0) */
 #define ALPHA 12435
@@ -79,32 +79,54 @@ void syr2k(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
     }
 }
 
-void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
+void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit)
 {
   int i, j, k;
+  int ii, iii;
 	
   for (i = 0; i < N; i++)
     {
       for (j = 0; j < N; j++)
 	{
-	  C[i*N + j] *= BETA;
+	  Cinit[i*N + j] *= BETA;
 	}
     }
+  DATA_TYPE sum;
 
-  #pragma omp target device (GPU_DEVICE)
-  #pragma omp target map(to: A[:N*M], B[:N*M]) map(tofrom: C[:N*N])
-#pragma omp parallel for collapse(2)
+  //#pragma omp target map(to: A[:N*M], B[:N*M]) map(tofrom: C[:N*N]) device (DEVICE_ID)
+  /*#pragma omp parallel for //collapse(2)
   for (i = 0; i < N; i++)
     {
       for (j = 0; j < N; j++)
 	{
+          //sum = 0;
 	  for (k = 0; k < M; k++)
 	    {
 	      C[i*N + j] += ALPHA * A[i*M + k] * B[j*M + k];
 	      C[i*N + j] += ALPHA * B[i*M + k] * A[j*M + k];
 	    }
+          //C[i*N + j] += sum;
 	}
+    }*/
+  
+  #pragma omp target map(to: A[:N*M], B[:N*M], Cinit[:N*N]) map(tofrom: C[:N*N]) device (DEVICE_ID)
+  #pragma omp parallel for //collapse(2)
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (i = 0; i < N; i++)
+    {
+      i = iii * SIZE/SIZE2 + ii;  
+      for (j = 0; j < N; j++)
+        {
+        C[i*N + j] = Cinit[i*N + j];
+          for (k = 0; k < M; k++)
+            {
+              C[i*N + j] += ALPHA * A[i*M + k] * B[j*M + k];
+              C[i*N + j] += ALPHA * B[i*M + k] * A[j*M + k];
+            }
+        }
     }
+  }
 }
 
 void compareResults(DATA_TYPE *C, DATA_TYPE *C_Gpu)
@@ -135,26 +157,28 @@ int main()
   DATA_TYPE* A;
   DATA_TYPE* B;
   DATA_TYPE* C;
+  DATA_TYPE* Cinit;
   DATA_TYPE* C_Gpu;
 
   A = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   B = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   C = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
-  C_Gpu = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  Cinit = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  C_Gpu = (DATA_TYPE*)calloc(N*M, sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Symmetric rank-2k operations >>\n");
 
-  init_arrays(A, B, C_Gpu);
+  init_arrays(A, B, Cinit);
     
   t_start = rtclock();
-  syr2k_OMP(A, B, C_Gpu);
+  syr2k_OMP(A, B, C_Gpu, Cinit);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 	
   init_arrays(A, B, C);
 
   t_start = rtclock();
-  syr2k(A, B, C);
+  //syr2k(A, B, C);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 

@@ -23,13 +23,15 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
 /* Problem size. */
-# define NI 512
-# define NJ 512
-# define NK 512
-# define NL 512
-# define NM 512
+#define SIZE 9600
+#define SIZE2 16
 
-# define DEVICE_ID 1
+# define NI SIZE
+# define NJ SIZE
+# define NK SIZE
+# define NL SIZE
+# define NM SIZE
+
 
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
@@ -138,13 +140,17 @@ void mm3_cpu(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *
 void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *E, DATA_TYPE *F, DATA_TYPE *G)
 {
   int i,j,k;
+  int ii, iii;
 	
   /* E := A*B */
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ]) map(from: E[:NI*NJ])	
-  #pragma omp parallel for
-  for (i = 0; i < NI; i++)
+  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], C[:NJ*NM], D[:NM*NL]) map(tofrom: E[:NI*NJ], F[:NJ*NL], G[:NI*NL])	device (DEVICE_ID)
+  {
+  #pragma omp parallel for 
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (i = 0; i < NI; i++)
     {
+      i = iii * SIZE/SIZE2 + ii;  
       for (j = 0; j < NJ; j++)
 	{
 	  E[i*NJ + j] = 0;
@@ -154,12 +160,15 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *
 	    }
 	}
     }
+  }
   
   /* F := C*D */
-  #pragma omp target map(to: C[:NJ*NM], D[:NM*NL]) map(from: F[:NJ*NL])
-  #pragma omp parallel for
-  for (i = 0; i < NJ; i++)
+  #pragma omp parallel for 
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (i = 0; i < NJ; i++)
     {
+      i = iii * SIZE/SIZE2 + ii; 
       for (j = 0; j < NL; j++)
 	{
 	  F[i*NL + j] = 0;
@@ -169,12 +178,15 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *
 	    }
 	}
     }
+  }
 
   /* G := E*F */
-  #pragma omp target map(to: E[:NI*NJ], F[:NJ*NL]) map(from: G[:NI*NL])
-  #pragma omp parallel for
-  for (i = 0; i < NI; i++)
+  #pragma omp parallel for 
+  for (iii = 0; iii < SIZE2; ++iii) {
+    for (ii = 0; ii < SIZE/SIZE2; ++ii)
+    //for (i = 0; i < NI; i++)
     {
+      i = iii * SIZE/SIZE2 + ii; 
       for (j = 0; j < NL; j++)
 	{
 	  G[i*NL + j] = 0;
@@ -184,6 +196,8 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *
 	    }
 	}
     }
+  }
+  }
 }
 
 int main(int argc, char** argv)

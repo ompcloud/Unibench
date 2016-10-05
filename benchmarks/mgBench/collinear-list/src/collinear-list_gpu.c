@@ -21,7 +21,8 @@
 #include <sys/time.h>
 #include "../../common/mgbenchUtilFunctions.h"
 
-#define SIZE 1024
+#define SIZE 1024*16
+#define SIZE2 16
 
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
@@ -47,29 +48,37 @@ void generate_points()
 /// N = size of vector
 int colinear_list_points_GPU()
 {
-    int i,j,k,p,val;
+    unsigned i;
+    int ii, iii;
+    int j,k,p,val;
     val = 0;
-    p = 10000;
 	
     int *parallel_lines;
-    parallel_lines = (int *) malloc(sizeof(int)*p);
+    parallel_lines = (int *) malloc(sizeof(int)*SIZE);
     for(i=0;i<p;i++)
     {
         parallel_lines[i] = 0;	
     }
+    
+    // FIXME: declaration moved outside the loop because of clang bug
+    int slope_coefficient,linear_coefficient;
+    int ret;
 
-    #pragma omp target map(to: points[0:SIZE]) map(tofrom: parallel_lines[0:p])	device(DEVICE_ID)
+    #pragma omp target map(to: points[:SIZE]) map(tofrom: parallel_lines[:SIZE])	device(DEVICE_ID)
     {
         #pragma omp parallel for collapse(1)
-	for(i = 0; i < SIZE; i++)
-	{
+        for (iii = 0; iii < SIZE2; ++iii) {
+        for (ii = 0; ii < SIZE/SIZE2; ++ii)
+        {
+            i = iii * SIZE/SIZE2 + ii;
 	    for(j = 0; j < SIZE; j++)
 	    {
 	        for(k = 0; k < SIZE; k++)
 		{
 		    /// to understand if is colinear points
-		    int slope_coefficient,linear_coefficient;
-		    int ret;
+		    // FIXME: declaration moved outside the loop because of clang bug
+                    //int slope_coefficient,linear_coefficient;
+                    //int ret;
 		    ret = 0;
 		    slope_coefficient = points[j].y - points[i].y;
 		    if((points[j].x - points[i].x)!=0)
@@ -84,15 +93,16 @@ int colinear_list_points_GPU()
 		    }
 		    if(ret==1)
 		    {
-		        parallel_lines[(i%p)] = 1;
+		        parallel_lines[(i&(SIZE-1))] = 1;
 		    }
 		}
 	    }
     	}
+        }
     }
 
     val = 0;
-    for(i=0;i<p;i++)
+    for(i=0;i<SIZE;i++)
     {
         if(parallel_lines[i]==1)
 	{

@@ -72,31 +72,29 @@ void runMvt(DATA_TYPE* a, DATA_TYPE* x1, DATA_TYPE* x2, DATA_TYPE* y1, DATA_TYPE
 
 void runMvt_OMP(DATA_TYPE* a, DATA_TYPE* x1, DATA_TYPE* x2, DATA_TYPE* y1, DATA_TYPE* y2)
 {
-  int i;
+  int i, j;
   
   //Note that you must collapse only outer loop to avoid conflicts
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: a[:N*N], y1[:N]) map(tofrom: x1[:N])	
+  #pragma omp target map(to: a[:N*N], y1[:N], y2[:N]) map(tofrom: x1[:N], x2[:N]) device (DEVICE_ID)
+  {
   #pragma omp parallel for collapse(1)
   for (i=0; i<N; i++) 
     {
-      int j;
       for (j=0; j<N; j++) 
 	{
 	  x1[i] = x1[i] + a[i*N + j] * y1[j];
 	}
     }
 	
-  #pragma omp target map(to: a[:N*N], y2[:N]) map(tofrom: x2[:N])
   #pragma omp parallel for collapse(1)
   for (i=0; i<N; i++) 
     {
-      int j;
       for (j=0; j<N; j++) 
 	{
 	  x2[i] = x2[i] + a[j*N + i] * y2[j];
 	}
     }
+  }
 }
 
 void compareResults(DATA_TYPE* x1, DATA_TYPE* x1_outputFromGpu, DATA_TYPE* x2, DATA_TYPE* x2_outputFromGpu)

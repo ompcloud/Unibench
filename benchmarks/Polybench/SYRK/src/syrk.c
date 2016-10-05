@@ -21,9 +21,12 @@
 #define ERROR_THRESHOLD 0.05
 
 
+#define SIZE 9600
+#define SIZE2 8
+
 /* Problem size */
-#define N 1024
-#define M 1024
+#define N SIZE
+#define M SIZE
 
 /* Declared constant values for alpha and beta */
 /* (same as values in PolyBench 2.0) */
@@ -82,31 +85,39 @@ void syrk(DATA_TYPE* A, DATA_TYPE* C) {
   }
 }
 
-void syrkGPU(DATA_TYPE* A, DATA_TYPE* D) {
-  int i, j;
+void syrkGPU(DATA_TYPE* A, DATA_TYPE* Dinit, DATA_TYPE* D1, DATA_TYPE* D2) {
+  int i, j, k;
+  int ii, iii;
   double t_start, t_end;
 
   t_start = rtclock();
 
-  #pragma omp target  device (DEVICE_ID)
-  #pragma omp target map(to: A[:N*M]) map(tofrom: D[:N*M])
+  #pragma omp target map(to: A[:N*M], Dinit[:N*M]) map(tofrom: D1[:N*M], D2[:N*M]) device (DEVICE_ID)
   {
     #pragma omp parallel for
-    for (i = 0; i < N; i++) {
-      for (j = 0; j < M; j++) {
-	D[i * M + j] *= beta;
+    for (iii = 0; iii < SIZE2; ++iii) {
+      for (ii = 0; ii < SIZE/SIZE2; ++ii) {
+      //for (i = 0; i < N; i++) {
+        i = iii * SIZE/SIZE2 + ii; 
+        for (j = 0; j < M; j++) {
+          D1[i * M + j] = Dinit[i * M + j] * beta;
+        }
       }
     }
     
-    #pragma omp parallel for collapse(2)
-    for (i = 0; i < N; i++) {
-      for (j = 0; j < M; j++) {
-	int k;		
-	for(k=0; k< M; k++) {
-	  D[i * M + j] += alpha * A[i * M + k] * A[j * M + k];
-	}
-      }
+    #pragma omp parallel for// collapse(2)
+    for (iii = 0; iii < SIZE2; ++iii) {
+      for (ii = 0; ii < SIZE/SIZE2; ++ii) {
+      //for (i = 0; i < N; i++) {
+        i = iii * SIZE/SIZE2 + ii; 
+        for (j = 0; j < M; j++) {
+          D2[i * N + j] = D1[i * N + j];
+          for(k=0; k< M; k++) {
+            D2[i * N + j] += alpha * A[i * M + k] * A[j * M + k];
+          }
+        }
     }
+  }
   }
   
   t_end = rtclock();
@@ -120,27 +131,31 @@ int main() {
 
   DATA_TYPE* A;
   DATA_TYPE* C;
-  DATA_TYPE* D;
+  DATA_TYPE* Dinit;
+  DATA_TYPE* D1;
+  DATA_TYPE* D2;
 
   A = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   C = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
-  D = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  Dinit = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  D1 = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  D2 = (DATA_TYPE*)calloc(N*M,sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Symmetric rank-k operations >>\n");
 
-  init_arrays(A, C, D);	
-  syrkGPU(A, D);
+  init_arrays(A, C, Dinit);	
+  syrkGPU(A, Dinit, D1, D2);
 
   t_start = rtclock();
-  syrk(A, C);
+  //syrk(A, C);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-  compareResults(C, D);
+  compareResults(C, D2);
 
   free(A);
   free(C);
-  free(D);
+  free(Dinit);
   return 0;
 }
 

@@ -3,7 +3,7 @@ project(UniBench)
 
 # Set OMP target flags
 set(OMP_TARGETS "x86_64-unknown-linux-spark")
-set(OMP_OFFLOAD_FLAGS "-fopenmp -omptargets=${OMP_TARGETS}")
+set(OMP_OFFLOAD_FLAGS "-fopenmp -omptargets=${OMP_TARGETS} --target=x86_64-unknown-linux-gnu")
 
 # Override C and CXX compiler flags to enable OpenMP offloading
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OMP_OFFLOAD_FLAGS}")

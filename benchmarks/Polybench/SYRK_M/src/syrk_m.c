@@ -37,6 +37,7 @@ typedef float DATA_TYPE;
 DATA_TYPE A[N][M];
 DATA_TYPE C[N][M];
 DATA_TYPE D[N][M];
+DATA_TYPE Dinit[N][M];
 
 void init_arrays() {
   int i, j;
@@ -47,7 +48,8 @@ void init_arrays() {
     }
     for (j = 0; j < M; j++) {
       C[i][j] = ((DATA_TYPE) i*j + 2) / N;
-      D[i][j] = C[i][j];
+      D[i][j] = 0;
+      Dinit[i][j] = C[i][j];
     }
   }
 }
@@ -88,17 +90,16 @@ void compareResults() {
 }
 
 void syrkGPU() {
-  int i, j;
+  int i, j, k;
   double t_start, t_end;
 
   t_start = rtclock();
 
-#pragma omp target map(to: A) map(tofrom: D) device (DEVICE_ID)
-#pragma omp parallel for collapse(2)
+#pragma omp target map(to: A, Dinit) map(tofrom: D) device (DEVICE_ID)
+#pragma omp parallel for //collapse(2)
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {
-      D[i][j] *= beta;
-      int k;		
+      D[i][j] = Dinit[i][j] * beta;	
       for(k=0; k< M; k++) {
 	D[i][j] += alpha * A[i][k] * A[j][k];
       }

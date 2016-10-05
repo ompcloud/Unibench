@@ -23,8 +23,8 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.5
 
 /* Problem size. */
-#define NX 8192
-#define NY 8192
+#define NX 9600
+#define NY 9600
 
 
 
@@ -100,8 +100,8 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
       y[i] = 0;
     }
   
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: A[:NX*NY], x[:NY]) map(from: tmp[:NX]) 
+  #pragma omp target map(to: A[:NX*NY], x[:NY]) map(tofrom: tmp[:NX], y[:NY]) device (DEVICE_ID)
+  {
   #pragma omp parallel for
   for (i = 0; i < NX; i++)
     {
@@ -113,14 +113,14 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
     }
 
   //Note that the Loop has been reversed
-  #pragma omp target map(to: A[:NX*NY], tmp[:NX]) map(from: y[:NY]) 
-  #pragma omp parallel for collapse(1)
+  #pragma omp parallel for //collapse(1)
   for (j = 0; j < NY; j++)
     for (i = 0; i < NX; i++){
       {
 	y[j] = y[j] + A[i*NY + j] * tmp[i];
       }
     }
+  }
 }
 
 int main(int argc, char** argv)

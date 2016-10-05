@@ -19,7 +19,8 @@
 #include <sys/time.h>
 #include "../../common/mgbenchUtilFunctions.h"
 
-#define SIZE 1000
+#define SIZE 9600
+#define SIZE2 128 
 
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 
@@ -32,7 +33,7 @@ void init(float *a, float *b, float *c_cpu, float *c_gpu)
 	for (j = 0; j < SIZE; ++j)
 	{
     	    a[i * SIZE + j] = (float)i + j % 100;
-	    b[i * SIZE + j] = (float)i + j % 100;
+	    b[i * SIZE + j] = (float)i + j % 100;  
 	    c_cpu[i * SIZE + j] = 0.0f;
 	    c_gpu[i * SIZE + j] = 0.0f;
 	}
@@ -43,25 +44,29 @@ void init(float *a, float *b, float *c_cpu, float *c_gpu)
 /// s = size of matrix
 void mul_GPU(float *a, float *b, float *c)
 {
-    int i, j, k;
+    int i, ii, iii, j, k;
 
-    float sum = 0.0;
+    //float sum = 0.0;
 
-    #pragma omp target map(to: a[0:SIZE*SIZE], b[0:SIZE*SIZE]) map(tofrom: c[0:SIZE*SIZE]) device(DEVICE_ID)
+    #pragma omp target map(to: a[:SIZE*SIZE], b[0:SIZE*SIZE], i, ii, iii, j, k) map(tofrom: c[:SIZE*SIZE]) device(DEVICE_ID)
     {
-	#pragma omp parallel for collapse(1)
-	for (i = 0; i < SIZE; ++i)
-	{
-	    for (j = 0; j < SIZE; ++j)
-	    {
-		sum = 0.0;
-		for (k = 0; k < SIZE; ++k)
-		{
-	    	    sum = sum + a[i * SIZE + k] * b[k * SIZE + j];
-		}
-		c[i * SIZE + j] = sum;
-	    }
-	}
+	#pragma omp parallel for //collapse(1)
+        for (iii = 0; iii < SIZE2; ++iii) {
+          for (ii = 0; ii < SIZE/SIZE2; ++ii)
+          //for (i = 0; i < SIZE; ++i)
+          {
+              i = iii * SIZE/SIZE2 + ii;
+              for (j = 0; j < SIZE; ++j)
+              {
+                float sum = 0.0;
+                  for (k = 0; k < SIZE; ++k)
+                  {
+                      sum += a[i * SIZE + k] * b[k * SIZE + j];
+                  }
+                 c[i * SIZE + j] = sum;
+              }
+          }
+       }
     }
 
 }
@@ -115,8 +120,8 @@ int main(int argc, char *argv[]) {
 
     a = (float *) malloc(sizeof(float) * SIZE * SIZE);
     b = (float *) malloc(sizeof(float) * SIZE * SIZE);
-    c_cpu = (float *) malloc(sizeof(float) * SIZE * SIZE);
-    c_gpu = (float *) malloc(sizeof(float) * SIZE * SIZE);
+    c_cpu = (float *) calloc(sizeof(float), SIZE * SIZE);
+    c_gpu = (float *) calloc(sizeof(float), SIZE * SIZE);
 
     init(a, b, c_cpu, c_gpu);
 

@@ -64,50 +64,70 @@ void init(point *pivots, point *the_points, sel_points *selected_cpu, sel_points
     }
 }
 
-void k_nearest_gpu(point *pivots, point *the_points, sel_points *selected)
+void k_nearest_gpu(point *pivots, point *the_points, sel_points *selected_init, sel_points *selected, sel_points *selected2)
 {
     int i,j,m;
+    float distance,x,y;
+    
+    
+    sel_points aux;
  
-    #pragma omp target map(to: pivots[0: SIZE_2], the_points[0:SIZE]) map(tofrom: selected[0:SIZE*SIZE]) device(DEVICE_ID)
+    //#pragma omp target map(to: pivots[0: SIZE_2], the_points[0:SIZE], selected_init[0:SIZE*SIZE]) map(tofrom: selected[0:SIZE*SIZE], selected2[0:SIZE*SIZE]) device(DEVICE_ID)
     {
-	#pragma omp parallel for collapse(1)
-        for(i=0;i<SIZE_2;i++)
+	//#pragma omp parallel for //collapse(1)
+        for(i=0;i<SIZE;i++)
         {
-            for(j=0;j<SIZE;j++)
-            {
-                float distance,x,y;
-                x = pivots[i].x - the_points[j].x;
-                y = pivots[i].y - the_points[j].y;
-                x = x * x;
-                y = y * y;
-                        
-                distance = x + y;
-                distance = sqrt(distance);
-                        
-                selected[i*SIZE+j].value = distance;
-                selected[i*SIZE+j].position = j;
+            if(i<SIZE_2) {
+              for(j=0;j<SIZE;j++)
+              {
+                  x = pivots[i].x - the_points[j].x;
+                  y = pivots[i].y - the_points[j].y;
+                  x = x * x;
+                  y = y * y;
+                          
+                  distance = x + y;
+                  distance = sqrt(distance);
+                          
+                  selected[i*SIZE+j].value = distance;
+                  selected[i*SIZE+j].position = j;
+              }
+            } else {
+              for(j=0;j<SIZE;j++)
+              {
+                selected[i*SIZE+j] = selected_init[i*SIZE+j];
+              }
             }
         }
+    
   
         /// for each line in matrix
         /// order values
         
-	#pragma omp parallel for collapse(1)
-        for(i=0;i<SIZE_2;i++)
+	//#pragma omp parallel for //collapse(1)
+        for(i=0;i<SIZE;i++)
         {
+          if(i<SIZE_2) {
             for(j=0;j<SIZE;j++)
             {
                 for(m=j+1;m<SIZE;m++)
                 {
                     if(selected[i*SIZE+j].value>selected[i*SIZE+m].value)
                     {
-                        sel_points aux;
                         aux = selected[i*SIZE+j];
-                        selected[i*SIZE+j] = selected[i*SIZE+m];
-                        selected[i*SIZE+m] = aux;
-                     }
+                        selected2[i*SIZE+j] = selected[i*SIZE+m];
+                        selected2[i*SIZE+m] = aux;
+                     } else {
+                      selected2[i*SIZE+j] = selected[i*SIZE+j];
+                        
+                    }
                 } 
             }
+          } else {
+            for(j=0;j<SIZE;j++)
+            {
+             selected2[i*SIZE+j] = selected[i*SIZE+j];
+            }
+          }
         }
     }
 }
@@ -188,18 +208,22 @@ int main(int argc, char *argv[])
     point *pivots;
     point *the_points;
     sel_points *selected_cpu, *selected_gpu;
+    sel_points *selected_gpu_init, *selected_gpu2;
     
     fprintf(stdout,"<< K-nearest >>\n");
 
     pivots = (point *) malloc(sizeof(point) * SIZE);
     the_points = (point *) malloc(sizeof(point) * SIZE);
     selected_cpu = (sel_points *)malloc(sizeof(sel_points) * SIZE * SIZE);   
-    selected_gpu = (sel_points *)malloc(sizeof(sel_points) * SIZE * SIZE);
+    selected_gpu = (sel_points *)malloc(sizeof(sel_points) * SIZE * SIZE);  
+    selected_gpu_init = (sel_points *)malloc(sizeof(sel_points) * SIZE * SIZE);
+    
+    selected_gpu2 = (sel_points *)malloc(sizeof(sel_points) * SIZE * SIZE);
 
-    init(pivots, the_points, selected_cpu, selected_gpu);
+    init(pivots, the_points, selected_cpu, selected_gpu_init);
 
     t_start = rtclock();
-    k_nearest_gpu(pivots, the_points, selected_gpu);
+    k_nearest_gpu(pivots, the_points, selected_gpu_init, selected_gpu, selected_gpu2);
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
@@ -208,7 +232,7 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(selected_cpu, selected_gpu);
+    compareResults(selected_cpu, selected_gpu2);
 
     free(selected_cpu);
     free(selected_gpu);
