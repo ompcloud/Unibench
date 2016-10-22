@@ -21,8 +21,13 @@
 #include <sys/time.h>
 #include "../../common/mgbenchUtilFunctions.h"
 
+#ifdef RUN_TEST
+#define SIZE 1024
+#elif RUN_BENCHMARK
 #define SIZE 1024*16
-#define SIZE2 16
+#else
+#define SIZE 1024
+#endif
 
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
@@ -48,37 +53,26 @@ void generate_points()
 /// N = size of vector
 int colinear_list_points_GPU()
 {
-    unsigned i;
-    int ii, iii;
-    int j,k,p,val;
-    val = 0;
-	
-    int *parallel_lines;
-    parallel_lines = (int *) malloc(sizeof(int)*SIZE);
-    for(i=0;i<p;i++)
+    int val = 0;
+    int *parallel_lines= (int *) malloc(sizeof(int)*SIZE);
+    
+    for(int i=0;i<SIZE;i++)
     {
         parallel_lines[i] = 0;	
     }
-    
-    // FIXME: declaration moved outside the loop because of clang bug
-    int slope_coefficient,linear_coefficient;
-    int ret;
 
     #pragma omp target map(to: points[:SIZE]) map(tofrom: parallel_lines[:SIZE])	device(DEVICE_ID)
     {
         #pragma omp parallel for collapse(1)
-        for (iii = 0; iii < SIZE2; ++iii) {
-        for (ii = 0; ii < SIZE/SIZE2; ++ii)
+        for (int i = 0; i < SIZE; ++i)
         {
-            i = iii * SIZE/SIZE2 + ii;
-	    for(j = 0; j < SIZE; j++)
+	    for(int j = 0; j < SIZE; j++)
 	    {
-	        for(k = 0; k < SIZE; k++)
+	        for(int k = 0; k < SIZE; k++)
 		{
 		    /// to understand if is colinear points
-		    // FIXME: declaration moved outside the loop because of clang bug
-                    //int slope_coefficient,linear_coefficient;
-                    //int ret;
+		    int slope_coefficient,linear_coefficient;
+                    int ret;
 		    ret = 0;
 		    slope_coefficient = points[j].y - points[i].y;
 		    if((points[j].x - points[i].x)!=0)
@@ -98,11 +92,10 @@ int colinear_list_points_GPU()
 		}
 	    }
     	}
-        }
     }
 
     val = 0;
-    for(i=0;i<SIZE;i++)
+    for(int i=0;i<SIZE;i++)
     {
         if(parallel_lines[i]==1)
 	{
@@ -158,7 +151,7 @@ int colinear_list_points_CPU()
     return val;
 }
 
-void compareResults(int A, int A_outputFromGpu)
+int compareResults(int A, int A_outputFromGpu)
 {
     int i, j, fail;
     fail = 0;
@@ -166,13 +159,16 @@ void compareResults(int A, int A_outputFromGpu)
 
     // Print results
     printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+    return fail;
 }
 
 
 int main(int argc, char *argv[])
 {
     double t_start, t_end;
-    int result_CPU, result_GPU;   
+    int fail = 0;
+    
+    int result_CPU, result_GPU;  
  
     fprintf(stdout, "<< Collinear List >>\n");
 
@@ -184,15 +180,16 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-
+#ifdef RUN_TEST
     t_start = rtclock();
     result_CPU = colinear_list_points_CPU();
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(result_GPU, result_CPU);
+    fail = compareResults(result_GPU, result_CPU);
+#endif
 
     free(points);
     
-    return 0;
+    return fail;
 }

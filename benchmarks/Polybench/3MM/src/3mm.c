@@ -23,8 +23,13 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
 /* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
 #define SIZE 9600
-#define SIZE2 16
+#else
+#define SIZE 1000
+#endif
 
 # define NI SIZE
 # define NJ SIZE
@@ -73,7 +78,7 @@ void init_array(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D)
     }
 }
 
-void compareResults(DATA_TYPE *G, DATA_TYPE *G_outputFromGpu)
+int compareResults(DATA_TYPE *G, DATA_TYPE *G_outputFromGpu)
 {
   int i,j,fail;
   fail = 0;
@@ -91,6 +96,7 @@ void compareResults(DATA_TYPE *G, DATA_TYPE *G_outputFromGpu)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+  return fail;
 }
 
 void mm3_cpu(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *E, DATA_TYPE *F, DATA_TYPE *G)
@@ -139,70 +145,57 @@ void mm3_cpu(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *
 
 void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *E, DATA_TYPE *F, DATA_TYPE *G)
 {
-  int i,j,k;
-  int ii, iii;
 	
   /* E := A*B */
   #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], C[:NJ*NM], D[:NM*NL]) map(tofrom: E[:NI*NJ], F[:NJ*NL], G[:NI*NL])	device (DEVICE_ID)
   {
   #pragma omp parallel for 
-  for (iii = 0; iii < SIZE2; ++iii) {
-    for (ii = 0; ii < SIZE/SIZE2; ++ii)
-    //for (i = 0; i < NI; i++)
+    for (int i = 0; i < NI; i++)
     {
-      i = iii * SIZE/SIZE2 + ii;  
-      for (j = 0; j < NJ; j++)
+      for (int j = 0; j < NJ; j++)
 	{
 	  E[i*NJ + j] = 0;
-	  for (k = 0; k < NK; ++k)
+	  for (int k = 0; k < NK; ++k)
 	    {
 	      E[i*NJ + j] += A[i*NK + k] * B[k*NJ + j];
 	    }
 	}
     }
-  }
   
   /* F := C*D */
   #pragma omp parallel for 
-  for (iii = 0; iii < SIZE2; ++iii) {
-    for (ii = 0; ii < SIZE/SIZE2; ++ii)
-    //for (i = 0; i < NJ; i++)
+    for (int i = 0; i < NJ; i++)
     {
-      i = iii * SIZE/SIZE2 + ii; 
-      for (j = 0; j < NL; j++)
+      for (int j = 0; j < NL; j++)
 	{
 	  F[i*NL + j] = 0;
-	  for (k = 0; k < NM; ++k)
+	  for (int k = 0; k < NM; ++k)
 	    {
 	      F[i*NL + j] += C[i*NM + k] * D[k*NL + j];
 	    }
 	}
     }
-  }
 
   /* G := E*F */
   #pragma omp parallel for 
-  for (iii = 0; iii < SIZE2; ++iii) {
-    for (ii = 0; ii < SIZE/SIZE2; ++ii)
-    //for (i = 0; i < NI; i++)
+    for (int i = 0; i < NI; i++)
     {
-      i = iii * SIZE/SIZE2 + ii; 
-      for (j = 0; j < NL; j++)
+      for (int j = 0; j < NL; j++)
 	{
 	  G[i*NL + j] = 0;
-	  for (k = 0; k < NJ; ++k)
+	  for (int k = 0; k < NJ; ++k)
 	    {
 	      G[i*NL + j] += E[i*NJ + k] * F[k*NL + j];
 	    }
 	}
     }
   }
-  }
 }
 
 int main(int argc, char** argv)
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* B;
@@ -232,13 +225,15 @@ int main(int argc, char** argv)
 
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
+#ifdef RUN_TEST
   t_start = rtclock();
   mm3_cpu(A, B, C, D, E, F, G);
   t_end = rtclock();
 
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-  compareResults(G, G_outputFromGpu);
+  fail = compareResults(G, G_outputFromGpu);
+#endif
 
   free(A);
   free(B);
@@ -249,6 +244,6 @@ int main(int argc, char** argv)
   free(G);
   free(G_outputFromGpu);
 
-  return 0;
+  return fail;
 }
 

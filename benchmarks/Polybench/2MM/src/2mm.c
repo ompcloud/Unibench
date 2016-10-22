@@ -23,8 +23,13 @@
 #define ERROR_THRESHOLD 0.05
 
 /* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
 #define SIZE 9600
-#define SIZE2 128
+#else
+#define SIZE 1000
+#endif
 
 # define NI SIZE
 # define NJ SIZE
@@ -71,7 +76,7 @@ void init_array(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D)
     }
 }
 
-void compareResults(DATA_TYPE *E, DATA_TYPE *E_GPU)
+int compareResults(DATA_TYPE *E, DATA_TYPE *E_GPU)
 {
   int i,j,fail;
   fail = 0;
@@ -89,6 +94,7 @@ void compareResults(DATA_TYPE *E, DATA_TYPE *E_GPU)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+  return fail;
 }
 
 void mm2_cpu(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* E)
@@ -122,49 +128,43 @@ void mm2_cpu(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
 
 void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* E)
 {
-  int i, j, k;
-  int ii, iii;
 
-  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], D[:NJ*NL]) map(tofrom: C[:NI*NJ], E[:NI*NL]) device(DEVICE_ID)
+  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], D[:NJ*NL]) map(tofrom: C[:NI*NJ]) device(DEVICE_ID)
   {
   #pragma omp parallel for 
-  for (iii = 0; iii < SIZE2; ++iii) {
-    for (ii = 0; ii < SIZE/SIZE2; ++ii)
-    //for (i = 0; i < NI; i++)
+    for (int i = 0; i < NI; i++)
     {
-      i = iii * SIZE/SIZE2 + ii;  
-      for (j = 0; j < NJ; j++)
+      for (int j = 0; j < NJ; j++)
 	{
 	  C[i*NJ + j] = 0.0;
-	  for (k = 0; k < NK; ++k)
+	  for (int k = 0; k < NK; ++k)
 	    {
 	      C[i*NJ + j] += A[i*NK + k] * B[k*NJ + j];
 	    }
 	}
     }
-  }
+  
   #pragma omp parallel for
-  for (iii = 0; iii < SIZE2; ++iii) {
-    for (ii = 0; ii < SIZE/SIZE2; ++ii)
-    //for (i = 0; i < NI; i++)
+    for (int i = 0; i < NI; i++)
     {
-      i = iii * SIZE/SIZE2 + ii; 
-      for (j = 0; j < NL; j++)
+      for (int j = 0; j < NL; j++)
 	{
 	  E[i*NL + j] = 0.0;
-	  for (k = 0; k < NJ; ++k)
+	  for (int k = 0; k < NJ; ++k)
 	    {
 	      E[i*NL + j] += C[i*NJ + k] * D[k*NL + j];
 	    }
 	}
       }
-    }
   }
+  
 }
 
 int main(int argc, char** argv)
 {
   double t_start, t_end, t_start_GPU, t_end_GPU;
+  
+  int fail = 0;
 
   DATA_TYPE* C;
   DATA_TYPE* C_GPU;
@@ -191,13 +191,15 @@ int main(int argc, char** argv)
   t_end_GPU = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end_GPU - t_start_GPU);	
 
+#ifdef RUN_TEST
   t_start = rtclock();
-  //mm2_cpu(A, B, C, D, E);
+  mm2_cpu(A, B, C, D, E);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
   compareResults(C, C_GPU);
-  compareResults(E, E_GPU);
+  fail += compareResults(E, E_GPU);
+#endif
 
   free(C);
   free(A);
@@ -206,6 +208,6 @@ int main(int argc, char** argv)
   free(E);
   free(E_GPU);
 
-  return 0;
+  return fail;
 }
 

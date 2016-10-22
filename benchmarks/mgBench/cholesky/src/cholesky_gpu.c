@@ -48,7 +48,7 @@ void cholesky_GPU(float *A, float *B)
 {
     int i,j,k,l;
     
-    float t;
+   ;
 
     #pragma omp target map(to: A[0:SIZE*SIZE]) map(tofrom: B[0:SIZE*SIZE]) device(DEVICE_ID)
     {
@@ -57,7 +57,7 @@ void cholesky_GPU(float *A, float *B)
         {
             for(j = 0; j <= i; j++) 
             {
-                t = 0.0f;
+                 float t = 0.0f;
                 for (k = 0; k < j; k++)
                 {
                     if(B[i*SIZE+k]!=0.0f && B[j*SIZE+k]!=0.0f)

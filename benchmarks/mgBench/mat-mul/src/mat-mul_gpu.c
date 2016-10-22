@@ -19,8 +19,13 @@
 #include <sys/time.h>
 #include "../../common/mgbenchUtilFunctions.h"
 
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
 #define SIZE 9600
-#define SIZE2 128 
+#else
+#define SIZE 1000
+#endif
 
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 
@@ -44,30 +49,24 @@ void init(float *a, float *b, float *c_cpu, float *c_gpu)
 /// s = size of matrix
 void mul_GPU(float *a, float *b, float *c)
 {
-    int i, ii, iii, j, k;
 
-    //float sum = 0.0;
-
-    #pragma omp target map(to: a[:SIZE*SIZE], b[0:SIZE*SIZE], i, ii, iii, j, k) map(tofrom: c[:SIZE*SIZE]) device(DEVICE_ID)
+    #pragma omp target map(to: a[:SIZE*SIZE], b[0:SIZE*SIZE]) map(tofrom: c[:SIZE*SIZE]) device(DEVICE_ID)
     {
-	#pragma omp parallel for //collapse(1)
-        for (iii = 0; iii < SIZE2; ++iii) {
-          for (ii = 0; ii < SIZE/SIZE2; ++ii)
-          //for (i = 0; i < SIZE; ++i)
-          {
-              i = iii * SIZE/SIZE2 + ii;
-              for (j = 0; j < SIZE; ++j)
+      #pragma omp parallel for //collapse(1)
+        for (int i = 0; i < SIZE; ++i)
+        {
+            for (int j = 0; j < SIZE; ++j)
+            {
+              float sum  = 0.0;
+              for (int k = 0; k < SIZE; ++k)
               {
-                float sum = 0.0;
-                  for (k = 0; k < SIZE; ++k)
-                  {
-                      sum += a[i * SIZE + k] * b[k * SIZE + j];
-                  }
-                 c[i * SIZE + j] = sum;
+                  sum += a[i * SIZE + k] * b[k * SIZE + j];
               }
-          }
-       }
-    }
+              c[i * SIZE + j] = sum;
+            }
+        }
+     }
+    
 
 }
 
@@ -104,6 +103,8 @@ void compareResults(float *b_cpu, float *b_gpu)
 	  if (percentDiff(b_cpu[i*SIZE + j], b_gpu[i*SIZE + j]) > PERCENT_DIFF_ERROR_THRESHOLD)
 	  {
 	      fail++;
+              if(i < 10)
+                fprintf(stdout, "%f != %f \n", b_cpu[i*SIZE + j], b_gpu[i*SIZE + j]); 
 	  }
       }
    }
@@ -116,6 +117,7 @@ void compareResults(float *b_cpu, float *b_gpu)
 int main(int argc, char *argv[]) {
 
     double t_start, t_end;
+    int fail = 0;
     float *a, *b, *c_cpu, *c_gpu;
 
     a = (float *) malloc(sizeof(float) * SIZE * SIZE);
@@ -132,17 +134,19 @@ int main(int argc, char *argv[]) {
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
+#ifdef RUN_TEST
     t_start = rtclock();
     mul_CPU(a, b, c_cpu);
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-    compareResults(c_cpu, c_gpu);
+    fail = compareResults(c_cpu, c_gpu);
+#endif
 
     free(a);
     free(b);
     free(c_cpu);
     free(c_gpu);
 
-    return 0;
+    return fail;
 }

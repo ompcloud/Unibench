@@ -28,9 +28,13 @@
 #define NJ SIZE
 #define NK SIZE
 
-
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
 #define SIZE 9600
-#define SIZE2 128
+#else
+#define SIZE 1000
+#endif
 
 /* Declared constant values for ALPHA and BETA (same as values in PolyBench 2.0) */
 #define ALPHA 32412.0f
@@ -61,27 +65,21 @@ void gemm(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 
 void gemm_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit)
 {
-  int i,j,k;
-  int ii, iii;
 	
-  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], Cinit[:NI*NJ]) map(tofrom: C[:NI*NJ]) device (DEVICE_ID)
+  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], Cinit[:NI*NJ]) map(from: C[:NI*NJ]) device (DEVICE_ID)
   #pragma omp parallel for //collapse(2)
-  for (iii = 0; iii < SIZE2; ++iii) {
-    for (ii = 0; ii < SIZE/SIZE2; ++ii)
-    //for (i = 0; i < NI; i++)
+    for (int i = 0; i < NI; i++)
     {
-      i = iii * SIZE/SIZE2 + ii;
-      for (j = 0; j < NJ; j++)
+      for (int j = 0; j < NJ; j++)
 	{
 	  C[i*NJ + j] = Cinit[i*NJ + j] * BETA;
 	
-	  for (k = 0; k < NK; ++k)
+	  for (int k = 0; k < NK; ++k)
 	    {
 	      C[i*NJ + j] += ALPHA * A[i*NK + k] * B[k*NJ + j];
 	    }
 	}
     }
-  }
 }
 
 
@@ -116,7 +114,7 @@ void init(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *C_OMP)
 }
 
 
-void compareResults(DATA_TYPE* C, DATA_TYPE* C_outputFromGpu)
+int compareResults(DATA_TYPE* C, DATA_TYPE* C_outputFromGpu)
 {
   int i, j, fail;
   fail = 0;
@@ -129,17 +127,21 @@ void compareResults(DATA_TYPE* C, DATA_TYPE* C_outputFromGpu)
 	  if (percentDiff(C[i*NJ + j], C_outputFromGpu[i*NJ + j]) > PERCENT_DIFF_ERROR_THRESHOLD) 
 	    {
 	      fail++;
+              fprintf(stdout, "%f != %f \n", C[i*NJ + j], C_outputFromGpu[i*NJ + j]); 
 	    }
 	}
     }
   
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+  
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* B;  
@@ -162,18 +164,20 @@ int main(int argc, char *argv[])
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
+#ifdef RUN_TEST
   t_start = rtclock();	
-  //gemm(A, B, C);
+  gemm(A, B, C);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 	
-  compareResults(C, C_outputFromGpu);
+  fail compareResults(C, C_outputFromGpu);
+#endif
 
   free(A);
   free(B);  
   free(C);  
   free(C_outputFromGpu); 
 
-  return 0;
+  return fail;
 }
 

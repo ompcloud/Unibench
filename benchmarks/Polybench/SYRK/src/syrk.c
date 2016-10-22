@@ -20,9 +20,13 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
-
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
 #define SIZE 9600
-#define SIZE2 8
+#else
+#define SIZE 1000
+#endif
 
 /* Problem size */
 #define N SIZE
@@ -50,7 +54,7 @@ void init_arrays(DATA_TYPE* A, DATA_TYPE* C, DATA_TYPE* D) {
   }
 }
 
-void compareResults(DATA_TYPE* C, DATA_TYPE* D) {
+int compareResults(DATA_TYPE* C, DATA_TYPE* D) {
   int i,j,fail;
   fail = 0;
 
@@ -65,6 +69,8 @@ void compareResults(DATA_TYPE* C, DATA_TYPE* D) {
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+  
+  return fail;
 }
 
 void syrk(DATA_TYPE* A, DATA_TYPE* C) {
@@ -86,8 +92,6 @@ void syrk(DATA_TYPE* A, DATA_TYPE* C) {
 }
 
 void syrkGPU(DATA_TYPE* A, DATA_TYPE* Dinit, DATA_TYPE* D1, DATA_TYPE* D2) {
-  int i, j, k;
-  int ii, iii;
   double t_start, t_end;
 
   t_start = rtclock();
@@ -95,29 +99,21 @@ void syrkGPU(DATA_TYPE* A, DATA_TYPE* Dinit, DATA_TYPE* D1, DATA_TYPE* D2) {
   #pragma omp target map(to: A[:N*M], Dinit[:N*M]) map(tofrom: D1[:N*M], D2[:N*M]) device (DEVICE_ID)
   {
     #pragma omp parallel for
-    for (iii = 0; iii < SIZE2; ++iii) {
-      for (ii = 0; ii < SIZE/SIZE2; ++ii) {
-      //for (i = 0; i < N; i++) {
-        i = iii * SIZE/SIZE2 + ii; 
-        for (j = 0; j < M; j++) {
+      for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
           D1[i * M + j] = Dinit[i * M + j] * beta;
         }
       }
-    }
     
     #pragma omp parallel for// collapse(2)
-    for (iii = 0; iii < SIZE2; ++iii) {
-      for (ii = 0; ii < SIZE/SIZE2; ++ii) {
-      //for (i = 0; i < N; i++) {
-        i = iii * SIZE/SIZE2 + ii; 
-        for (j = 0; j < M; j++) {
+      for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
           D2[i * N + j] = D1[i * N + j];
-          for(k=0; k< M; k++) {
+          for(int k=0; k< M; k++) {
             D2[i * N + j] += alpha * A[i * M + k] * A[j * M + k];
           }
         }
     }
-  }
   }
   
   t_end = rtclock();
@@ -128,6 +124,7 @@ void syrkGPU(DATA_TYPE* A, DATA_TYPE* Dinit, DATA_TYPE* D1, DATA_TYPE* D2) {
 
 int main() {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* C;
@@ -146,16 +143,18 @@ int main() {
   init_arrays(A, C, Dinit);	
   syrkGPU(A, Dinit, D1, D2);
 
+#ifdef RUN_TEST
   t_start = rtclock();
-  //syrk(A, C);
+  syrk(A, C);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-  compareResults(C, D2);
+  fail = compareResults(C, D2);
+#endif
 
   free(A);
   free(C);
   free(Dinit);
-  return 0;
+  return fail;
 }
 

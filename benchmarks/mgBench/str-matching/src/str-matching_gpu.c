@@ -64,11 +64,10 @@ int string_matching_GPU(char *frase, char *palavra)
 
     #pragma omp target map(to: frase[0:SIZE], palavra[0:SIZE2]) map(tofrom: vector[0:parallel_size]) device(DEVICE_ID)
     {
-	#pragma omp parallel for
+	#pragma omp parallel for reduction(+: count)
 	for(i=0;i<diff;i++)
 	{
-	    int v;
-	    v = 0;		
+	    int v = 0;		
 	    for(j=0;j<SIZE2;j++)
 	    {
 		if(frase[(i+j)]!=palavra[j])
@@ -78,15 +77,9 @@ int string_matching_GPU(char *frase, char *palavra)
 	     }
 	     if(v==0)
 	     {
-		vector[i%parallel_size]++;
+		count++;
    	     }
 	 }
-    }    
-
-    
-    for(i=0;i<parallel_size;i++)
-    {
-    	count += vector[i];
     }
         
     return count;
