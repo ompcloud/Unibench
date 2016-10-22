@@ -8,4 +8,6 @@ set(SRC_FILES
 add_executable(search-vector ${SRC_FILES})
 add_dependencies(mgBench search-vector)
 
+add_dependencies(supported search-vector)
+
 add_test(mgBench_search-vector search-vector)

@@ -8,4 +8,6 @@ set(SRC_FILES
 add_executable(GESUMMV ${SRC_FILES})
 add_dependencies(Polybench GESUMMV)
 
+add_dependencies(supported GESUMMV)
+
 add_test(Polybench_GESUMMV GESUMMV)

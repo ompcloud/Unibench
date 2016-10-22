@@ -8,4 +8,7 @@ set(SRC_FILES
 add_executable(COVAR ${SRC_FILES})
 add_dependencies(Polybench COVAR)
 
+add_dependencies(experiments COVAR)
+add_dependencies(supported COVAR)
+
 add_test(Polybench_COVAR COVAR)

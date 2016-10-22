@@ -8,4 +8,6 @@ set(SRC_FILES
 add_executable(mat-sum ${SRC_FILES})
 add_dependencies(mgBench mat-sum)
 
+add_dependencies(supported mat-sum)
+
 add_test(mgBench_mat-sum mat-sum)

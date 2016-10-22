@@ -8,4 +8,6 @@ set(SRC_FILES
 add_executable(2DCONV ${SRC_FILES})
 add_dependencies(Polybench 2DCONV)
 
+add_dependencies(supported 2DCONV)
+
 add_test(Polybench_2DCONV 2DCONV)
