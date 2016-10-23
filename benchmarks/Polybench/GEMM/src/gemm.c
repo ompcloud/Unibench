@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 	
-  fail compareResults(C, C_outputFromGpu);
+  fail = compareResults(C, C_outputFromGpu);
 #endif
 
   free(A);

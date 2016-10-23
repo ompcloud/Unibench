@@ -91,7 +91,7 @@ void mul_CPU(float *a, float *b, float *c)
 }
 
 
-void compareResults(float *b_cpu, float *b_gpu)
+int compareResults(float *b_cpu, float *b_gpu)
 {
   int i, j, fail;
   fail = 0;
@@ -111,6 +111,7 @@ void compareResults(float *b_cpu, float *b_gpu)
 
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+  return fail;
 }
 
 
