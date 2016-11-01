@@ -5,8 +5,9 @@
 #include <string.h>
 #include <math.h>
 #include <sys/time.h>
+#ifdef _OPENMP
 #include <omp.h>
-#define OPENMP
+#endif
 #include "../../common/rodiniaUtilFunctions.h"
 
 

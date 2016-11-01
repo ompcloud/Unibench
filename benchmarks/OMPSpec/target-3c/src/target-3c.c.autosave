@@ -42,46 +42,20 @@ void init(DATA_TYPE * A, DATA_TYPE * B) {
 	return;
 }
 
-void init_again(DATA_TYPE * A, DATA_TYPE * B) {
-	int i;
-
-	for(i=0;i<N;i++) {
-		A[i] = i;
-		B[i] = ((N-1)-i);
-	}
-
-	return;
-}
-
 void vec_mult(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C) {
 	int i;
 
 	for (i=0; i<N; i++)
 		C[i] = A[i] * B[i];
-
-	init_again(A, B);
-
-	for (i=0; i<N; i++)
-		C[i] += A[i] * B[i];
 }
 
 void vec_mult_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C) {
 	int i;
 
-	#pragma omp target data map(from: C[:N])
-	{
-		#pragma omp target map(to: A[:N], B[:N])
-		#pragma omp parallel for
-		for (i=0; i<N; i++)
-			C[i] = A[i] * B[i];
-
-		init_again(A, B);
-
-		#pragma omp target map(to: A[:N], B[:N])
-		#pragma omp parallel for
-		for (i=0; i<N; i++)
-			C[i] += A[i] * B[i];
-	}
+	#pragma omp target map(to: A[:N], B[:N]) map(from: C[:N]) device(DEVICE_ID)
+	#pragma omp parallel for
+	for (i=0; i<N; i++)
+		C[i] = A[i] * B[i];
 }
 
 void compareResults(DATA_TYPE* B, DATA_TYPE* B_GPU)
@@ -92,7 +66,6 @@ void compareResults(DATA_TYPE* B, DATA_TYPE* B_GPU)
   // Compare B and B_GPU
   for (i=0; i < N; i++) 
     {
-		if(B[i] != B_GPU[i]) printf("DIFF @ %d![%f, %f]\n", i, B[i], B_GPU[i]);
 	  if (percentDiff(B[i], B_GPU[i]) > ERROR_THRESHOLD) 
 	    {
 	      fail++;
@@ -128,10 +101,6 @@ int main(int argc, char *argv[])
   t_end_OMP = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end_OMP - t_start_OMP);//);
 	
-
-  //initialize the arrays
-  init(A, B);
-
   t_start = rtclock();
   vec_mult(A, B, C);
   t_end = rtclock();

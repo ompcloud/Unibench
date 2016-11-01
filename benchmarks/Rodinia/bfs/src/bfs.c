@@ -2,7 +2,9 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <sys/time.h>
 #include "../../common/rodiniaUtilFunctions.h"
 //#define NUM_THREAD 4

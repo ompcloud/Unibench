@@ -7,15 +7,15 @@
  ******************************************************************
  */
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include "backprop.h"
 #include <math.h>
 #include <sys/time.h>
 #include "../../common/rodiniaUtilFunctions.h"
-
-#define OPEN
 
 #define ERROR_THRESHOLD 0.00
 

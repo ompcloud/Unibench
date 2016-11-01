@@ -24,7 +24,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "define.c"
 #include "graphics.c"

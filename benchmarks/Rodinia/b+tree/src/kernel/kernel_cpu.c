@@ -10,7 +10,9 @@
 //	LIBRARIES
 //======================================================================================================================================================150
 
-#include <omp.h>									// (in directory known to compiler)			needed by openmp
+#ifdef _OPENMP
+#include <omp.h>
+#endif									// (in directory known to compiler)			needed by openmp
 #include <stdlib.h>									// (in directory known to compiler)			needed by malloc
 #include <stdio.h>									// (in directory known to compiler)			needed by printf, stderr
 

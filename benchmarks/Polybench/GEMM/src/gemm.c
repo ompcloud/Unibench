@@ -16,7 +16,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "../../common/polybenchUtilFuncts.h"
 

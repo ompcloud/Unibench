@@ -15,7 +15,9 @@
 #include <assert.h>
 #include <unistd.h>
 #include <sys/time.h>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "../../common/polybenchUtilFuncts.h"
 

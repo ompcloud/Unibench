@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include "backprop.h"
-#include "omp.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 extern char *strcpy();
 extern void exit();
