@@ -32,7 +32,6 @@
 #include <malloc.h>
 
 #include "../../common/parboil.h"
-#include "computeQ.cc"
 
 #include "file.h"
 #include "computeQ.cc"
