@@ -6,8 +6,8 @@
  *cr
  ***************************************************************************/
 
-/* 
- * C code for creating the Q data structure for fast convolution-based 
+/*
+ * C code for creating the Q data structure for fast convolution-based
  * Hessian multiplication for arbitrary k-space trajectories.
  *
  * Inputs:
@@ -17,7 +17,7 @@
  * x  - VECTOR of x values, same length as y and z
  * y  - VECTOR of y values, same length as x and z
  * z  - VECTOR of z values, same length as x and y
- * phi - VECTOR of the Fourier transform of the spatial basis 
+ * phi - VECTOR of the Fourier transform of the spatial basis
  *      function, evaluated at [kx, ky, kz].  Same length as kx, ky, and kz.
  *
  * recommended g++ options:
@@ -32,6 +32,7 @@
 #include <malloc.h>
 
 #include "../../common/parboil.h"
+#include "computeQ.cc"
 
 #include "file.h"
 #include "computeQ.cc"
@@ -55,7 +56,7 @@ void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU, DATA_TYPE *B, DATA_TYPE *B_G
 
   for (i=0; i < N; i++)
     {
-	  if (percentDiff(A[i], A_GPU[i]) > ERROR_THRESHOLD) 
+	  if (percentDiff(A[i], A_GPU[i]) > ERROR_THRESHOLD)
 	    {
 	      fail++;
 	    }
@@ -63,12 +64,12 @@ void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU, DATA_TYPE *B, DATA_TYPE *B_G
 
   for (i=0; i < N; i++)
     {
-	  if (percentDiff(B[i], B_GPU[i]) > ERROR_THRESHOLD) 
+	  if (percentDiff(B[i], B_GPU[i]) > ERROR_THRESHOLD)
 	    {
 	      fail++;
 	    }
     }
-	
+
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
 }
@@ -94,7 +95,7 @@ double mriqGPU(int argc, char *argv[]) {
       fprintf(stderr, "Expecting one input filename\n");
       exit(-1);
     }
-  
+
   /* Read in data */
 //  pb_SwitchToTimer(&timers, pb_TimerID_IO);
   inputData(params->inpFiles[0],
@@ -193,7 +194,7 @@ double mriqCPU(int argc, char *argv[]) {
       fprintf(stderr, "Expecting one input filename\n");
       exit(-1);
     }
-  
+
   /* Read in data */
 //  pb_SwitchToTimer(&timers, pb_TimerID_IO);
   inputData(params->inpFiles[0],
