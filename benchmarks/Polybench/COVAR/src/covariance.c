@@ -115,7 +115,6 @@ void covariance(DATA_TYPE* data, DATA_TYPE* symmat, DATA_TYPE* mean)
 
 void covariance_OMP(DATA_TYPE* data, DATA_TYPE* data2, DATA_TYPE* symmat, DATA_TYPE* mean)
 {
-  int i, j, j1,j2;
 
   /* Determine mean of column vectors of input data matrix */
 	 
@@ -134,9 +133,9 @@ void covariance_OMP(DATA_TYPE* data, DATA_TYPE* data2, DATA_TYPE* symmat, DATA_T
   
   /* Center the column vectors. */
   #pragma omp parallel for //collapse(2)
-    for (i = 1; i < (N+1); i++)
+    for (int i = 1; i < (N+1); i++)
     {
-      for (j = 1; j < (M+1); j++)
+      for (int j = 1; j < (M+1); j++)
 	{
 	  data2[i*(M+1) + j] = data[i*(M+1) + j] - mean[j];
 	}
