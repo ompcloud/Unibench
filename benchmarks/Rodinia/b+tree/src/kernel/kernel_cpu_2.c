@@ -74,10 +74,12 @@ kernel_cpu_2(	int cores_arg,
 	//======================================================================================================================================================150
 
 	int max_nthreads;
-	max_nthreads = omp_get_max_threads();
-	// printf("max # of threads = %d\n", max_nthreads);
-	omp_set_num_threads(cores_arg);
-	// printf("set # of threads = %d\n", cores_arg);
+#ifdef _OPENMP
+        max_nthreads = omp_get_max_threads();
+        // printf("max # of threads = %d\n", max_nthreads);
+        omp_set_num_threads(cores_arg);
+        // printf("set # of threads = %d\n", cores_arg);
+#endif
 
 	int threadsPerBlock;
 	threadsPerBlock = order < 1024 ? order : 1024;

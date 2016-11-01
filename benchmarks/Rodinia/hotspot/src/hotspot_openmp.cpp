@@ -110,7 +110,7 @@ void single_iteration_gpu(double *result, double *temp, double *power, int row, 
 	}
 
 
-#ifdef OPEN
+#ifdef _OPENMP
 	omp_set_num_threads(num_omp_threads);
 	#pragma omp parallel for shared(result, temp) private(r, c) schedule(static)
 #endif
