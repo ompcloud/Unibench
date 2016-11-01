@@ -24,13 +24,18 @@ endif(RUN_BENCHMARK)
 
 use_c99()
 
+find_package(OpenMP)
+
 # Set OMP target flags
 set(OMP_TARGETS "x86_64-unknown-linux-spark")
-set(OMP_OFFLOAD_FLAGS "-fopenmp -omptargets=${OMP_TARGETS} --target=x86_64-unknown-linux-gnu")
+set(OMP_OFFLOAD_FLAGS "-omptargets=${OMP_TARGETS} --target=x86_64-unknown-linux-gnu")
 
-# Override C and CXX compiler flags to enable OpenMP offloading
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OMP_OFFLOAD_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OMP_OFFLOAD_FLAGS}")
+option(OMP_OFFLOAD "Offload to accelerator" ON)
+if(OMP_OFFLOAD)
+    # Override C and CXX compiler flags to enable OpenMP offloading
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OMP_OFFLOAD_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OMP_OFFLOAD_FLAGS}")
+endif(OMP_OFFLOAD)
 
 # Define the ID of the device
 add_definitions(-DDEVICE_ID=0)

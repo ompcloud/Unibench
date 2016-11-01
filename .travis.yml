@@ -5,5 +5,5 @@ sudo: false
 script:
   - mkdir $TRAVIS_BUILD_DIR/build
   - cd $TRAVIS_BUILD_DIR/build
-  - cmake $TRAVIS_BUILD_DIR
+  - cmake $TRAVIS_BUILD_DIR -DOMP_OFFLOAD=OFF
   - make
