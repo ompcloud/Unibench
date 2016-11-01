@@ -2,6 +2,10 @@ language: cpp
 
 sudo: false
 
+compiler:
+  - clang
+  - gcc
+
 script:
   - mkdir $TRAVIS_BUILD_DIR/build
   - cd $TRAVIS_BUILD_DIR/build
