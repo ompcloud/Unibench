@@ -1,13 +1,13 @@
 language: cpp
-
 sudo: false
-
 compiler:
-  - clang
-  - gcc
-
+- clang
+- gcc
 script:
-  - mkdir $TRAVIS_BUILD_DIR/build
-  - cd $TRAVIS_BUILD_DIR/build
-  - cmake $TRAVIS_BUILD_DIR -DOMP_OFFLOAD=OFF
-  - make
+- mkdir $TRAVIS_BUILD_DIR/build
+- cd $TRAVIS_BUILD_DIR/build
+- cmake $TRAVIS_BUILD_DIR -DOMP_OFFLOAD=OFF
+- make
+notifications:
+  slack:
+    secure: A7fiSI3O/6uUTRYZauffJDbo1jQOSXwOJJuTtRrfkYog+3ihQ/wyvsSdibOyZg0aHSHi7BLcn3UJjPpnef0JnMqOGDhW6WzoP7v/+NAceqq/WPwcNwkI/9GP53aX66AQQoevkYFiZYpG6M6nlt0fg1r1bbbafrL6TUkqxoMQBY4rxiU4CBbUiiU7dsPVRXRRzIwodp6cIw2fsQB7GWSSf59akxZDEt+AmYRXRzxIWx4+ElBBJTVcSOKud6r5NXscC0vzruvhYtgr28eqaD6iBc5ln1JI7voA71MwXiegHSalDJitBpd/ZmjmKeIgwBWznBbdHzdpV8GS8YCbBJMWkSD7qG0F/tCrcRJXkYDoCI1dEzTp1h4hTi534FpR6hl2+4RJusLuNaAbMwcBkHuZUvpaMdvUEfd/IG1pVTGWpfHTbeUJEvNbZ394oadPEXyksqLKJ8axWNPOc322ZiLlgGL1HcDRz1pUCRnqJHeb0pkr1BzAAlI3p2RWn0o35ellCceqpmEF0gZ1MErOSuNC302BPx6ovz3veDPH7kFHtQiRJMzQmdg+4bNK5X3sIfsIv4imiZOULbcUcylmkcPjg9Taq95owGMLbRX/WvnNOdLYaCUL6g1pGmIQY1k7dkwsswtQZJ0ssSEydHe/LrfH4yM/GM4VwxrFjgmhTr5gZoc=
