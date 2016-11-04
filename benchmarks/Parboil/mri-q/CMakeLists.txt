@@ -11,7 +11,7 @@ include_directories(
 )
 
 add_executable(mri-q ${SRC_FILES})
-target_link_libraries(mri-q parboil m)
+target_link_libraries(mri-q parboilutil m)
 add_dependencies(Parboil mri-q)
 
 file(COPY input DESTINATION .)

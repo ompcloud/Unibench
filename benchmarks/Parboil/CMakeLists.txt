@@ -1,7 +1,7 @@
 
 include_directories(common)
 
-add_library(parboil common/parboil.c)
+add_library(parboilutil common/parboil.c)
 
 add_custom_target(Parboil)
 
