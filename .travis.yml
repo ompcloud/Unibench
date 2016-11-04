@@ -1,15 +1,17 @@
 language: cpp
 sudo: false
 env:
-- RUN_TEST=ON
-- RUN_TEST=OFF
+- RUN_TEST=ON OMP_DISABLE=ON
+- RUN_TEST=ON OMP_DISABLE=OFF
+- RUN_TEST=OFF OMP_DISABLE=ON
+- RUN_TEST=OFF OMP_DISABLE=OFF
 compiler:
 - clang
 - gcc
 script:
 - mkdir $TRAVIS_BUILD_DIR/build
 - cd $TRAVIS_BUILD_DIR/build
-- cmake $TRAVIS_BUILD_DIR -DOMP_OFFLOAD=OFF -DRUN_TEST=$RUN_TEST
+- cmake $TRAVIS_BUILD_DIR -DOMP_OFFLOAD=OFF -DRUN_TEST=$RUN_TEST -DOMP_DISABLE=$OMP_DISABLE
 - make
 after_script:
 - ctest --timeout 300

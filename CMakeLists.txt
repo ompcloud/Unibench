@@ -24,10 +24,14 @@ endif(RUN_BENCHMARK)
 
 use_c99()
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+option(OMP_DISABLE "Disable OpenMP" OFF)
+
+if(NOT OMP_DISABLE)
+    find_package(OpenMP)
+    if(OPENMP_FOUND)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    endif()
 endif()
 
 # Set OMP target flags
@@ -35,7 +39,7 @@ set(OMP_TARGETS "x86_64-unknown-linux-spark")
 set(OMP_OFFLOAD_FLAGS "-omptargets=${OMP_TARGETS} --target=x86_64-unknown-linux-gnu")
 
 option(OMP_OFFLOAD "Offload to accelerator" ON)
-if(OMP_OFFLOAD)
+if(OMP_OFFLOAD AND OPENMP_FOUND)
     # Override C and CXX compiler flags to enable OpenMP offloading
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OMP_OFFLOAD_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OMP_OFFLOAD_FLAGS}")
