@@ -102,9 +102,8 @@ void atax_cpu(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
 
 void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
 {
-  int i,j;
 	
-  for (i= 0; i < NY; i++)
+  for (int i= 0; i < NY; i++)
     {
       y[i] = 0;
     }
@@ -112,10 +111,10 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
   #pragma omp target map(to: A[:NX*NY], x[:NY]) map(tofrom: tmp[:NX], y[:NY]) device (DEVICE_ID)
   {
   #pragma omp parallel for
-  for (i = 0; i < NX; i++)
+  for (int i = 0; i < NX; i++)
     {
       tmp[i] = 0;
-      for (j = 0; j < NY; j++)
+      for (int j = 0; j < NY; j++)
 	{
 	  tmp[i] = tmp[i] + A[i*NY + j] * x[j];
 	}
@@ -123,8 +122,8 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
 
   //Note that the Loop has been reversed
   #pragma omp parallel for //collapse(1)
-  for (j = 0; j < NY; j++)
-    for (i = 0; i < NX; i++){
+  for (int j = 0; j < NY; j++)
+    for (int i = 0; i < NX; i++){
       {
 	y[j] = y[j] + A[i*NY + j] * tmp[i];
       }

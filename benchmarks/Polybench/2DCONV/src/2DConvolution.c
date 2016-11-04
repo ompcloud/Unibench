@@ -42,16 +42,15 @@ typedef float DATA_TYPE;
 
 void conv2D(DATA_TYPE* A, DATA_TYPE* B)
 {
-  int i, j;
   DATA_TYPE c11, c12, c13, c21, c22, c23, c31, c32, c33;
 
   c11 = +0.2;  c21 = +0.5;  c31 = -0.8;
   c12 = -0.3;  c22 = +0.6;  c32 = -0.9;
   c13 = +0.4;  c23 = +0.7;  c33 = +0.10;
 
-  for (i = 1; i < NI - 1; ++i) // 0
+  for (int i = 1; i < NI - 1; ++i) // 0
     {
-      for (j = 1; j < NJ - 1; ++j) // 1
+      for (int j = 1; j < NJ - 1; ++j) // 1
 	{
 	  B[i*NJ + j] = c11 * A[(i - 1)*NJ + (j - 1)]  +  c12 * A[(i + 0)*NJ + (j - 1)]  +  c13 * A[(i + 1)*NJ + (j - 1)]
 	    + c21 * A[(i - 1)*NJ + (j + 0)]  +  c22 * A[(i + 0)*NJ + (j + 0)]  +  c23 * A[(i + 1)*NJ + (j + 0)] 
@@ -62,18 +61,17 @@ void conv2D(DATA_TYPE* A, DATA_TYPE* B)
 
 void conv2D_OMP(DATA_TYPE* A, DATA_TYPE* B)
 {
-  int i, j;
   DATA_TYPE c11, c12, c13, c21, c22, c23, c31, c32, c33;
 
   c11 = +0.2;  c21 = +0.5;  c31 = -0.8;
   c12 = -0.3;  c22 = +0.6;  c32 = -0.9;
   c13 = +0.4;  c23 = +0.7;  c33 = +0.10;
 
-  #pragma omp target map(to: A[:NI*NJ]) map (from: B[:NI*NJ]) device (DEVICE_ID)
+  #pragma omp target map(to: A[:NI*NJ]) map(from: B[:NI*NJ]) device(DEVICE_ID)
   #pragma omp parallel for
-  for (i = 1; i < NI - 1; ++i)
+  for (int i = 1; i < NI - 1; ++i)
     {
-      for (j = 1; j < NJ - 1; ++j)
+      for (int j = 1; j < NJ - 1; ++j)
 	{
 	  B[i*NJ + j] = c11 * A[(i - 1)*NJ + (j - 1)]  +  c12 * A[(i + 0)*NJ + (j - 1)]  +  c13 * A[(i + 1)*NJ + (j - 1)]
 	    + c21 * A[(i - 1)*NJ + (j + 0)]  +  c22 * A[(i + 0)*NJ + (j + 0)]  +  c23 * A[(i + 1)*NJ + (j + 0)] 
