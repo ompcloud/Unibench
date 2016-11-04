@@ -29,7 +29,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+
+#ifndef __APPLE__
 #include <malloc.h>
+#else
+void* memalign(int alignment, size_t size) {
+  return malloc(size);
+}
+#endif
 
 #include "../../common/parboil.h"
 

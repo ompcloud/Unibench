@@ -15,12 +15,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
-#include <malloc.h>
 #include <vector>
-#include "../../common/parboil.h"
 #include <iostream>
-#include "sgemm_kernel.cc"
 
+#ifndef __APPLE__
+#include <malloc.h>
+#else
+void* memalign(int alignment, size_t size) {
+  return malloc(size);
+}
+#endif
+
+#include "sgemm_kernel.cc"
+#include "../../common/parboil.h"
 #include "../../common/polybenchUtilFuncts.h"
 
 

@@ -6,11 +6,18 @@
  *cr
  ***************************************************************************/
 
-#include <endian.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <stdio.h>
 #include <inttypes.h>
+
+#ifndef __APPLE__
+#include <malloc.h>
+#include <endian.h>
+#else
+void* memalign(int alignment, size_t size) {
+  return malloc(size);
+}
+#endif
 
 #if __BYTE_ORDER != __LITTLE_ENDIAN
 # error "File I/O is not implemented for this system: wrong endianness."
