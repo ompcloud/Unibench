@@ -26,14 +26,22 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
+
 /* Problem size */
-#define M 512
-#define N 512
+#define M SIZE
+#define N SIZE
 
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
-#define GPU_DEVICE 1
 
 void gramschmidt(DATA_TYPE* A, DATA_TYPE* R, DATA_TYPE* Q)
 {
@@ -73,7 +81,7 @@ void gramschmidt_OMP(DATA_TYPE* A, DATA_TYPE* R, DATA_TYPE* Q)
   int i,j,k;
   DATA_TYPE nrm;
 	
-  #pragma omp target device (GPU_DEVICE)
+  #pragma omp target device (DEVICE_ID)
   for (k = 0; k < N; k++)
     {
       //CPU

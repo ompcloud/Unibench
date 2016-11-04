@@ -24,10 +24,16 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.7
 
 /* Problem size. */
-#define NX 8192
-#define NY 8192
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
-
+#define NX SIZE
+#define NY SIZE
 
 #ifndef M_PI
 #define M_PI 3.14159

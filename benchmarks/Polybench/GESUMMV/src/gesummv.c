@@ -25,10 +25,16 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
-
-/* Problem size */
-#define N 8192
+#define N SIZE
 
 /* Declared constant values for ALPHA and BETA (same as values in PolyBench 2.0) */
 #define ALPHA 43532.0f
@@ -58,9 +64,8 @@ void gesummv(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *x, DATA_TYPE *y, DATA_TYPE *
 void gesummv_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *x, DATA_TYPE *y, DATA_TYPE *tmp)
 {
   int i, j;
-	
-  #pragma omp target device (DEVICE_ID)
-  #pragma omp target map(to: A[:N*N], B[:N*N], x[:N], tmp[:N]) map(tofrom: y[:N])
+
+  #pragma omp target map(to: A[:N*N], B[:N*N], x[:N], tmp[:N]) map(tofrom: y[:N]) device(DEVICE_ID)
   #pragma omp parallel for
   for (i = 0; i < N; i++)
     {

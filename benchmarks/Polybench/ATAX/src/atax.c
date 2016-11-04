@@ -25,9 +25,16 @@
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.5
 
 /* Problem size. */
-#define NX 9600
-#define NY 9600
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
+#define NX SIZE
+#define NY SIZE
 
 
 #ifndef M_PI

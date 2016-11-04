@@ -26,10 +26,18 @@
 
 
 
-/* Problem size */
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
+
 #define tmax 500
-#define NX 2048
-#define NY 2048
+#define NX SIZE
+#define NY SIZE
 
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;

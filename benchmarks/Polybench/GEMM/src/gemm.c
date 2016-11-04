@@ -25,11 +25,7 @@
 //define the error threshold for the results "not matching"
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
 
-/* Problem size */
-#define NI SIZE
-#define NJ SIZE
-#define NK SIZE
-
+/* Problem size. */
 #ifdef RUN_TEST
 #define SIZE 1100
 #elif RUN_BENCHMARK
@@ -37,6 +33,10 @@
 #else
 #define SIZE 1000
 #endif
+
+#define NI SIZE
+#define NJ SIZE
+#define NK SIZE
 
 /* Declared constant values for ALPHA and BETA (same as values in PolyBench 2.0) */
 #define ALPHA 32412.0f

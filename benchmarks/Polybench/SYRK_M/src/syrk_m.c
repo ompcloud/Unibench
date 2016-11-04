@@ -21,10 +21,18 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
 /* Problem size */
-#define N 1024
-#define M 1024
+#define N SIZE
+#define M SIZE
 
 /* Declared constant values for alpha and beta */
 /* (same as values in PolyBench 2.0) */

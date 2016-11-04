@@ -25,11 +25,17 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
-
-/* Problem size */
-#define NI 8192
-#define NJ 8192
+#define NI SIZE
+#define NJ SIZE
 
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;

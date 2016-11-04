@@ -23,11 +23,18 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 1.05
 
-#define GPU_DEVICE 1
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
 /* Problem size */
-#define M 1024
-#define N 1024
+#define M SIZE
+#define N SIZE
 
 #define sqrt_of_array_cell(x,j) sqrt(x[j])
 

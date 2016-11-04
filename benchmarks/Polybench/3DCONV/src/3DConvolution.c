@@ -25,12 +25,18 @@
 //define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.5
 
-#define GPU_DEVICE 1
+/* Problem size. */
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
+#define SIZE 1000
+#endif
 
-/* Problem size */
-#define NI 512
-#define NJ 512
-#define NK 512
+#define NI SIZE
+#define NJ SIZE
+#define NK SIZE
 
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
