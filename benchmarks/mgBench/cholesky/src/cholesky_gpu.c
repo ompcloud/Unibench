@@ -46,19 +46,15 @@ void init_arrays(float *A, float *B_GPU, float *B_CPU)
 /// s = size of matrix
 void cholesky_GPU(float *A, float *B) 
 {
-    int i,j,k,l;
-    
-   ;
-
     #pragma omp target map(to: A[0:SIZE*SIZE]) map(tofrom: B[0:SIZE*SIZE]) device(DEVICE_ID)
     {
 	#pragma omp parallel for collapse(1)
-        for(i = 0; i < SIZE; i++)
+        for(int i = 0; i < SIZE; i++)
         {
-            for(j = 0; j <= i; j++) 
+            for(int j = 0; j <= i; j++)
             {
                  float t = 0.0f;
-                for (k = 0; k < j; k++)
+                for (int k = 0; k < j; k++)
                 {
                     if(B[i*SIZE+k]!=0.0f && B[j*SIZE+k]!=0.0f)
                     {
