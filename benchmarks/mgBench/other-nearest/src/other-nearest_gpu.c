@@ -21,7 +21,14 @@ typedef struct sel_points
     float value;
 }sel_points;
 
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
 #define SIZE 500
+#endif
+
 #define points 250
 #define var SIZE/points
 #define default_v 100000.00

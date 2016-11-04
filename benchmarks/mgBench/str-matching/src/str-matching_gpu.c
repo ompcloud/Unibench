@@ -21,8 +21,15 @@
 #include <sys/time.h>
 #include "../../common/mgbenchUtilFunctions.h"
 
+#ifdef RUN_TEST
+#define SIZE 1100
+#elif RUN_BENCHMARK
+#define SIZE 9600
+#else
 #define SIZE 1000
-#define SIZE2 500
+#endif
+
+#define SIZE2 SIZE/2
 
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 

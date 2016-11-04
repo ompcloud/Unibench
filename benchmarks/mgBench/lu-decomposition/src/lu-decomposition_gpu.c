@@ -21,11 +21,19 @@
 #include <sys/time.h>
 #include "../../common/mgbenchUtilFunctions.h"
 
-
-
-#define PERCENT_DIFF_ERROR_THRESHOLD 0.05
+#ifdef RUN_TEST
 #define SIZE 500
 #define points 250
+#elif RUN_BENCHMARK
+#define SIZE 500
+#define points 250
+#else
+#define SIZE 500
+#define points 250
+#endif
+
+#define PERCENT_DIFF_ERROR_THRESHOLD 0.05
+
 #define var SIZE/points
 
 
