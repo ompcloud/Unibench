@@ -89,12 +89,10 @@ void syr2k(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C)
 
 void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit)
 {
-  int i, j, k;
-  int ii, iii;
 	
-  for (i = 0; i < N; i++)
+  for (int i = 0; i < N; i++)
     {
-      for (j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)
 	{
 	  Cinit[i*N + j] *= BETA;
 	}
@@ -119,12 +117,12 @@ void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit)
   
   #pragma omp target map(to: A[:N*M], B[:N*M], Cinit[:N*N]) map(tofrom: C[:N*N]) device (DEVICE_ID)
   #pragma omp parallel for //collapse(2)
-    for (i = 0; i < N; i++)
+    for (int i = 0; i < N; i++)
     {
-      for (j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)
         {
         C[i*N + j] = Cinit[i*N + j];
-          for (k = 0; k < M; k++)
+          for (int k = 0; k < M; k++)
             {
               C[i*N + j] += ALPHA * A[i*M + k] * B[j*M + k];
               C[i*N + j] += ALPHA * B[i*M + k] * A[j*M + k];

@@ -135,7 +135,7 @@ int main() {
   A = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   C = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
   Dinit = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
-  D1 = (DATA_TYPE*)malloc(N*M*sizeof(DATA_TYPE));
+  D1 = (DATA_TYPE*)calloc(N*M,sizeof(DATA_TYPE));
   D2 = (DATA_TYPE*)calloc(N*M,sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Symmetric rank-k operations >>\n");
