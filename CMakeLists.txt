@@ -9,18 +9,18 @@ macro(use_c99)
   else ()
     set (CMAKE_C_STANDARD 99)
   endif ()
-endmacro(use_c99)
+endmacro()
 
 option(RUN_TEST "Compare with CPU execution" OFF)
 if(RUN_TEST)
     message("Run test to compare results with CPU execution")
     add_definitions(-DRUN_TEST=1)
-endif(RUN_TEST)
+endif()
 
 option(RUN_BENCHMARK "Use large datasets" OFF)
 if(RUN_BENCHMARK)
     add_definitions(-DRUN_BENCHMARK=1)
-endif(RUN_BENCHMARK)
+endif()
 
 use_c99()
 
@@ -43,7 +43,7 @@ if(OMP_OFFLOAD AND OPENMP_FOUND)
     # Override C and CXX compiler flags to enable OpenMP offloading
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OMP_OFFLOAD_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OMP_OFFLOAD_FLAGS}")
-endif(OMP_OFFLOAD)
+endif()
 
 # Define the ID of the device
 add_definitions(-DDEVICE_ID=0)
