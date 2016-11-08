@@ -131,7 +131,7 @@ void mm2_cpu(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* 
 void mm2_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C, DATA_TYPE* D, DATA_TYPE* E)
 {
 
-  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], D[:NJ*NL]) map(tofrom: C[:NI*NJ]) device(DEVICE_ID)
+  #pragma omp target map(to: A[:NI*NK], B[:NK*NJ], D[:NJ*NL]) map(tofrom: C[:NI*NJ]) map(from: E[:NI*NJ]) device(DEVICE_ID)
   {
   #pragma omp parallel for 
     for (int i = 0; i < NI; i++)
@@ -199,7 +199,7 @@ int main(int argc, char** argv)
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-  compareResults(C, C_GPU);
+  fail += compareResults(C, C_GPU);
   fail += compareResults(E, E_GPU);
 #endif
 

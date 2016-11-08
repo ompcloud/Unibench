@@ -115,7 +115,7 @@ void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit)
 	}
     }*/
   
-  #pragma omp target map(to: A[:N*M], B[:N*M], Cinit[:N*N]) map(tofrom: C[:N*N]) device (DEVICE_ID)
+  #pragma omp target map(to: A[:N*M], B[:N*M], Cinit[:N*N]) map(from: C[:N*N]) device (DEVICE_ID)
   #pragma omp parallel for //collapse(2)
     for (int i = 0; i < N; i++)
     {
