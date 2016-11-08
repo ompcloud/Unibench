@@ -11,4 +11,4 @@ add_dependencies(mgBench other-nearest)
 
 add_dependencies(supported other-nearest)
 
-add_test(mgBench_other-nearest other-nearest)
+#add_test(mgBench_other-nearest other-nearest)

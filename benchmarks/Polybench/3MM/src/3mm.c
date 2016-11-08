@@ -206,6 +206,8 @@ int main(int argc, char** argv)
   DATA_TYPE* E;
   DATA_TYPE* F;
   DATA_TYPE* G;
+  DATA_TYPE* E_outputFromGpu;
+  DATA_TYPE* F_outputFromGpu;
   DATA_TYPE* G_outputFromGpu;
 
   A = (DATA_TYPE*)malloc(NI*NK*sizeof(DATA_TYPE));
@@ -215,14 +217,16 @@ int main(int argc, char** argv)
   E = (DATA_TYPE*)malloc(NI*NJ*sizeof(DATA_TYPE));
   F = (DATA_TYPE*)malloc(NJ*NL*sizeof(DATA_TYPE));
   G = (DATA_TYPE*)malloc(NI*NL*sizeof(DATA_TYPE));
-  G_outputFromGpu = (DATA_TYPE*)malloc(NI*NL*sizeof(DATA_TYPE));
+  E_outputFromGpu = (DATA_TYPE*)calloc(NI*NJ,sizeof(DATA_TYPE));
+  F_outputFromGpu = (DATA_TYPE*)calloc(NJ*NL,sizeof(DATA_TYPE));
+  G_outputFromGpu = (DATA_TYPE*)calloc(NI*NL,sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Linear Algebra: 3 Matrix Multiplications (E=A.B; F=C.D; G=E.F) >>\n");
 
   init_array(A, B, C, D);
 
   t_start = rtclock();
-  mm3_OMP(A, B, C, D, E, F, G_outputFromGpu);
+  mm3_OMP(A, B, C, D, E_outputFromGpu, F_outputFromGpu, G_outputFromGpu);
   t_end = rtclock();	
 
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);

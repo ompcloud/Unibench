@@ -54,27 +54,25 @@ void init(int s, float *a, float *b) {
 /// Crout algorithm GPU
 /// s = size of matrix
 void Crout_GPU(int s, float *a, float *b){
-    int k,j,i;
-    float sum;
-
     #pragma omp target map(to: a[0:SIZE*SIZE]) map(tofrom: b[0:SIZE*SIZE]) device(DEVICE_ID)
     {
         #pragma omp parallel for
-        for(k=0;k<s;++k)
+        for(int k=0;k<s;++k)
         {
-            for(j=k;j<s;++j)
+            float sum;
+            for(int j=k;j<s;++j)
             {
                 sum=0.0;
-                for(i=0;i<k;++i)
+                for(int i=0;i<k;++i)
                 {
                     sum+=b[j*s+i]*b[i*s+k];
                 }
                 b[j*s+k]=(a[j*s+k]-sum); // not dividing by diagonals
             }
-            for(i=k+1;i<s;++i)
+            for(int i=k+1;i<s;++i)
             {
                 sum=0.0;
-                for(j=0;j<k;++j)
+                for(int j=0;j<k;++j)
                 {
                     sum+=b[k*s+j]*b[i*s+i];
                 }

@@ -14,4 +14,4 @@ target_link_libraries(b+tree m)
 
 file(COPY input DESTINATION .)
 
-add_test(Rodinia_b+tree b+tree "core" "2" "file" "input/mil.txt" "command" "input/command.txt")
+#add_test(Rodinia_b+tree b+tree "core" "2" "file" "input/mil.txt" "command" "input/command.txt")

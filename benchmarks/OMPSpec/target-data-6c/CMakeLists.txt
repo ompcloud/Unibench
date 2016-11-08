@@ -8,4 +8,4 @@ set(SRC_FILES
 add_executable(target-data-6c ${SRC_FILES})
 add_dependencies(OMPSpec target-data-6c)
 
-add_test(OMPSpec_target-data-6c target-data-6c)
+#add_test(OMPSpec_target-data-6c target-data-6c)

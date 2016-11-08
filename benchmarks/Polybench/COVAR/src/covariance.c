@@ -174,7 +174,6 @@ int main()
   DATA_TYPE* symmat_outputFromGpu;	
 
   data = (DATA_TYPE*)calloc((M+1)*(N+1),sizeof(DATA_TYPE));
-  data_GPU = (DATA_TYPE*)calloc((M+1)*(N+1),sizeof(DATA_TYPE));
   data2_GPU = (DATA_TYPE*)calloc((M+1)*(N+1),sizeof(DATA_TYPE));
   symmat = (DATA_TYPE*)calloc((M+1)*(M+1),sizeof(DATA_TYPE));
   mean = (DATA_TYPE*)calloc((M+1),sizeof(DATA_TYPE));
@@ -184,14 +183,14 @@ int main()
   fprintf(stdout, "<< Covariance Computation >>\n");
 
   init_arrays(data);
-  init_arrays(data_GPU);
     
   t_start = rtclock();
-  covariance_OMP(data_GPU, data2_GPU, symmat_outputFromGpu, mean_GPU);
+  covariance_OMP(data, data2_GPU, symmat_outputFromGpu, mean_GPU);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
 #ifdef RUN_TEST
+
   t_start = rtclock();
   covariance(data, symmat, mean);
   t_end = rtclock();

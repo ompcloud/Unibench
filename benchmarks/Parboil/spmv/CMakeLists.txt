@@ -18,4 +18,4 @@ add_dependencies(Parboil spmv)
 
 file(COPY input DESTINATION .)
 
-add_test(Parboil_spmv spmv "-i" "input/Dubcova3.mtx.bin,input/vector.bin" "-o" "output.out")
+#add_test(Parboil_spmv spmv "-i" "input/Dubcova3.mtx.bin,input/vector.bin" "-o" "output.out")

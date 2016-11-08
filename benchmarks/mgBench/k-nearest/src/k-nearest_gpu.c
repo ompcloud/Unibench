@@ -77,9 +77,9 @@ void k_nearest_gpu(point *pivots, point *the_points, sel_points *selected_init, 
     
     sel_points aux;
  
-    //#pragma omp target map(to: pivots[0: SIZE_2], the_points[0:SIZE], selected_init[0:SIZE*SIZE]) map(tofrom: selected[0:SIZE*SIZE], selected2[0:SIZE*SIZE]) device(DEVICE_ID)
+    #pragma omp target map(to: pivots[0: SIZE_2], the_points[0:SIZE], selected_init[0:SIZE*SIZE]) map(tofrom: selected[0:SIZE*SIZE], selected2[0:SIZE*SIZE]) device(DEVICE_ID)
     {
-	//#pragma omp parallel for //collapse(1)
+        //#pragma omp parallel for //collapse(1)
         for(i=0;i<SIZE;i++)
         {
             if(i<SIZE_2) {
@@ -108,7 +108,7 @@ void k_nearest_gpu(point *pivots, point *the_points, sel_points *selected_init, 
         /// for each line in matrix
         /// order values
         
-	//#pragma omp parallel for //collapse(1)
+        //#pragma omp parallel for //collapse(1)
         for(i=0;i<SIZE;i++)
         {
           if(i<SIZE_2) {

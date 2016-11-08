@@ -9,4 +9,4 @@ add_executable(k-nearest ${SRC_FILES})
 target_link_libraries(k-nearest m)
 add_dependencies(mgBench k-nearest)
 
-add_test(mgBench_k-nearest k-nearest)
+#add_test(mgBench_k-nearest k-nearest)

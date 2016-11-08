@@ -12,4 +12,4 @@ add_dependencies(Parboil sgemm)
 
 file(COPY input DESTINATION .)
 
-add_test(Parboil_sgemm sgemm "-i" "input/matrix1.txt,input/matrix2.txt,input/matrix2t.txt" "-o" "matrix3.txt")
+#add_test(Parboil_sgemm sgemm "-i" "input/matrix1.txt,input/matrix2.txt,input/matrix2t.txt" "-o" "matrix3.txt")
