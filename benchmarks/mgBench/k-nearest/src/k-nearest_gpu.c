@@ -29,6 +29,8 @@
 #define SIZE 128
 #endif
 
+#define SIZE_2 SIZE/2
+
 #define ERROR_THRESHOLD 0.05
 #define default_v 100000.00
 
