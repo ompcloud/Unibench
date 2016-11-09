@@ -23,6 +23,7 @@ kernel_cpu(	int cores_arg,
 			int *keys,
 			record *ans);
 
+void
 kernel_gpu(	int cores_arg,
 
 			record *records,

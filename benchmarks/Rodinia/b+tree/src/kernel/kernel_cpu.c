@@ -131,7 +131,7 @@ kernel_gpu(	int cores_arg,
 
 
 
-kernel_cpu(	int cores_arg,
+void kernel_cpu(	int cores_arg,
 
 			record *records,
 			knode *knodes,
