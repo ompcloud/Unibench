@@ -58,7 +58,7 @@ void init_array(DATA_TYPE *x, DATA_TYPE *A)
     }
 }
 
-void compareResults(DATA_TYPE *z, DATA_TYPE *z_outputFromGpu)
+int compareResults(DATA_TYPE *z, DATA_TYPE *z_outputFromGpu)
 {
   int i, fail;
   fail = 0;
@@ -73,6 +73,8 @@ void compareResults(DATA_TYPE *z, DATA_TYPE *z_outputFromGpu)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 void atax_cpu(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
@@ -134,6 +136,7 @@ void atax_OMP(DATA_TYPE* A, DATA_TYPE* x, DATA_TYPE* y, DATA_TYPE* tmp)
 int main(int argc, char** argv)
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* x;
@@ -155,13 +158,15 @@ int main(int argc, char** argv)
   atax_OMP(A, x, y_outputFromGpu, tmp);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
-	
+
+#ifdef RUN_TEST
   t_start = rtclock();
   atax_cpu(A, x, y, tmp);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 
-  compareResults(y, y_outputFromGpu);
+  fail = compareResults(y, y_outputFromGpu);
+#endif
 
   free(A);
   free(x);
@@ -169,6 +174,6 @@ int main(int argc, char** argv)
   free(y_outputFromGpu);
   free(tmp);
 
-  return 0;
+  return fail;
 }
 

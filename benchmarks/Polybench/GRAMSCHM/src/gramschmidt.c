@@ -130,7 +130,7 @@ void init_array(DATA_TYPE* A, DATA_TYPE* A2)
 }
 
 
-void compareResults(DATA_TYPE* A, DATA_TYPE* A_outputFromGpu)
+int compareResults(DATA_TYPE* A, DATA_TYPE* A_outputFromGpu)
 {
   int i, j, fail;
   fail = 0;
@@ -149,11 +149,14 @@ void compareResults(DATA_TYPE* A, DATA_TYPE* A_outputFromGpu)
 	
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* A_outputFromGpu;
@@ -173,19 +176,21 @@ int main(int argc, char *argv[])
   gramschmidt_OMP(A_outputFromGpu, R, Q);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
-	
+
+#ifdef RUN_TEST
   t_start = rtclock();
   gramschmidt(A, R, Q);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 	
-  compareResults(A, A_outputFromGpu);
+  fail = compareResults(A, A_outputFromGpu);
+#endif
 	
   free(A);
   free(A_outputFromGpu);
   free(R);
   free(Q);  
 
-  return 0;
+  return fail;
 }
 

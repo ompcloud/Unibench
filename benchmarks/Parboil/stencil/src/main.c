@@ -28,7 +28,7 @@ int NX, NY, NZ;
 typedef float DATA_TYPE;
 struct pb_Parameters *parameters;
 
-void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
+int compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
 {
   int i, j, k, fail=0;
 
@@ -44,6 +44,8 @@ void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 static int read_data(float *A0, int nx,int ny,int nz,FILE *fp) 
@@ -244,21 +246,24 @@ double stencilCPU(int argc, char** argv) {
 
 int main(int argc, char** argv) {
   double t_GPU, t_CPU;
+  int fail = 0;
 
 	parameters = pb_ReadParameters(&argc, argv);
 
   t_GPU = stencilGPU(argc, argv);
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_GPU);
 
+#ifdef RUN_TEST
   t_CPU = stencilCPU(argc, argv);
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_CPU);
 
-  compareResults(h_Anext_GPU, h_Anext_CPU);
+  fail = compareResults(h_Anext_GPU, h_Anext_CPU);
+#endif
 
 	pb_FreeParameters(parameters);
 	free (h_Anext_GPU);
 	free (h_Anext_CPU);
 
-	return 0;
+        return fail;
 
 }

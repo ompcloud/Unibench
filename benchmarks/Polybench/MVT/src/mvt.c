@@ -105,7 +105,7 @@ void runMvt_OMP(DATA_TYPE* a, DATA_TYPE* x1, DATA_TYPE* x2, DATA_TYPE* y1, DATA_
   }
 }
 
-void compareResults(DATA_TYPE* x1, DATA_TYPE* x1_outputFromGpu, DATA_TYPE* x2, DATA_TYPE* x2_outputFromGpu)
+int compareResults(DATA_TYPE* x1, DATA_TYPE* x1_outputFromGpu, DATA_TYPE* x2, DATA_TYPE* x2_outputFromGpu)
 {
   int i, fail;
   fail = 0;
@@ -125,12 +125,15 @@ void compareResults(DATA_TYPE* x1, DATA_TYPE* x1_outputFromGpu, DATA_TYPE* x2, D
 	
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 
 int main()
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* a;
   DATA_TYPE* x1;
@@ -156,14 +159,16 @@ int main()
   runMvt_OMP(a, x1_outputFromGpu, x2_outputFromGpu, y_1, y_2);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
-  
+
+#ifdef RUN_TEST
   t_start = rtclock();
   //run the algorithm on the CPU
   runMvt(a, x1, x2, y_1, y_2);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
   
-  compareResults(x1, x1_outputFromGpu, x2, x2_outputFromGpu);
+  fail = compareResults(x1, x1_outputFromGpu, x2, x2_outputFromGpu);
+#endif
   
   free(a);
   free(x1);
@@ -173,6 +178,6 @@ int main()
   free(y_1);
   free(y_2);
 
-  return 0;
+  return fail;
 }
 

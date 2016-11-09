@@ -75,7 +75,7 @@ void init_array_hz(DATA_TYPE* hz)
     }
 }
 
-void compareResults(DATA_TYPE* hz1, DATA_TYPE* hz2)
+int compareResults(DATA_TYPE* hz1, DATA_TYPE* hz2)
 {
   int i, j, fail;
   fail = 0;
@@ -93,6 +93,8 @@ void compareResults(DATA_TYPE* hz1, DATA_TYPE* hz2)
 	
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 void runFdtd(DATA_TYPE* _fict_, DATA_TYPE* ex, DATA_TYPE* ey, DATA_TYPE* hz)
@@ -181,6 +183,7 @@ void runFdtd_OMP(DATA_TYPE* _fict_, DATA_TYPE* ex, DATA_TYPE* ey, DATA_TYPE* hz)
 int main()
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* _fict_;
   DATA_TYPE* ex;
@@ -205,13 +208,16 @@ int main()
 	
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
+
+#ifdef RUN_TEST
   t_start = rtclock();
   runFdtd(_fict_, ex, ey, hz);
   t_end = rtclock();
 	
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 	
-  compareResults(hz, hz_outputFromGpu);
+  fail = compareResults(hz, hz_outputFromGpu);
+#endif
 
   free(_fict_);
   free(ex);
@@ -219,6 +225,6 @@ int main()
   free(hz);
   free(hz_outputFromGpu);
 
-  return 0;
+  return fail;
 }
 

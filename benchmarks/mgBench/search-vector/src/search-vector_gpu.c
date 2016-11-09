@@ -82,6 +82,8 @@ int search_CPU(float *a, float c)
 
 int main(int argc, char *argv[]) {
     double t_start, t_end;
+    int fail = 0;
+
     float *a, c;
     int find_cpu, find_gpu;
 
@@ -97,18 +99,23 @@ int main(int argc, char *argv[]) {
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
+#ifdef RUN_TEST
     t_start = rtclock();
     find_cpu = search_CPU(a, c);
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    if(find_gpu == find_cpu)
+    if(find_gpu == find_cpu) {
         printf("Working %d=%d\n", find_gpu, find_cpu);
-    else
+        fail = 0;
+    }
+    else {
 	printf("Error %d != %d\n", find_gpu, find_cpu);
+    }
+#endif
 
     free(a);
 
-    return 0;
+    return fail;
 }
 

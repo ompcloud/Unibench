@@ -188,7 +188,7 @@ void correlation_OMP(DATA_TYPE* data, DATA_TYPE* mean, DATA_TYPE* stddev, DATA_T
 
 }
 
-void compareResults(DATA_TYPE* symmat, DATA_TYPE* symmat_outputFromGpu)
+int compareResults(DATA_TYPE* symmat, DATA_TYPE* symmat_outputFromGpu)
 {
   int i,j,fail;
   fail = 0;
@@ -207,11 +207,14 @@ void compareResults(DATA_TYPE* symmat, DATA_TYPE* symmat_outputFromGpu)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 int main()
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* data;
   DATA_TYPE* mean;
@@ -235,6 +238,7 @@ int main()
 
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
+#ifdef RUN_TEST
   init_arrays(data);
 
   t_start = rtclock();
@@ -244,6 +248,7 @@ int main()
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
     
   compareResults(symmat, symmat_GPU);
+#endif
 
   free(data);
   free(mean);
@@ -251,7 +256,7 @@ int main()
   free(symmat);
   free(symmat_GPU);
 
-  return 0;
+  return fail;
 }
 
 

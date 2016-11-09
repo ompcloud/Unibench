@@ -287,7 +287,7 @@ void usage(int argc, char **argv)
 	exit(1);
 }
 
-void compareResults(double *result_cpu, double *result_gpu, int grid_rows, int grid_cols) {
+int compareResults(double *result_cpu, double *result_gpu, int grid_rows, int grid_cols) {
 	int i,fail;
 	fail = 0;
 
@@ -299,6 +299,8 @@ void compareResults(double *result_cpu, double *result_gpu, int grid_rows, int g
 
 	// Print results
 	printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+        return fail;
 }
 
 int main(int argc, char **argv)

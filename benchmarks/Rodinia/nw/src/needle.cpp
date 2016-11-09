@@ -80,7 +80,7 @@ void usage(int argc, char **argv)
 }
 
 
-void compareResults(int *cpu, int *gpu, int max_rows, int max_cols)
+int compareResults(int *cpu, int *gpu, int max_rows, int max_cols)
 {
   int i, fail;
   fail = 0;
@@ -95,7 +95,8 @@ void compareResults(int *cpu, int *gpu, int max_rows, int max_cols)
     }
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
-	
+
+  return fail;
 }
 
 void init(int *input_itemsets_cpu, int *input_itemsets_gpu, int *referrence_cpu, int *referrence_gpu, int max_rows, int max_cols, int penalty)

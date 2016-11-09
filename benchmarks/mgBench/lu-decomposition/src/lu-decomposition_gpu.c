@@ -109,7 +109,7 @@ void Crout_CPU(int s, float *a, float *b){
     }
 }
 
-void compareResults(float *b_cpu, float *b_gpu)
+int compareResults(float *b_cpu, float *b_gpu)
 {
   int i, j, fail;
   fail = 0;
@@ -127,11 +127,14 @@ void compareResults(float *b_cpu, float *b_gpu)
 	
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 int main(int argc, char *argv[]) 
 {
     double t_start, t_end;
+    int fail = 0;
     int i;
 
     float *a, *b_cpu, *b_gpu;
@@ -150,6 +153,7 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
+#ifdef RUN_TEST
     t_start = rtclock();
     for(i=2;i<SIZE;i+=var)
     {
@@ -159,13 +163,14 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(b_cpu, b_gpu);
+    fail = compareResults(b_cpu, b_gpu);
+#endif
 
     free(a);
     free(b_cpu);
     free(b_gpu);
 
-    return 0;
+    return fail;
 }
 
 

@@ -56,7 +56,7 @@ int N;
 
 typedef float DATA_TYPE;
 
-void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU, DATA_TYPE *B, DATA_TYPE *B_GPU)
+int compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU, DATA_TYPE *B, DATA_TYPE *B_GPU)
 {
   int i,fail=0;
 
@@ -78,6 +78,8 @@ void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU, DATA_TYPE *B, DATA_TYPE *B_G
 
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 double mriqGPU(int argc, char *argv[]) {
@@ -281,19 +283,22 @@ double mriqCPU(int argc, char *argv[]) {
 int
 main (int argc, char *argv[]) {
   double t_GPU, t_CPU;
+  int fail = 0;
 
   t_GPU = mriqGPU(argc, argv);
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_GPU);
 
+#ifdef RUN_TEST
   t_CPU = mriqCPU(argc, argv);
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_CPU);
 
-  compareResults(Qr_CPU, Qr_GPU, Qi_CPU, Qi_GPU);
+  fail = compareResults(Qr_CPU, Qr_GPU, Qi_CPU, Qi_GPU);
+#endif
 
 	free(Qr_GPU);
 	free(Qi_GPU);
 	free(Qr_CPU);
 	free(Qi_CPU);
 
-  return 0;
+  return fail;
 }

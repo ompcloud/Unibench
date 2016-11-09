@@ -41,7 +41,7 @@
 
 
 
-void compareResults(fp *image, fp *image_cpu, int Ne)
+int compareResults(fp *image, fp *image_cpu, int Ne)
 {
   int i, fail;
   fail = 0;
@@ -56,6 +56,8 @@ void compareResults(fp *image, fp *image_cpu, int Ne)
 	
     // print results
     printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+    return fail;
 }
 
 //====================================================================================================100

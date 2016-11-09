@@ -182,7 +182,7 @@ void k_nearest_cpu(point *pivots, point *the_points, sel_points *selected)
     }
 }
 
-void compareResults(sel_points* B, sel_points* B_GPU)
+int compareResults(sel_points* B, sel_points* B_GPU)
 {
   int i, j, fail;
   fail = 0;
@@ -206,12 +206,14 @@ void compareResults(sel_points* B, sel_points* B_GPU)
     }
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
-	
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
     double t_start, t_end;	
+    int fail = 0;
+
     point *pivots;
     point *the_points;
     sel_points *selected_cpu, *selected_gpu;
@@ -234,18 +236,20 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
+#ifdef RUN_TEST
     t_start = rtclock();
     k_nearest_cpu(pivots, the_points, selected_cpu);
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(selected_cpu, selected_gpu2);
+    fail = compareResults(selected_cpu, selected_gpu2);
+#endif
 
     free(selected_cpu);
     free(selected_gpu);
     free(pivots);
     free(the_points);
 
-    return 0;
+    return fail;
 }
 

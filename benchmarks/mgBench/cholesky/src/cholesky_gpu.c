@@ -118,7 +118,7 @@ void cholesky_CPU(float *A, float *B)
 }
 
 
-void compareResults(float *E, float *E_GPU)
+int compareResults(float *E, float *E_GPU)
 {
   int i,j,fail;
   fail = 0;
@@ -136,12 +136,15 @@ void compareResults(float *E, float *E_GPU)
 	
     // print results
     printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+    return fail;
 }
 
 int main(int argc, char *argv[]) 
 {
     double t_start, t_end;
     float *A, *B_CPU, *B_GPU;
+    int fail = 0;
     
     A     = (float*) malloc(SIZE * SIZE * sizeof(float));
     B_CPU = (float*) malloc(SIZE * SIZE * sizeof(float)); 
@@ -156,17 +159,19 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
+#ifdef RUN_TEST
     t_start = rtclock();
     cholesky_CPU(A, B_CPU); 
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(B_CPU, B_GPU);
+    fail = compareResults(B_CPU, B_GPU);
+#endif
 
     free(A);
     free(B_CPU);
     free(B_GPU);
  
-    return 0;
+    return fail;
 }
 

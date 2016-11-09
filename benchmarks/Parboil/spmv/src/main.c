@@ -26,7 +26,7 @@ int N;
 
 typedef float DATA_TYPE;
 
-void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
+int compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
 {
   int i, fail=0;
 
@@ -40,6 +40,8 @@ void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 static int generate_vector(float *x_vector, int dim) 
@@ -311,18 +313,21 @@ double spmvCPU(int argc, char** argv) {
 
 int main(int argc, char** argv) {
   double t_GPU, t_CPU;
+  int fail = 0;
 
   t_GPU = spmvGPU(argc, argv);
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_GPU);
 
+#ifdef RUN_TEST
   t_CPU = spmvCPU(argc, argv);
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_CPU);
 
-  compareResults(h_Ax_vector_GPU, h_Ax_vector_CPU);
+  fail = compareResults(h_Ax_vector_GPU, h_Ax_vector_CPU);
+#endif
 
 	free (h_Ax_vector_GPU);
 	free (h_Ax_vector_CPU);
 
-	return 0;
+        return fail;
 
 }

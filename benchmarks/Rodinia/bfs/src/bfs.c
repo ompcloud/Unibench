@@ -46,7 +46,7 @@ int main( int argc, char** argv)
 }
 
 
-void compareResults(int* h_cost, int* h_cost_gpu, int no_of_nodes) {
+int compareResults(int* h_cost, int* h_cost_gpu, int no_of_nodes) {
   int i,fail;
   fail = 0;
 
@@ -59,6 +59,8 @@ void compareResults(int* h_cost, int* h_cost_gpu, int no_of_nodes) {
 
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

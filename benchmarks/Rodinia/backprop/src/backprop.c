@@ -236,7 +236,7 @@ int n_in, n_hidden, n_out;
   return (newnet);
 }
 
-void compareResults(float *l2, float *l2_gpu, int n2) {
+int compareResults(float *l2, float *l2_gpu, int n2) {
   int i;
   int fail = 0;
   // Compare C with D

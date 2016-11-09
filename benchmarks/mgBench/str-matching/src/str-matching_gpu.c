@@ -121,6 +121,8 @@ int string_matching_CPU(char *frase, char *palavra)
 int main(int argc, char *argv[]) 
 {
     double t_start, t_end;
+    int fail = 0;
+
     char *frase;
     char *palavra;
 
@@ -138,19 +140,25 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
+#ifdef RUN_TEST
     t_start = rtclock();
     count_gpu = string_matching_GPU(frase, palavra);
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    if(count_cpu == count_gpu)
+    if(count_cpu == count_gpu) {
 	printf("Corrects answers: %d = %d\n", count_cpu, count_gpu);
-    else
+        fail = 0;
+    }
+    else {
         printf("Error: %d != %d\n", count_cpu, count_gpu);
+        fail = 1;
+    }
+#endif
 
     free(frase);
     free(palavra);
 
-    return 0;
+    return fail;
 }
 

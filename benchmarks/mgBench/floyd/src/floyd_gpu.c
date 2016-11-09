@@ -132,7 +132,7 @@ void Knearest_CPU(int *matrix, int *matrix_dist)
     }
 }
 
-void compareResults(int *B, int *B_GPU)
+int compareResults(int *B, int *B_GPU)
 {
   int i, j, fail;
   fail = 0;
@@ -151,14 +151,16 @@ void compareResults(int *B, int *B_GPU)
 
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
-	
+
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
     int i;
     int points, var;
-    double t_start, t_end;	
+    double t_start, t_end;
+    int fail = 0;
 
     int *matrix;
     int *matrix_dist_cpu, *matrix_dist_gpu;
@@ -176,17 +178,19 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
 
+#ifdef RUN_TEST
     t_start = rtclock();
     Knearest_CPU(matrix, matrix_dist_cpu);
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(matrix_dist_cpu, matrix_dist_gpu);
+    fail = compareResults(matrix_dist_cpu, matrix_dist_gpu);
+#endif
 
     free(matrix);
     free(matrix_dist_cpu);
     free(matrix_dist_gpu);
 
-    return 0;
+    return fail;
 }
 

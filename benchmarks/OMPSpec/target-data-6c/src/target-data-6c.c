@@ -85,7 +85,7 @@ void vec_mult_OMP(DATA_TYPE* A, DATA_TYPE* B, DATA_TYPE* C) {
 	}
 }
 
-void compareResults(DATA_TYPE* B, DATA_TYPE* B_GPU)
+int compareResults(DATA_TYPE* B, DATA_TYPE* B_GPU)
 {
   int i, fail;
   fail = 0;
@@ -102,12 +102,14 @@ void compareResults(DATA_TYPE* B, DATA_TYPE* B_GPU)
 	
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
-	
+
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
   double t_start, t_end, t_start_OMP, t_end_OMP;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* B;  
@@ -128,8 +130,8 @@ int main(int argc, char *argv[])
   vec_mult_OMP(A, B, C_OMP);
   t_end_OMP = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end_OMP - t_start_OMP);//);
-	
-
+	 
+#ifdef RUN_TEST
   //initialize the arrays
   init(A, B);
 
@@ -138,12 +140,13 @@ int main(int argc, char *argv[])
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);//);
 	
-  compareResults(C, C_OMP);
+  fail = compareResults(C, C_OMP);
+#endif
 
   free(A);
   free(B);
   free(C);
   free(C_OMP);
 	
-  return 0;
+  return fail;
 }

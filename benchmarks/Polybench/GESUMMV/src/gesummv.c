@@ -96,7 +96,7 @@ void init(DATA_TYPE* A, DATA_TYPE* x)
     }
 }
 
-void compareResults(DATA_TYPE* y, DATA_TYPE* y_outputFromGpu)
+int compareResults(DATA_TYPE* y, DATA_TYPE* y_outputFromGpu)
 {
   int i, fail;
   fail = 0;
@@ -111,11 +111,14 @@ void compareResults(DATA_TYPE* y, DATA_TYPE* y_outputFromGpu)
   
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
   double t_start, t_end;
+  int fail = 0;
 
   DATA_TYPE* A;
   DATA_TYPE* B;  
@@ -139,13 +142,15 @@ int main(int argc, char *argv[])
   gesummv_OMP(A, B, x, y_outputFromGpu, tmp);
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
-	
+
+#ifdef RUN_TEST
   t_start = rtclock();
   gesummv(A, B, x, y, tmp);
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
 	
-  compareResults(y, y_outputFromGpu);
+  fail = compareResults(y, y_outputFromGpu);
+#endif
 
   free(A);
   free(B);  
@@ -154,6 +159,6 @@ int main(int argc, char *argv[])
   free(y_outputFromGpu);
   free(tmp);
 
-  return 0;
+  return fail;
 }
 

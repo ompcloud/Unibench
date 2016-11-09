@@ -157,7 +157,7 @@ void order_points(int s, point *vector, sel_points *selected)
 }
 
 
-void compareResults(sel_points* B, sel_points* B_GPU)
+int compareResults(sel_points* B, sel_points* B_GPU)
 {
   int i, j, fail;
   fail = 0;
@@ -181,12 +181,15 @@ void compareResults(sel_points* B, sel_points* B_GPU)
     }
   // Print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
-	
+
+  return fail;
 }
 
 int main(int argc, char *argv[])
 {
     double t_start, t_end;
+    int fail = 0;
+
     point *vector;
     sel_points *selected_cpu, *selected_gpu;
 
@@ -208,7 +211,7 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-
+#ifdef RUN_TEST
     t_start = rtclock();
     for(i=(var-1);i<SIZE;i+=var)
     {
@@ -218,11 +221,12 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(selected_cpu, selected_gpu);
+    fail = compareResults(selected_cpu, selected_gpu);
+#endif
 
     free(selected_cpu);
     free(selected_gpu);
     free(vector);
-    return 0;
+    return fail;
 }
 

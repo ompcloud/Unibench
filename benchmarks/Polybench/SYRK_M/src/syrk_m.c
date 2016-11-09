@@ -80,7 +80,7 @@ void syrk() {
   }
 }
 
-void compareResults() {
+int compareResults() {
   int i,j,fail;
   fail = 0;
 
@@ -95,6 +95,8 @@ void compareResults() {
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 void syrkGPU() {
@@ -121,14 +123,21 @@ void syrkGPU() {
 
 int main() {
   double t_start, t_end;
+  int fail = 0;
 
   init_arrays();	
+  t_start = rtclock();
   syrkGPU();
+  t_end = rtclock();
+
+#ifdef RUN_TEST
   t_start = rtclock();
   syrk();
   t_end = rtclock();
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
-  compareResults();
-  return 0;
+  fail = compareResults();
+#endif
+
+  return fail;
 }
 

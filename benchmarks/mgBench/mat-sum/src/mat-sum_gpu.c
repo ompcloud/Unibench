@@ -79,7 +79,7 @@ void sum_CPU(float *a, float *b, float *c)
     }
 }
 
-void compareResults(float *b_cpu, float *b_gpu)
+int compareResults(float *b_cpu, float *b_gpu)
 {
     int i, j, fail;
     fail = 0;
@@ -97,12 +97,15 @@ void compareResults(float *b_cpu, float *b_gpu)
 	
     // Print results
     printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", PERCENT_DIFF_ERROR_THRESHOLD, fail);
+
+    return fail;
 }
 
 int main(int argc, char *argv[]) 
 {
     double t_start, t_end;
     float *a, *b, *c_cpu, *c_gpu;
+    int fail = 0;
    
     a = (float *) malloc(sizeof(float) * SIZE * SIZE);
     b = (float *) malloc(sizeof(float) * SIZE * SIZE);
@@ -118,18 +121,20 @@ int main(int argc, char *argv[])
     t_end = rtclock();
     fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);	
 
+#ifdef RUN_TEST
     t_start = rtclock();
     sum_CPU(a, b, c_cpu);
     t_end = rtclock();
     fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);	
 
-    compareResults(c_cpu, c_gpu);
+    fail = compareResults(c_cpu, c_gpu);
+#endif
 
     free(a);
     free(b);
     free(c_cpu);
     free(c_gpu);
 
-    return 0;
+    return fail;
 }
 

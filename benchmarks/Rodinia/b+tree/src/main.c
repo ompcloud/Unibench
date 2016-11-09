@@ -1850,7 +1850,7 @@ destroy_tree(node* root)
 //	MAIN FUNCTION
 //========================================================================================================================================================================================================200
 
-void compareResults(long *offset_cpu, long *offset_gpu, long *currKnode_cpu, long *currKnode_gpu, record *ans_cpu, record *ans_gpu, int count) {
+int compareResults(long *offset_cpu, long *offset_gpu, long *currKnode_cpu, long *currKnode_gpu, record *ans_cpu, record *ans_gpu, int count) {
   int i,j,fail;
   fail = 0;
 
@@ -1868,6 +1868,8 @@ void compareResults(long *offset_cpu, long *offset_gpu, long *currKnode_cpu, lon
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 int 

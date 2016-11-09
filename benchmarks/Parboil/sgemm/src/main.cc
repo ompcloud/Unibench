@@ -40,7 +40,7 @@ int NX, NY;
 
 typedef float DATA_TYPE;
 
-void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
+int compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
 {
   int i, j, fail=0;
 
@@ -57,6 +57,8 @@ void compareResults(DATA_TYPE *A, DATA_TYPE *A_GPU)
 	
   // print results
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+
+  return fail;
 }
 
 // I/O routines
@@ -198,14 +200,17 @@ double sgemmCPU(int argc, char *argv[]) {
 int
 main (int argc, char *argv[]) {
   double t_GPU, t_CPU;
+  int fail = 0;
 
   t_GPU = sgemmGPU(argc, argv);
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_GPU);
 
+#ifdef RUN_TEST
   t_CPU = sgemmCPU(argc, argv);
   fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_CPU);
 
-  compareResults(matC_GPU, matC_CPU);
+  fail = compareResults(matC_GPU, matC_CPU);
+#endif
 
-  return 0;
+  return fail;
 }
