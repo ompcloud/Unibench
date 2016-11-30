@@ -67,11 +67,11 @@ void gesummv_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *x, DATA_TYPE *y, DATA_TY
 
   #pragma omp target map(to: A[:N*N], B[:N*N], x[:N], tmp[:N]) map(tofrom: y[:N]) device(DEVICE_ID)
   #pragma omp parallel for
-  for (i = 0; i < N; i++)
+  for (int i = 0; i < N; i++)
     {
       tmp[i] = 0;
       y[i] = 0;
-      for (j = 0; j < N; j++)
+      for (int j = 0; j < N; j++)
 	{
 	  tmp[i] = A[i*N + j] * x[j] + tmp[i];
 	  y[i] = B[i*N + j] * x[j] + y[i];
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   B = (DATA_TYPE*)malloc(N*N*sizeof(DATA_TYPE));
   x = (DATA_TYPE*)malloc(N*sizeof(DATA_TYPE)); 
   y = (DATA_TYPE*)malloc(N*sizeof(DATA_TYPE));
-  y_outputFromGpu = (DATA_TYPE*)malloc(N*sizeof(DATA_TYPE));
+  y_outputFromGpu = (DATA_TYPE*)calloc(N,sizeof(DATA_TYPE));
   tmp = (DATA_TYPE*)malloc(N*sizeof(DATA_TYPE));
 
   fprintf(stdout, "<< Scalar, Vector and Matrix Multiplication >>\n");
