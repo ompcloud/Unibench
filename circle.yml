@@ -9,4 +9,4 @@ dependencies:
 
 test:
   post:
-    - docker run -t --name ompcloud-test ompcloud/ompcloud-test:latest /sbin/my_init -- /opt/ompcloud-script/ompcloud-updatetools.sh -- /opt/ompcloud-script/ompcloud-quicktests.sh
+    - docker run -t --name ompcloud-test ompcloud/ompcloud-test:latest /sbin/my_init -- /opt/ompcloud-script/ompcloud-updatetools.sh -- /opt/ompcloud-script/ompcloud-runtests.sh
