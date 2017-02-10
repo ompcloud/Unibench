@@ -51,6 +51,8 @@ void mul_GPU(float *a, float *b, float *c) {
   {
 #pragma omp parallel for // collapse(1)
     for (int i = 0; i < SIZE; ++i) {
+#pragma omp target data map(to : a[i *SIZE : (i + 1) * SIZE]) map(             \
+    tofrom : c[i *SIZE : (i + 1) * SIZE])
       for (int j = 0; j < SIZE; ++j) {
         float sum = 0.0;
         for (int k = 0; k < SIZE; ++k) {

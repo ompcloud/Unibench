@@ -52,6 +52,9 @@ void sum_GPU(float *a, float *b, float *c) {
   {
 #pragma omp parallel for collapse(1)
     for (i = 0; i < SIZE; ++i) {
+#pragma omp target data map(to : a[i *SIZE : (i + 1) * SIZE],                  \
+                                   b[i *SIZE : (i + 1) * SIZE]) map(           \
+                                       tofrom : c[i *SIZE : (i + 1) * SIZE])
       for (j = 0; j < SIZE; ++j) {
         c[i * SIZE + j] = a[i * SIZE + j] + b[i * SIZE + j];
       }
