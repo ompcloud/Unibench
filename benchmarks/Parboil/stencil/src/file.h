@@ -6,6 +6,6 @@
  *cr
  ***************************************************************************/
 
-void inputData(char* fName, int* nx, int* ny, int* nz);
+void inputData(char *fName, int *nx, int *ny, int *nz);
 
-void outputData(char* fName, float *h_A0,int nx,int ny,int nz);
+void outputData(char *fName, float *h_A0, int nx, int ny, int nz);

@@ -2,7 +2,7 @@
  * syrk_m.c: This file was adapted from PolyBench/GPU 1.0 test suite
  * to run on GPU with OpenMP 4.0 pragmas and OpenCL driver.
  *
- * http://www.cse.ohio-state.edu/~pouchet/software/polybench/GPU 
+ * http://www.cse.ohio-state.edu/~pouchet/software/polybench/GPU
  *
  * Contact: Marcio M Pereira <mpereira@ic.unicamp.br>
  *          Rafael Cardoso F Sousa <rafael.cardoso@students.ic.unicamp.br>
@@ -10,15 +10,15 @@
  *
  */
 
+#include "../../common/polybenchUtilFuncts.h"
+#include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <assert.h>
-#include <unistd.h>
 #include <sys/time.h>
-#include "../../common/polybenchUtilFuncts.h"
+#include <unistd.h>
 
-//define the error threshold for the results "not matching"
+// define the error threshold for the results "not matching"
 #define ERROR_THRESHOLD 0.05
 
 /* Problem size. */
@@ -49,13 +49,13 @@ DATA_TYPE Dinit[N][M];
 
 void init_arrays() {
   int i, j;
-	
+
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {
-      A[i][j] = ((DATA_TYPE) i*j) / N;
+      A[i][j] = ((DATA_TYPE)i * j) / N;
     }
     for (j = 0; j < M; j++) {
-      C[i][j] = ((DATA_TYPE) i*j + 2) / N;
+      C[i][j] = ((DATA_TYPE)i * j + 2) / N;
       D[i][j] = 0;
       Dinit[i][j] = C[i][j];
     }
@@ -64,37 +64,39 @@ void init_arrays() {
 
 void syrk() {
   int i, j, k;
-	
+
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {
       C[i][j] *= beta;
     }
   }
-	
+
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {
       for (k = 0; k < M; k++) {
-	C[i][j] += alpha * A[i][k] * A[j][k];
+        C[i][j] += alpha * A[i][k] * A[j][k];
       }
     }
   }
 }
 
 int compareResults() {
-  int i,j,fail;
+  int i, j, fail;
   fail = 0;
 
   // Compare C with D
-  for (i=0; i<N; i++) {
-    for (j=0; j<M; j++)	{
+  for (i = 0; i < N; i++) {
+    for (j = 0; j < M; j++) {
       if (percentDiff(C[i][j], D[i][j]) > ERROR_THRESHOLD) {
-	fail++;
+        fail++;
       }
     }
   }
-	
+
   // print results
-  printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f Percent: %d\n", ERROR_THRESHOLD, fail);
+  printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f "
+         "Percent: %d\n",
+         ERROR_THRESHOLD, fail);
 
   return fail;
 }
@@ -105,27 +107,26 @@ void syrkGPU() {
 
   t_start = rtclock();
 
-#pragma omp target map(to: A, Dinit) map(tofrom: D) device (DEVICE_ID)
-#pragma omp parallel for //collapse(2)
+#pragma omp target map(to : A, Dinit) map(tofrom : D) device(DEVICE_ID)
+#pragma omp parallel for // collapse(2)
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {
-      D[i][j] = Dinit[i][j] * beta;	
-      for(k=0; k< M; k++) {
-	D[i][j] += alpha * A[i][k] * A[j][k];
+      D[i][j] = Dinit[i][j] * beta;
+      for (k = 0; k < M; k++) {
+        D[i][j] += alpha * A[i][k] * A[j][k];
       }
     }
   }
 
   t_end = rtclock();
   fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
-
 }
 
 int main() {
   double t_start, t_end;
   int fail = 0;
 
-  init_arrays();	
+  init_arrays();
   t_start = rtclock();
   syrkGPU();
   t_end = rtclock();
@@ -140,4 +141,3 @@ int main() {
 
   return fail;
 }
-
