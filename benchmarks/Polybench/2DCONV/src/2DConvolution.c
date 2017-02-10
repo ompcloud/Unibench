@@ -80,10 +80,12 @@ void conv2D_OMP(DATA_TYPE *A, DATA_TYPE *B) {
   c23 = +0.7;
   c33 = +0.10;
 
-#pragma omp target map(to : A[ : NI *NJ]) map(from : B[ : NI *NJ])             \
+#pragma omp target map(to : A[ : NI *NJ]) map(tofrom : B[ : NI *NJ])           \
     device(DEVICE_ID)
 #pragma omp parallel for
   for (int i = 1; i < NI - 1; ++i) {
+#pragma omp target data map(to : A[(                                           \
+    i - 1) * NJ : (i + 2) * NJ]) map(tofrom : B[i *NJ : (i + 2) * NJ])
     for (int j = 1; j < NJ - 1; ++j) {
       B[i * NJ + j] =
           c11 * A[(i - 1) * NJ + (j - 1)] + c12 * A[(i + 0) * NJ + (j - 1)] +
@@ -135,8 +137,8 @@ int main(int argc, char *argv[]) {
   DATA_TYPE *B_OMP;
 
   A = (DATA_TYPE *)malloc(NI * NJ * sizeof(DATA_TYPE));
-  B = (DATA_TYPE *)malloc(NI * NJ * sizeof(DATA_TYPE));
-  B_OMP = (DATA_TYPE *)malloc(NI * NJ * sizeof(DATA_TYPE));
+  B = (DATA_TYPE *)calloc(NI * NJ, sizeof(DATA_TYPE));
+  B_OMP = (DATA_TYPE *)calloc(NI * NJ, sizeof(DATA_TYPE));
 
   fprintf(stdout, ">> Two dimensional (2D) convolution <<\n");
 
