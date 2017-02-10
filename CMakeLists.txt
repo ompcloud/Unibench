@@ -51,6 +51,6 @@ add_definitions(-DDEVICE_ID=0)
 # Use ctest for benchmarking
 enable_testing()
 
-add_subdirectory(benchmarks)
+add_custom_target(supported)
 
-#add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
+add_subdirectory(benchmarks)
