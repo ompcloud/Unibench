@@ -24,8 +24,8 @@
 void *memalign(int alignment, size_t size) { return malloc(size); }
 #endif
 
-#include "../../common/parboil.h"
-#include "../../common/polybenchUtilFuncts.h"
+#include "parboil.h"
+#include "BenchmarksUtil.h"
 #include "sgemm_kernel.cc"
 
 #define ERROR_THRESHOLD 0.05

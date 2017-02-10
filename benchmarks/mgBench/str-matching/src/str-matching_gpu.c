@@ -10,7 +10,7 @@
     ipmacc string-matching _gpu.c -o str
     ./str matrix-size
 */
-#include "../../common/mgbenchUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <limits.h>
 #include <math.h>

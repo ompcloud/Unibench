@@ -65,7 +65,7 @@
 // #include <sys/time.h>							// (in
 // directory
 // known to compiler)			needed by ???
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <math.h> // (in directory known to compiler)			needed by log, pow
 #include <stdlib.h>

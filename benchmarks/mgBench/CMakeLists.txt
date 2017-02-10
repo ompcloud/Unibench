@@ -1,6 +1,4 @@
 
-include_directories(common)
-
 add_custom_target(mgBench)
 
 add_subdirectory(cholesky)

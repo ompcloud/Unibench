@@ -16,7 +16,7 @@
  * =====================================================================================
  */
 
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <getopt.h>
 #include <stdio.h>

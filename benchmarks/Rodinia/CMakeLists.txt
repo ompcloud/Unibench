@@ -1,6 +1,4 @@
 
-include_directories(common)
-
 add_custom_target(Rodinia)
 
 add_subdirectory(b+tree)

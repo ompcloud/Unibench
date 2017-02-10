@@ -5,7 +5,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <sys/time.h>
 //#define NUM_THREAD 4
 #define OPEN

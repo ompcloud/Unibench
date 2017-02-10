@@ -16,7 +16,7 @@
 #include "file.h"
 #include "kernels.h"
 
-#include "../../common/polybenchUtilFuncts.h"
+#include "BenchmarksUtil.h"
 
 #define ERROR_THRESHOLD 0.05
 

@@ -12,7 +12,7 @@
     ./a.out
 */
 
-#include "../../common/mgbenchUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

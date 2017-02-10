@@ -1,11 +1,12 @@
-// polybenchUtilFuncts.h
+// BenchmarksUtil.h
 // Scott Grauer-Gray (sgrauerg@gmail.com)
 // Functions used across hmpp codes
 
-#ifndef POLYBENCH_UTIL_FUNCTS_H
-#define POLYBENCH_UTIL_FUNCTS_H
+#ifndef BENCHMARKS_UTIL_H
+#define BENCHMARKS_UTIL_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
@@ -42,4 +43,4 @@ float percentDiff(double val1, double val2) {
   }
 }
 
-#endif // POLYBENCH_UTIL_FUNCTS_H
+#endif // BENCHMARKS_UTIL_H

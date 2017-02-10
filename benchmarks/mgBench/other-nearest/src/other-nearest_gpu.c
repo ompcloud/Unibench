@@ -1,7 +1,7 @@
 //<libmptogpu> Error executing kernel. Global Work Size is NULL or exceeded
 //valid range.
 
-#include "../../common/mgbenchUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

@@ -13,7 +13,7 @@
     ipmacc k-nearest_gpu.c -o k-nearest
     ./k-nearest matrix-size
 */
-#include "../../common/mgbenchUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

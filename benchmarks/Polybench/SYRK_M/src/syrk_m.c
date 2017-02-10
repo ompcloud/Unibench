@@ -10,7 +10,7 @@
  *
  */
 
-#include "../../common/polybenchUtilFuncts.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

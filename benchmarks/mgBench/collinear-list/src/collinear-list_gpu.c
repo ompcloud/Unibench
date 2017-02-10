@@ -14,7 +14,7 @@
     folder_ipmacc/ipmacc folder_archive/colinear_v2.c
     ./a.out
 */
-#include "../../common/mgbenchUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <assert.h>
 #include <limits.h>
 #include <math.h>

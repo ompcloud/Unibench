@@ -10,7 +10,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include "backprop.h"
 #include <math.h>
 #include <stdio.h>

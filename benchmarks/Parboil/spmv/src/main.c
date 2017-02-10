@@ -14,7 +14,7 @@
 #include "convert_dataset.h"
 #include "file.h"
 
-#include "../../common/polybenchUtilFuncts.h"
+#include "BenchmarksUtil.h"
 
 #define ERROR_THRESHOLD 0.05
 

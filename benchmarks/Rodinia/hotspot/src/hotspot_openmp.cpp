@@ -3,7 +3,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <sys/time.h>
 
 #define STR_SIZE 256

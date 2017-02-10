@@ -1,6 +1,4 @@
 
-include_directories(common)
-
 add_custom_target(OMPSpec)
 
 add_subdirectory(target-3c)

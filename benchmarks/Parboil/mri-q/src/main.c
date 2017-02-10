@@ -36,12 +36,12 @@
 void *memalign(int alignment, size_t size) { return malloc(size); }
 #endif
 
-#include "../../common/parboil.h"
+#include "parboil.h"
 
 #include "computeQ.cc"
 #include "file.h"
 
-#include "../../common/polybenchUtilFuncts.h"
+#include "BenchmarksUtil.h"
 
 #define ERROR_THRESHOLD 0.1
 

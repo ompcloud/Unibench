@@ -8,7 +8,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 
 #define ERROR_THRESHOLD 0.05
 

@@ -33,7 +33,7 @@
 #include "resize.c"
 #include "timer.c"
 
-#include "../../common/rodiniaUtilFunctions.h"
+#include "BenchmarksUtil.h"
 #include <sys/time.h>
 
 #define ERROR_THRESHOLD 0.05
