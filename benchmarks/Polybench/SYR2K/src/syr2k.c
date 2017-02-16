@@ -109,6 +109,9 @@ for (i = 0; i < N; i++)
                                    map(from : C[ : N *N]) device(DEVICE_ID)
 #pragma omp parallel for // collapse(2)
   for (int i = 0; i < N; i++) {
+
+#pragma omp target data map(from : Cinit[i *N : (i + 1) * N])                  \
+                                             map(to : C[i *N : (i + 1) * N])
     for (int j = 0; j < N; j++) {
       C[i * N + j] = Cinit[i * N + j];
       for (int k = 0; k < M; k++) {

@@ -103,6 +103,8 @@ void syrkGPU(DATA_TYPE *A, DATA_TYPE *Dinit, DATA_TYPE *D1, DATA_TYPE *D2) {
   {
 #pragma omp parallel for
     for (int i = 0; i < N; i++) {
+#pragma omp target data map(from : Dinit[i *M : (i + 1) * M])                  \
+                                             map(to : D1[i *M : (i + 1) * M])
       for (int j = 0; j < M; j++) {
         D1[i * M + j] = Dinit[i * M + j] * beta;
       }
@@ -110,6 +112,8 @@ void syrkGPU(DATA_TYPE *A, DATA_TYPE *Dinit, DATA_TYPE *D1, DATA_TYPE *D2) {
 
 #pragma omp parallel for // collapse(2)
     for (int i = 0; i < N; i++) {
+#pragma omp target data map(to : D1[i *M : (i + 1) * M])                  \
+                                             map(to : D2[i *M : (i + 1) * M])
       for (int j = 0; j < M; j++) {
         D2[i * N + j] = D1[i * N + j];
         for (int k = 0; k < M; k++) {
