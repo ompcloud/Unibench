@@ -131,14 +131,14 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
 /* E := A*B */
 #pragma omp target map(                                                        \
     to : A[ : NI *NK], B[ : NK *NJ], C[ : NJ *NM], D[ : NM *NL]) map(          \
-                                         alloc : E[ : NI *NJ], F[ : NJ *NL])   \
-                                             map(from : G[ : NI *NL])          \
-                                                 device(DEVICE_ID)
+                                         from : E[ : NI *NJ],                  \
+                                                   F[ : NJ *NL], G[ : NI *NL]) \
+                                                       device(DEVICE_ID)
   {
 #pragma omp parallel for
     for (int i = 0; i < NI; i++) {
 #pragma omp target data map(to : A[i *NK : (i + 1) * NK])                      \
-                                       map(alloc : E[i *NJ : (i + 1) * NJ])
+                                       map(from : E[i *NJ : (i + 1) * NJ])
       for (int j = 0; j < NJ; j++) {
         E[i * NJ + j] = 0;
         for (int k = 0; k < NK; ++k) {
@@ -151,7 +151,7 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
 #pragma omp parallel for
     for (int i = 0; i < NJ; i++) {
 #pragma omp target data map(to : C[i *NM : (i + 1) * NM])                      \
-                                       map(alloc : F[i *NL : (i + 1) * NL])
+                                       map(from : F[i *NL : (i + 1) * NL])
       for (int j = 0; j < NL; j++) {
         F[i * NL + j] = 0;
         for (int k = 0; k < NM; ++k) {
@@ -163,7 +163,7 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
 /* G := E*F */
 #pragma omp parallel for
     for (int i = 0; i < NI; i++) {
-#pragma omp target data map(alloc : E[i *NL : (i + 1) * NL])                      \
+#pragma omp target data map(to : E[i *NL : (i + 1) * NL])                      \
                                        map(from : G[i *NL : (i + 1) * NL])
       for (int j = 0; j < NL; j++) {
         G[i * NL + j] = 0;
