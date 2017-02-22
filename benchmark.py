@@ -34,7 +34,7 @@ class Logger(object):
 
 #@atexit.register
 def shutdown_aws_cluster():
-    subprocess.run(["cgcloud", "terminate-cluster", "-c", "ompcloud-test", "spark"] check=True)
+    subprocess.run(["cgcloud", "terminate-cluster", "-c", "ompcloud-test", "spark"], check=True)
 
 if not os.path.exists(UNIBENCH_BUILD) :
     raise Exception("Unibench build directory does not exist: " + UNIBENCH_BUILD)
