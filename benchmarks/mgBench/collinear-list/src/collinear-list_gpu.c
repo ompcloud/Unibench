@@ -27,7 +27,7 @@
 #ifdef RUN_TEST
 #define SIZE 1024
 #elif RUN_BENCHMARK
-#define SIZE 1024 * 16 * 2
+#define SIZE 1024 * 16
 #else
 #define SIZE 1024
 #endif
