@@ -20,54 +20,61 @@
 #include <unistd.h>
 
 #ifdef RUN_TEST
-#define SIZE 1100
+#define SIZE 1234
 #elif RUN_BENCHMARK
-#define SIZE 9600
+#define SIZE 16000
 #else
 #define SIZE 1000
 #endif
 
+typedef float DATA_TYPE;
+
+
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 
 // Initialize matrices.
-void init(float *a, float *b, float *c_cpu, float *c_gpu) {
+void init(DATA_TYPE *a, DATA_TYPE *b, DATA_TYPE *c_cpu, DATA_TYPE *c_gpu) {
   int i, j;
   for (i = 0; i < SIZE; ++i) {
     for (j = 0; j < SIZE; ++j) {
-      a[i * SIZE + j] = (float)i + j % 100;
-      b[i * SIZE + j] = (float)i + j % 100;
-      c_cpu[i * SIZE + j] = 0.0f;
-      c_gpu[i * SIZE + j] = 0.0f;
+#ifdef SPARSE
+      a[i * SIZE + j] = i + j % 100;
+      b[i * SIZE + j] = i + j % 100;
+#else
+      a[i * SIZE + j] = ((DATA_TYPE)i * j) / SIZE;
+      b[i * SIZE + j] = ((DATA_TYPE)i * (j + 1)) / SIZE;
+#endif
     }
   }
 }
 
 /// matrix multiplication algorithm GPU
 /// s = size of matrix
-void mul_GPU(float *a, float *b, float *c) {
+void mul_GPU(DATA_TYPE *a, DATA_TYPE *b, DATA_TYPE *c) {
 
 #pragma omp target map(to : a[ : SIZE *SIZE], b[0 : SIZE *SIZE])               \
-                           map(tofrom : c[ : SIZE *SIZE]) device(DEVICE_ID)
+                           map(from : c[ : SIZE *SIZE]) device(DEVICE_ID)
   {
 #pragma omp parallel for // collapse(1)
     for (int i = 0; i < SIZE; ++i) {
-#pragma omp target data map(to : a[i *SIZE : (i + 1) * SIZE]) map(             \
-    tofrom : c[i *SIZE : (i + 1) * SIZE])
+#pragma omp target data map(to : a[i *SIZE : (i + 1) * SIZE])                  \
+                                       map(from : c[i *SIZE : (i + 1) * SIZE])
       for (int j = 0; j < SIZE; ++j) {
-        float sum = 0.0;
+        // float sum = 0.0;
         for (int k = 0; k < SIZE; ++k) {
-          sum += a[i * SIZE + k] * b[k * SIZE + j];
+          // sum += a[i * SIZE + k] * b[k * SIZE + j];
+          c[i * SIZE + j] += a[i * SIZE + k] * b[k * SIZE + j];
         }
-        c[i * SIZE + j] = sum;
+        // c[i * SIZE + j] = sum;
       }
     }
   }
 }
 
-void mul_CPU(float *a, float *b, float *c) {
+void mul_CPU(DATA_TYPE *a, DATA_TYPE *b, DATA_TYPE *c) {
 
   int i, j, k;
-  float sum = 0.0;
+  DATA_TYPE sum = 0.0;
 
   for (i = 0; i < SIZE; ++i) {
     for (j = 0; j < SIZE; ++j) {
@@ -80,7 +87,7 @@ void mul_CPU(float *a, float *b, float *c) {
   }
 }
 
-int compareResults(float *b_cpu, float *b_gpu) {
+int compareResults(DATA_TYPE *b_cpu, DATA_TYPE *b_gpu) {
   int i, j, fail;
   fail = 0;
 
@@ -107,12 +114,12 @@ int main(int argc, char *argv[]) {
 
   double t_start, t_end;
   int fail = 0;
-  float *a, *b, *c_cpu, *c_gpu;
+  DATA_TYPE *a, *b, *c_cpu, *c_gpu;
 
-  a = (float *)malloc(sizeof(float) * SIZE * SIZE);
-  b = (float *)malloc(sizeof(float) * SIZE * SIZE);
-  c_cpu = (float *)calloc(sizeof(float), SIZE * SIZE);
-  c_gpu = (float *)calloc(sizeof(float), SIZE * SIZE);
+  a = (float *)malloc(sizeof(DATA_TYPE) * SIZE * SIZE);
+  b = (float *)malloc(sizeof(DATA_TYPE) * SIZE * SIZE);
+  c_cpu = (float *)calloc(sizeof(DATA_TYPE), SIZE * SIZE);
+  c_gpu = (float *)calloc(sizeof(DATA_TYPE), SIZE * SIZE);
 
   init(a, b, c_cpu, c_gpu);
 

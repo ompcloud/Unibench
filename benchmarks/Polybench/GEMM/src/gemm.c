@@ -29,7 +29,7 @@
 #ifdef RUN_TEST
 #define SIZE 1100
 #elif RUN_BENCHMARK
-#define SIZE 9600
+#define SIZE 16000
 #else
 #define SIZE 1000
 #endif

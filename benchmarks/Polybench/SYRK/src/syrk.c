@@ -23,7 +23,7 @@
 #ifdef RUN_TEST
 #define SIZE 1100
 #elif RUN_BENCHMARK
-#define SIZE 9600
+#define SIZE 16000
 #else
 #define SIZE 1000
 #endif
@@ -99,12 +99,12 @@ void syrkGPU(DATA_TYPE *A, DATA_TYPE *Dinit, DATA_TYPE *D1, DATA_TYPE *D2) {
   t_start = rtclock();
 
 #pragma omp target map(to : A[ : N *M], Dinit[ : N *M]) map(                   \
-    tofrom : D1[ : N *M], D2[ : N *M]) device(DEVICE_ID)
+    alloc : D1[ : N *M]) map(from : D2[ : N *M]) device(DEVICE_ID)
   {
 #pragma omp parallel for
     for (int i = 0; i < N; i++) {
-#pragma omp target data map(from : Dinit[i *M : (i + 1) * M])                  \
-                                             map(to : D1[i *M : (i + 1) * M])
+#pragma omp target data map(from : Dinit[i *M : (i + 1) * M]) map(             \
+    alloc : D1[i *M : (i + 1) * M])
       for (int j = 0; j < M; j++) {
         D1[i * M + j] = Dinit[i * M + j] * beta;
       }
@@ -112,8 +112,8 @@ void syrkGPU(DATA_TYPE *A, DATA_TYPE *Dinit, DATA_TYPE *D1, DATA_TYPE *D2) {
 
 #pragma omp parallel for // collapse(2)
     for (int i = 0; i < N; i++) {
-#pragma omp target data map(to : D1[i *M : (i + 1) * M])                  \
-                                             map(to : D2[i *M : (i + 1) * M])
+#pragma omp target data map(alloc : D1[i *M : (i + 1) * M])                    \
+                                           map(from : D2[i *M : (i + 1) * M])
       for (int j = 0; j < M; j++) {
         D2[i * N + j] = D1[i * N + j];
         for (int k = 0; k < M; k++) {

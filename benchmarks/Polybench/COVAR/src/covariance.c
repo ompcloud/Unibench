@@ -27,7 +27,7 @@
 #ifdef RUN_TEST
 #define SIZE 1100
 #elif RUN_BENCHMARK
-#define SIZE 9600
+#define SIZE 16000
 #else
 #define SIZE 1000
 #endif
@@ -127,6 +127,8 @@ void covariance_OMP(DATA_TYPE *data, DATA_TYPE *data2, DATA_TYPE *symmat,
 /* Center the column vectors. */
 #pragma omp parallel for // collapse(2)
     for (int i = 1; i < (N + 1); i++) {
+#pragma omp target data map(to : data[i *(M + 1) : (i + 1) * (M + 1)])                      \
+                                       map(tofrom : data2[i *(M + 1) : (i + 1) * (M + 1)])
       for (int j = 1; j < (M + 1); j++) {
         data2[i * (M + 1) + j] = data[i * (M + 1) + j] - mean[j];
       }

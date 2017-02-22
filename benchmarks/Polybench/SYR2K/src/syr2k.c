@@ -28,7 +28,7 @@
 #ifdef RUN_TEST
 #define SIZE 1100
 #elif RUN_BENCHMARK
-#define SIZE 9600
+#define SIZE 16000
 #else
 #define SIZE 1000
 #endif
@@ -110,8 +110,8 @@ for (i = 0; i < N; i++)
 #pragma omp parallel for // collapse(2)
   for (int i = 0; i < N; i++) {
 
-#pragma omp target data map(from : Cinit[i *N : (i + 1) * N])                  \
-                                             map(to : C[i *N : (i + 1) * N])
+#pragma omp target data map(to : Cinit[i *N : (i + 1) * N])                  \
+                                             map(from : C[i *N : (i + 1) * N])
     for (int j = 0; j < N; j++) {
       C[i * N + j] = Cinit[i * N + j];
       for (int k = 0; k < M; k++) {
