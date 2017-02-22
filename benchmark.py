@@ -7,15 +7,18 @@ import numpy
 import time
 import sys
 
-NB_EXEC = 2 # Number of time the execution is repeated
+NB_EXEC = 3 # Number of time the execution is repeated
 UNIBENCH_BUILD = "/opt/Unibench-build/" # Path to the benchmarks
 LOG_DIR = "/opt/Unibench-log/"
-#NB_CORE = [ 8, 16, 32, 64, 128, 256 ]
-NB_CORE = [ 8 ]
+NB_CORE = [ 256, 192, 128, 64, 32, 16, 8 ]
+#NB_CORE = [ 32, 16 ]
+#NB_CORE = [ 1 ]
 APPLICATION = [
-    ("mgBench", ["mat-mul", "mat-sum"])
+#    ("mgBench", ["mat-mul", "collinear-list"])
+    ("mgBench", ["mat-mul", "collinear-list"]),
+    ("Polybench", ["2MM", "3MM", "COVAR", "GEMM", "SYR2K", "SYRK"])
 ]
-OMPCLOUD_CONF = "/opt/ompcloud-conf/cloud_rtl.ini.aws_c3.8xlarge"
+OMPCLOUD_CONF = "/opt/ompcloud-conf/cloud_rtl.ini.aws_c3.8xlarge.exp"
 
 class Logger(object):
     def __init__(self, filepath):
@@ -28,6 +31,10 @@ class Logger(object):
 
     def flush(self):
         pass
+
+#@atexit.register
+def shutdown_aws_cluster():
+    subprocess.run(["cgcloud", "terminate-cluster", "-c", "ompcloud-test", "spark"] check=True)
 
 if not os.path.exists(UNIBENCH_BUILD) :
     raise Exception("Unibench build directory does not exist: " + UNIBENCH_BUILD)
@@ -42,14 +49,17 @@ sys.stdout = Logger(os.path.join(log_dir, "output.log"))
 
 for nb_core in NB_CORE :
     print("Run benchmarks on " + str(nb_core) + " worker cores")
-    #os.environ['OMPCLOUD_CONF_PATH'] = OMPCLOUD_CONF + "." + str(nb_core)
+    os.environ['OMPCLOUD_CONF_PATH'] = OMPCLOUD_CONF + "." + str(nb_core)
     for (suite, benchmarks) in APPLICATION :
         print("-- Suite " + suite)
         for bench in benchmarks :
-            binary = os.path.join(UNIBENCH_BUILD, "benchmarks", suite, bench, bench)
+            bench_dir = os.path.join(UNIBENCH_BUILD, "benchmarks", suite, bench)
+            if not os.path.exists(bench_dir) :
+                raise Exception("Benchmark directory do not exist: " + bench_dir)
+            os.chdir(bench_dir)
+            binary = os.path.abspath(bench)
             if not os.path.exists(binary) :
                 raise Exception("Binary does not exist: " + binary)
-            cmd = os.path.abspath(binary)
             print("--- Benchmark " + bench + ": " + binary)
             times = []
             for n in range(0,NB_EXEC) :
@@ -57,13 +67,13 @@ for nb_core in NB_CORE :
                 logfile = open(os.path.join(log_dir, log), "w")
 
                 start = timeit.default_timer()
-                subprocess.call([cmd], stdout=logfile, stderr=subprocess.STDOUT)
+                subprocess.run([binary], stdout=logfile, stderr=logfile, check=True)
                 elapsed = timeit.default_timer() - start
 
                 print("Execution {} in {:.2f}s".format(n, elapsed))
                 logfile.close()
                 times.append(elapsed)
-                time.sleep(2) # wait to avoid JVM exception
+                time.sleep(10) # wait to avoid JVM exception
 
             print("Variance: " + str(numpy.var(times)))
             print("Std deviation: " + str(numpy.std(times)))
