@@ -55,7 +55,7 @@ sys.stdout = Logger(os.path.join(log_dir, "output.log"))
 for nb_core in NB_CORE :
     print("Run benchmarks on " + str(nb_core) + " worker cores")
     conf_filename = OMPCLOUD_CONF_PREFIX + "." + str(nb_core)
-    conf_filepath = os.path.join(OMPCLOUD_CONF, conf_file)
+    conf_filepath = os.path.join(OMPCLOUD_CONF, conf_filename)
     if not os.path.exists(conf_filepath) :
         print("Warning - Configuration file does not exist: " + conf_filepath)
     os.environ['OMPCLOUD_CONF_PATH'] = conf_filepath
