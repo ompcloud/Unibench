@@ -6,10 +6,11 @@ import os.path
 import numpy
 import time
 import sys
+import atexit
+
+WORKING_DIR = "/opt"
 
 NB_EXEC = 3 # Number of time the execution is repeated
-UNIBENCH_BUILD = "/opt/Unibench-build/" # Path to the benchmarks
-LOG_DIR = "/opt/Unibench-log/"
 NB_CORE = [ 256, 192, 128, 64, 32, 16, 8 ]
 #NB_CORE = [ 32, 16 ]
 #NB_CORE = [ 1 ]
@@ -18,7 +19,6 @@ APPLICATION = [
     ("mgBench", ["mat-mul", "collinear-list"]),
     ("Polybench", ["2MM", "3MM", "COVAR", "GEMM", "SYR2K", "SYRK"])
 ]
-OMPCLOUD_CONF = "/opt/ompcloud-conf/cloud_rtl.ini.aws_c3.8xlarge.exp"
 
 class Logger(object):
     def __init__(self, filepath):
@@ -34,7 +34,12 @@ class Logger(object):
 
 #@atexit.register
 def shutdown_aws_cluster():
-    subprocess.run(["cgcloud", "terminate-cluster", "-c", "ompcloud-test", "spark"], check=True)
+    subprocess.run(["cgcloud", "terminate-cluster", "-c", "ompcloud-experiments", "spark"], check=True)
+
+UNIBENCH_BUILD = os.path.join(WORKING_DIR, "Unibench-build") # Path to the benchmarks
+LOG_DIR = os.path.join(WORKING_DIR, "Unibench-log")
+OMPCLOUD_CONF = os.path.join(WORKING_DIR, "ompcloud-conf")
+OMPCLOUD_CONF_PREFIX = "cloud_rtl.ini.aws_iccp"
 
 if not os.path.exists(UNIBENCH_BUILD) :
     raise Exception("Unibench build directory does not exist: " + UNIBENCH_BUILD)
@@ -49,7 +54,11 @@ sys.stdout = Logger(os.path.join(log_dir, "output.log"))
 
 for nb_core in NB_CORE :
     print("Run benchmarks on " + str(nb_core) + " worker cores")
-    os.environ['OMPCLOUD_CONF_PATH'] = OMPCLOUD_CONF + "." + str(nb_core)
+    conf_filename = OMPCLOUD_CONF_PREFIX + "." + str(nb_core)
+    conf_filepath = os.path.join(OMPCLOUD_CONF, conf_file)
+    if not os.path.exists(conf_filepath) :
+        print("Warning - Configuration file does not exist: " + conf_filepath)
+    os.environ['OMPCLOUD_CONF_PATH'] = conf_filepath
     for (suite, benchmarks) in APPLICATION :
         print("-- Suite " + suite)
         for bench in benchmarks :
