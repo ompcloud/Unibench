@@ -38,33 +38,44 @@
 #define NK SIZE
 #define NL SIZE
 
+#ifndef SPARSE
+#define SPARSE 0
+#endif
+
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
 void init_array(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D) {
   int i, j;
 
+
   for (i = 0; i < NI; i++) {
     for (j = 0; j < NK; j++) {
-      A[i * NI + j] = ((DATA_TYPE)i * j) / NI;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        A[i * NK + j] = 0;
+      } else {
+        A[i * NK + j] = ((DATA_TYPE)i * j) / NI;
+      }
     }
   }
 
   for (i = 0; i < NK; i++) {
     for (j = 0; j < NJ; j++) {
-      B[i * NK + j] = ((DATA_TYPE)i * (j + 1)) / NJ;
-    }
-  }
-
-  for (i = 0; i < NL; i++) {
-    for (j = 0; j < NJ; j++) {
-      // C[i*NL + j] = ((DATA_TYPE) i*(j+3)) / NL;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        B[i * NJ + j] = 0;
+      } else {
+        B[i * NJ + j] = ((DATA_TYPE)i * (j + 1)) / NJ;
+      }
     }
   }
 
   for (i = 0; i < NI; i++) {
     for (j = 0; j < NL; j++) {
-      D[i * NL + j] = ((DATA_TYPE)i * (j + 2)) / NK;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        D[i * NL + j] = 0;
+      } else {
+        D[i * NL + j] = ((DATA_TYPE)i * (j + 2)) / NK;
+      }
     }
   }
 }

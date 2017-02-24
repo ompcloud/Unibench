@@ -46,6 +46,10 @@
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
+#ifndef SPARSE
+#define SPARSE 0
+#endif
+
 void gemm(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C) {
   int i, j, k;
 
@@ -84,20 +88,33 @@ void init(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *C_OMP) {
 
   for (i = 0; i < NI; i++) {
     for (j = 0; j < NK; j++) {
-      A[i * NK + j] = ((DATA_TYPE)i * j) / NI;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        A[i * NK + j] = 0;
+      } else {
+        A[i * NK + j] = ((DATA_TYPE)i * j) / NI;
+      }
     }
   }
 
   for (i = 0; i < NK; i++) {
     for (j = 0; j < NJ; j++) {
-      B[i * NJ + j] = ((DATA_TYPE)i * j + 1) / NJ;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        B[i * NJ + j] = 0;
+      } else {
+        B[i * NJ + j] = ((DATA_TYPE)i * (j + 1)) / NJ;
+      }
     }
   }
 
   for (i = 0; i < NI; i++) {
     for (j = 0; j < NJ; j++) {
-      C[i * NJ + j] = ((DATA_TYPE)i * j + 2) / NJ;
-      C_OMP[i * NJ + j] = ((DATA_TYPE)i * j + 2) / NJ;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        C[i * NJ + j] = 0;
+        C_OMP[i * NJ + j] = 0;
+      } else {
+        C[i * NJ + j] = ((DATA_TYPE)i * j + 2) / NJ;
+        C_OMP[i * NJ + j] = ((DATA_TYPE)i * j + 2) / NJ;
+      }
     }
   }
 }

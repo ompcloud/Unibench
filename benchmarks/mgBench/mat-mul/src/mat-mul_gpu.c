@@ -24,11 +24,10 @@
 #elif RUN_BENCHMARK
 #define SIZE 16000
 #else
-#define SIZE 1000
+#define SIZE 4000
 #endif
 
 typedef float DATA_TYPE;
-
 
 #define PERCENT_DIFF_ERROR_THRESHOLD 0.01
 
@@ -37,13 +36,13 @@ void init(DATA_TYPE *a, DATA_TYPE *b, DATA_TYPE *c_cpu, DATA_TYPE *c_gpu) {
   int i, j;
   for (i = 0; i < SIZE; ++i) {
     for (j = 0; j < SIZE; ++j) {
-#ifdef SPARSE
-      a[i * SIZE + j] = i + j % 100;
-      b[i * SIZE + j] = i + j % 100;
-#else
-      a[i * SIZE + j] = ((DATA_TYPE)i * j) / SIZE;
-      b[i * SIZE + j] = ((DATA_TYPE)i * (j + 1)) / SIZE;
-#endif
+      if ((i != j || (i%2==0)) && SPARSE) {
+        a[i * SIZE + j] = 0;
+        b[i * SIZE + j] = 0;
+      } else {
+        a[i * SIZE + j] = ((DATA_TYPE)i * j) / SIZE;
+        b[i * SIZE + j] = ((DATA_TYPE)i * (j + 1)) / SIZE;
+      }
     }
   }
 }

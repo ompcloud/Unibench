@@ -40,16 +40,29 @@
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
+#ifndef SPARSE
+#define SPARSE 0
+#endif
+
 void init_arrays(DATA_TYPE *A, DATA_TYPE *C, DATA_TYPE *D) {
   int i, j;
 
   for (i = 0; i < N; i++) {
     for (j = 0; j < M; j++) {
-      A[i * M + j] = ((DATA_TYPE)i * j) / N;
+      if ((i != j || (i % 2 == 0)) && SPARSE) {
+        A[i * M + j] = 0;
+      } else {
+        A[i * M + j] = ((DATA_TYPE)i * j) / N;
+      }
     }
     for (j = 0; j < M; j++) {
-      C[i * M + j] = ((DATA_TYPE)i * j + 2) / N;
-      D[i * M + j] = ((DATA_TYPE)i * j + 2) / N;
+      if ((i != j || (i % 2 == 0)) && SPARSE) {
+        C[i * M + j] = 0;
+        D[i * M + j] = 0;
+      } else {
+        C[i * M + j] = ((DATA_TYPE)i * j + 2) / N;
+        D[i * M + j] = ((DATA_TYPE)i * j + 2) / N;
+      }
     }
   }
 }

@@ -44,12 +44,20 @@
 /* Can switch DATA_TYPE between float and double */
 typedef float DATA_TYPE;
 
+#ifndef SPARSE
+#define SPARSE 0
+#endif
+
 void init_arrays(DATA_TYPE *data) {
   int i, j;
 
   for (i = 1; i < (M + 1); i++) {
     for (j = 1; j < (N + 1); j++) {
-      data[i * (N + 1) + j] = ((DATA_TYPE)i * j) / M;
+      if ((i != j || (i%2==0)) && SPARSE) {
+        data[i * (N + 1) + j] = 0;
+      } else {
+        data[i * (N + 1) + j] = ((DATA_TYPE)i * j) / M;
+      }
     }
   }
 }

@@ -22,6 +22,11 @@ if(RUN_BENCHMARK)
     add_definitions(-DRUN_BENCHMARK=1)
 endif()
 
+option(USE_SPARSE "Use sparse datasets" OFF)
+if(USE_SPARSE)
+    add_definitions(-DSPARSE=1)
+endif()
+
 use_c99()
 
 option(OMP_DISABLE "Disable OpenMP" OFF)
