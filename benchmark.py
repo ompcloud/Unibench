@@ -76,7 +76,11 @@ for nb_core in NB_CORE :
                 logfile = open(os.path.join(log_dir, log), "w")
 
                 start = timeit.default_timer()
-                subprocess.run([binary], stdout=logfile, stderr=logfile, check=True)
+                try:
+                    subprocess.run([binary], stdout=logfile, stderr=logfile, check=True)
+                except CalledProcessError as e:
+                    print("Execution error: " + e.output)
+                    pass
                 elapsed = timeit.default_timer() - start
 
                 print("Execution {} in {:.2f}s".format(n, elapsed))
@@ -84,5 +88,6 @@ for nb_core in NB_CORE :
                 times.append(elapsed)
                 time.sleep(10) # wait to avoid JVM exception
 
+            print("Median: " + str(numpy.mean(times)))
             print("Variance: " + str(numpy.var(times)))
             print("Std deviation: " + str(numpy.std(times)))
