@@ -24,7 +24,11 @@
 #elif RUN_BENCHMARK
 #define SIZE 16000
 #else
-#define SIZE 4000
+#define SIZE 1000
+#endif
+
+#ifndef SPARSE
+#define SPARSE 0
 #endif
 
 typedef float DATA_TYPE;
