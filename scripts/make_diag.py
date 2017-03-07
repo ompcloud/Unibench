@@ -63,8 +63,11 @@ def GenGraphes(bench, path):
     sp_ompcloud_full_mean = np.mean(sp_ompcloud_full_all, axis=1)
 
     ind = np.arange(N)  # the x locations for the groups
+
     width = 0.2       # the width of the bars
 
+
+    ## Generate speedup graphs
     fig, ax = plt.subplots()
 
     errorbar_opt=dict(ecolor='black', lw=1, capsize=2, capthick=1)
@@ -89,6 +92,49 @@ def GenGraphes(bench, path):
     plt.grid(axis='y', color='grey', linestyle='-', linewidth=0.5)
 
     pdfFile = os.path.join(path, "speedup_" + bench + ".pdf")
+
+    plt.savefig(pdfFile, format='pdf')
+
+
+    ## Generate speedup graphs
+    fig2, ax2 = plt.subplots()
+
+    width = 0.35
+
+    # Compute the overhead
+    ompcloud_sparkoverhead_all = np.subtract(ompcloud_spark_all,ompcloud_comp_all)
+    ompcloud_commoverhead_all = np.subtract(ompcloud_full_all,ompcloud_spark_all)
+
+    ompcloud_comp_list = np.hsplit(ompcloud_comp_all, [1])
+    #print (ompcloud_comp_all)
+    #print (ompcloud_comp_list)
+
+    ompcloud_sparkoverhead_list = np.hsplit(ompcloud_sparkoverhead_all, [1])
+    ompcloud_commoverhead_list = np.hsplit(ompcloud_commoverhead_all, [1])
+
+    rects_comp_sparse = ax2.bar(ind, ompcloud_comp_list[0], width)
+    rects_sparkoverhead_sparse = ax2.bar(ind, ompcloud_sparkoverhead_list[0], width, bottom=ompcloud_comp_list[0])
+    rects_commoverhead_sparse = ax2.bar(ind, ompcloud_commoverhead_list[0], width, bottom=ompcloud_sparkoverhead_list[0]+ompcloud_comp_list[0])
+
+    rects_comp_full = ax2.bar(ind + 1.5 * width, ompcloud_comp_list[1], width)
+    rects_sparkoverhead_full = ax2.bar(ind + 1.5 * width, ompcloud_sparkoverhead_list[1], width, bottom=ompcloud_comp_list[1])
+    rects_commoverhead_full = ax2.bar(ind + 1.5 * width, ompcloud_commoverhead_list[1], width, bottom=ompcloud_sparkoverhead_list[1]+ompcloud_comp_list[1])
+
+    # add some text for labels, title and axes ticks
+    #ax.set_title(bench)
+    ax2.set_ylabel('Time in second')
+    ax2.set_xlabel('Number of cores')
+    ax2.set_xticks(ind + width)
+    ax2.set_xticklabels(('8', '16', '32', '64', '128', '192', '256'))
+
+    ax2.legend(
+        (rects_comp_sparse[0], rects_sparkoverhead_sparse[0], rects_commoverhead_sparse[0]),
+        ('Computation', 'Spark overhead', 'Host-Target communication overhead'),
+        loc='upper right')
+
+    plt.grid(axis='y', color='grey', linestyle='-', linewidth=0.5)
+
+    pdfFile = os.path.join(path, "exec_" + bench + ".pdf")
 
     plt.savefig(pdfFile, format='pdf')
 
