@@ -16,6 +16,8 @@ APPLICATION = [
 
 N = 7
 
+#plt.rcParams.update({'font.size': 12})
+
 #Nbcore = [8, 16, 32, 64, 128, 192, 256]
 nbcore2ind = dict([("1", -1), ("8", 0), ("16", 1), ("32", 2), ("64", 3), ("128", 4), ("192", 5), ("256", 6)])
 
@@ -73,7 +75,7 @@ def GenGraphes(bench, path):
     errorbar_opt=dict(ecolor='black', lw=1, capsize=2, capthick=1)
 
     rects_thread = ax.bar(ind, sp_ompthread, width)
-    rects_comp = ax.bar(ind + width, sp_ompcloud_comp_mean, width, yerr=sp_ompcloud_comp_std, error_kw=errorbar_opt)
+    rects_comp = ax.bar(ind + width, sp_ompcloud_comp_mean, width)
     rects_spark = ax.bar(ind + 2 * width, sp_ompcloud_spark_mean, width, yerr=sp_ompcloud_spark_std, error_kw=errorbar_opt)
     rects_full = ax.bar(ind + 3 * width, sp_ompcloud_full_mean, width, yerr=sp_ompcloud_full_std, error_kw=errorbar_opt)
 
@@ -84,10 +86,10 @@ def GenGraphes(bench, path):
     ax.set_xticks(ind + 1.5 * width)
     ax.set_xticklabels(('8', '16', '32', '64', '128', '192', '256'))
 
-    ax.legend(
-        (rects_thread[0], rects_comp[0], rects_spark[0], rects_full[0]),
-        ('OpenMP thread', 'OmpCloud-comp', 'OmpCloud-spark', 'OmpCloud-full'),
-        loc='upper left')
+    #ax.legend(
+    #    (rects_thread[0], rects_comp[0], rects_spark[0], rects_full[0], rects_comp.errorbar),
+    #    ('OmpThread', 'OmpCloud-computation', 'OmpCloud-spark', 'OmpCloud-full', 'Variation sparse/dense'),
+    #    loc='upper left')
 
     plt.grid(axis='y', color='grey', linestyle='-', linewidth=0.5)
 
@@ -99,7 +101,7 @@ def GenGraphes(bench, path):
     ## Generate speedup graphs
     fig2, ax2 = plt.subplots()
 
-    width = 0.35
+    width = 0.4
 
     # Compute the overhead
     ompcloud_sparkoverhead_all = np.subtract(ompcloud_spark_all,ompcloud_comp_all)
@@ -116,21 +118,21 @@ def GenGraphes(bench, path):
     rects_sparkoverhead_sparse = ax2.bar(ind, ompcloud_sparkoverhead_list[0], width, bottom=ompcloud_comp_list[0])
     rects_commoverhead_sparse = ax2.bar(ind, ompcloud_commoverhead_list[0], width, bottom=ompcloud_sparkoverhead_list[0]+ompcloud_comp_list[0])
 
-    rects_comp_full = ax2.bar(ind + 1.5 * width, ompcloud_comp_list[1], width)
-    rects_sparkoverhead_full = ax2.bar(ind + 1.5 * width, ompcloud_sparkoverhead_list[1], width, bottom=ompcloud_comp_list[1])
-    rects_commoverhead_full = ax2.bar(ind + 1.5 * width, ompcloud_commoverhead_list[1], width, bottom=ompcloud_sparkoverhead_list[1]+ompcloud_comp_list[1])
+    rects_comp_full = ax2.bar(ind + 1.1 * width, ompcloud_comp_list[1], width, color='C0')
+    rects_sparkoverhead_full = ax2.bar(ind + 1.1 * width, ompcloud_sparkoverhead_list[1], width, bottom=ompcloud_comp_list[1], color='#CB4813')
+    rects_commoverhead_full = ax2.bar(ind + 1.1 * width, ompcloud_commoverhead_list[1], width, bottom=ompcloud_sparkoverhead_list[1]+ompcloud_comp_list[1], color='#336D2E')
 
     # add some text for labels, title and axes ticks
     #ax.set_title(bench)
     ax2.set_ylabel('Time in second')
     ax2.set_xlabel('Number of cores')
-    ax2.set_xticks(ind + width)
+    ax2.set_xticks(ind + 0.55 * width)
     ax2.set_xticklabels(('8', '16', '32', '64', '128', '192', '256'))
 
-    ax2.legend(
-        (rects_comp_sparse[0], rects_sparkoverhead_sparse[0], rects_commoverhead_sparse[0]),
-        ('Computation', 'Spark overhead', 'Host-Target communication overhead'),
-        loc='upper right')
+    #ax2.legend(
+    #    (rects_comp_sparse[0], rects_sparkoverhead_sparse[0], rects_commoverhead_sparse[0]),
+    #    ('Computation time', 'Spark overhead', 'Host-Target communication'),
+    #    loc='upper right')
 
     plt.grid(axis='y', color='grey', linestyle='-', linewidth=0.5)
 
