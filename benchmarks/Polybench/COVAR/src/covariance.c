@@ -145,15 +145,20 @@ void covariance_OMP(DATA_TYPE *data, DATA_TYPE *data2, DATA_TYPE *symmat,
 /* Calculate the m * m covariance matrix. */
 #pragma omp parallel for // collapse(2) schedule(dynamic,8)
     for (int j1 = 1; j1 < (M + 1); j1++) {
-//#pragma omp target data map(from : symmat[j1 *(M + 1) : (j1 + 1) * (M + 1)])
+#pragma omp target data map(from : symmat[j1 *(M + 1) : (j1 + 1) * (M + 1)])
       for (int j2 = j1; j2 < (M + 1); j2++) {
         symmat[j1 * (M + 1) + j2] = 0.0;
         for (int i = 1; i < N + 1; i++) {
           symmat[j1 * (M + 1) + j2] +=
               data2[i * (M + 1) + j1] * data2[i * (M + 1) + j2];
         }
-        symmat[j2 * (M + 1) + j1] = symmat[j1 * (M + 1) + j2];
+        //symmat[j2 * (M + 1) + j1] = symmat[j1 * (M + 1) + j2];
       }
+    }
+  }
+  for (int j1 = 1; j1 < (M + 1); j1++) {
+    for (int j2 = j1; j2 < (M + 1); j2++) {
+      symmat[j2 * (M + 1) + j1] = symmat[j1 * (M + 1) + j2];
     }
   }
 }
