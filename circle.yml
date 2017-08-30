@@ -9,4 +9,4 @@ dependencies:
 
 test:
   post:
-    - docker run -t --name ompcloud-test ompcloud/ompcloud-test:latest /sbin/my_init -- /opt/ompcloud/script/ompcloud-runtests.sh
+    - docker run -t --name ompcloud-test ompcloud/ompcloud-test:latest /sbin/my_init -- bash -c "cd /opt/Unibench; git checkout $CIRCLE_BRANCH; /opt/ompcloud/script/ompcloud-updatetools.sh; /opt/ompcloud/script/ompcloud-runtests.sh"
