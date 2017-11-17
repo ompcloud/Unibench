@@ -8,6 +8,6 @@ add_executable(cholesky ${SRC_FILES})
 target_link_libraries(cholesky m)
 add_dependencies(mgBench cholesky)
 
-add_dependencies(supported cholesky)
+#add_dependencies(supported cholesky)
 
 add_test(mgBench_cholesky cholesky)
