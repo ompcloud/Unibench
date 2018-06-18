@@ -62,14 +62,12 @@ void gemm(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C) {
 
 void gemm_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit) {
 
-#pragma omp target map(to : A[ : NI *NK],                                      \
-                               B[ : NK *NJ], Cinit[ : NI *NJ])                 \
-                                   map(from : C[ : NI *NJ]) device(DEVICE_ID)
-#pragma omp parallel for // collapse(2)
+
+  #pragma omp target map(to : A[ : NI *NK], B[ : NK *NJ], Cinit[ : NI *NJ]) map(from : C[ : NI *NJ]) device(DEVICE_ID)
+  #pragma omp teams distribute parallel for
   for (int i = 0; i < NI; i++) {
     for (int j = 0; j < NJ; j++) {
       C[i * NJ + j] = Cinit[i * NJ + j] * BETA;
-
       for (int k = 0; k < NK; ++k) {
         C[i * NJ + j] += ALPHA * A[i * NK + k] * B[k * NJ + j];
       }

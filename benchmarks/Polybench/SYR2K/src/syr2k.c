@@ -85,29 +85,9 @@ void syr2k_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *Cinit) {
       Cinit[i * N + j] *= BETA;
     }
   }
-  DATA_TYPE sum;
 
-//#pragma omp target map(to: A[:N*M], B[:N*M]) map(tofrom: C[:N*N]) device
-//(DEVICE_ID)
-/*#pragma omp parallel for //collapse(2)
-for (i = 0; i < N; i++)
-  {
-    for (j = 0; j < N; j++)
-      {
-        //sum = 0;
-        for (k = 0; k < M; k++)
-          {
-            C[i*N + j] += ALPHA * A[i*M + k] * B[j*M + k];
-            C[i*N + j] += ALPHA * B[i*M + k] * A[j*M + k];
-          }
-        //C[i*N + j] += sum;
-      }
-  }*/
-
-#pragma omp target map(to : A[ : N *M],                                        \
-                               B[ : N *M], Cinit[ : N *N])                     \
-                                   map(from : C[ : N *N]) device(DEVICE_ID)
-#pragma omp parallel for // collapse(2)
+  #pragma omp target teams map(to : A[ : N *M], B[ : N *M], Cinit[ : N *N]) map(from : C[ : N *N]) device(DEVICE_ID)
+  #pragma omp distribute parallel for collapse(2)
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
       C[i * N + j] = Cinit[i * N + j];

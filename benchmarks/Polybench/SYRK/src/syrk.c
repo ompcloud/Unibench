@@ -98,17 +98,15 @@ void syrkGPU(DATA_TYPE *A, DATA_TYPE *Dinit, DATA_TYPE *D1, DATA_TYPE *D2) {
 
   t_start = rtclock();
 
-#pragma omp target map(to : A[ : N *M], Dinit[ : N *M]) map(                   \
-    tofrom : D1[ : N *M], D2[ : N *M]) device(DEVICE_ID)
+  #pragma omp target teams map(to : A[ : N *M], Dinit[ : N *M]) map(tofrom : D1[ : N *M], D2[ : N *M]) device(DEVICE_ID)
   {
-#pragma omp parallel for
+    #pragma omp distribute parallel for collapse(2)
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < M; j++) {
         D1[i * M + j] = Dinit[i * M + j] * beta;
       }
     }
-
-#pragma omp parallel for // collapse(2)
+    #pragma omp distribute parallel for collapse(2)
     for (int i = 0; i < N; i++) {
       for (int j = 0; j < M; j++) {
         D2[i * N + j] = D1[i * N + j];

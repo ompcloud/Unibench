@@ -124,19 +124,16 @@ void runFdtd(DATA_TYPE *_fict_, DATA_TYPE *ex, DATA_TYPE *ey, DATA_TYPE *hz) {
 void runFdtd_OMP(DATA_TYPE *_fict_, DATA_TYPE *ex, DATA_TYPE *ey,
                  DATA_TYPE *hz) {
   int t, i, j;
-
-#pragma omp target device(DEVICE_ID)
-#pragma omp target map(to : _fict_[ : tmax], ex[ : (NX *(NY + 1))],            \
-                                                 ey[ : ((NX + 1) * NY)])
-#pragma omp target map(tofrom : hz[ : (NX *(NY + 1))])
+  
+  #pragma omp target data  map(to : _fict_[ : tmax], ex[ : (NX *(NY + 1))], ey[ : ((NX + 1) * NY)]) map(tofrom : hz[ : (NX *(NY + 1))]) device(DEVICE_ID)
   {
     for (t = 0; t < tmax; t++) {
-#pragma omp parallel for
+      #pragma omp target teams distribute parallel for device(DEVICE_ID)
       for (j = 0; j < NY; j++) {
         ey[0 * NY + j] = _fict_[t];
       }
 
-#pragma omp parallel for collapse(2)
+      #pragma omp target teams distribute parallel for collapse(2) device(DEVICE_ID)
       for (i = 1; i < NX; i++) {
         for (j = 0; j < NY; j++) {
           ey[i * NY + j] =
@@ -144,15 +141,15 @@ void runFdtd_OMP(DATA_TYPE *_fict_, DATA_TYPE *ex, DATA_TYPE *ey,
         }
       }
 
-#pragma omp parallel for collapse(2)
+      #pragma omp target teams distribute parallel for collapse(2) device(DEVICE_ID)
       for (i = 0; i < NX; i++) {
         for (j = 1; j < NY; j++) {
           ex[i * (NY + 1) + j] = ex[i * (NY + 1) + j] -
                                  0.5 * (hz[i * NY + j] - hz[i * NY + (j - 1)]);
         }
       }
-
-#pragma omp parallel for collapse(2)
+      
+      #pragma omp target teams distribute parallel for collapse(2) device(DEVICE_ID)
       for (i = 0; i < NX; i++) {
         for (j = 0; j < NY; j++) {
           hz[i * NY + j] =

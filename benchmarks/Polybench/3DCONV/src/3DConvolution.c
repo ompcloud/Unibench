@@ -93,9 +93,7 @@ void conv3D_OMP(DATA_TYPE *A, DATA_TYPE *B) {
   c23 = +7;
   c33 = +10;
 
-#pragma omp target map(to : A[ : NI *NJ *NK]) map(from : B[ : NI *NJ *NK])     \
-    device(DEVICE_ID)
-#pragma omp parallel for collapse(1)
+  #pragma omp target teams distribute parallel for map(to:A[:NI*NJ*NK]) map(from:B[:NI*NJ*NK]) device(DEVICE_ID) private(i,k)
   for (j = 1; j < NJ - 1; ++j) {
     for (i = 1; i < NI - 1; ++i) {
       for (k = 1; k < NK - 1; ++k) {

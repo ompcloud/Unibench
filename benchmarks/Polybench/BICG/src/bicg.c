@@ -108,17 +108,16 @@ void bicg_OMP(DATA_TYPE *A, DATA_TYPE *r, DATA_TYPE *s, DATA_TYPE *p,
     s[i] = 0.0;
   }
 
-#pragma omp target device(DEVICE_ID) map(                                      \
-    to : A[ : NX *NY], p[ : NY], r[ : NX]) map(tofrom : s[ : NY], q[ : NX])
+  #pragma omp target teams map(to : A[ : NX *NY], p[ : NY], r[ : NX]) map(tofrom : s[ : NY], q[ : NX]) device(DEVICE_ID)
   {
-#pragma omp parallel for collapse(1)
+    #pragma omp distribute parallel for private(i)
     for (j = 0; j < NY; j++) {
       for (i = 0; i < NX; i++) {
         s[j] = s[j] + r[i] * A[i * NY + j];
       }
     }
 
-#pragma omp parallel for collapse(1)
+    #pragma omp distribute parallel for private(j)
     for (i = 0; i < NX; i++) {
       q[i] = 0.0;
       for (j = 0; j < NY; j++) {
