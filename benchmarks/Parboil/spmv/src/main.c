@@ -138,17 +138,10 @@ double spmvGPU(int argc, char **argv) {
   int p, i;
   t_start_GPU = rtclock();
 // main execution
-#pragma omp target map(                                                        \
-    to : h_nzcnt[ : nzcnt_len],                                                \
-                  h_ptr[ : col_count],                                         \
-                         h_indices[ : len],                                    \
-                                    h_data[ : len],                            \
-                                            h_perm[ : col_count],              \
-                                                    h_x_vector[ : dim]) map(   \
-                                                from : h_Ax_vector[ : dim])    \
-                                                device(DEVICE_ID)
+#pragma omp target map(to : h_nzcnt[ : nzcnt_len], h_ptr[ : col_count], h_indices[ : len], h_data[ : len], h_perm[ : col_count], h_x_vector[ : dim]) map(from : h_Ax_vector[ : dim])
+  #pragma omp teams distribute
   for (p = 0; p < 50; p++) {
-#pragma omp parallel for
+    #pragma omp parallel for
     for (i = 0; i < dim; i++) {
       int k;
       float sum = 0.0f;
@@ -162,6 +155,7 @@ double spmvGPU(int argc, char **argv) {
         float t = h_x_vector[in];
 
         sum += d * t;
+
       }
       //  #pragma omp critical
       h_Ax_vector[h_perm[i]] = sum;
