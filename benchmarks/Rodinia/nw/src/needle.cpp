@@ -161,7 +161,7 @@ void runTest_GPU(int max_cols, int max_rows, int *input_itemsets,
                  int *referrence, int penalty) {
   int index, i, idx;
 #pragma omp target map(to : referrence[0 : max_rows *max_cols])                \
-    map(tofrom : input_itemsets[0 : max_rows *max_cols]) device(DEVICE_ID)
+  map(tofrom : input_itemsets[0 : max_rows *max_cols]) //device(DEVICE_ID)
   {
     for (i = 0; i < max_cols - 2; i++) {
 
@@ -186,7 +186,7 @@ void runTest_GPU(int max_cols, int max_rows, int *input_itemsets,
 
 // Compute bottom-right matrix
 #pragma omp target map(to : referrence[0 : max_rows *max_cols])                \
-    map(tofrom : input_itemsets[0 : max_rows *max_cols]) device(DEVICE_ID)
+  map(tofrom : input_itemsets[0 : max_rows *max_cols]) //device(DEVICE_ID)
   {
     for (i = max_cols - 4; i >= 0; i--) {
 #pragma omp parallel for

@@ -165,9 +165,9 @@ void BFSGraph(int argc, char **argv) {
                                          h_cost_gpu[ : no_of_nodes],           \
                                                      h_updating_graph_mask_gpu \
                                                      [ : no_of_nodes])         \
-                                             device(DEVICE_ID)
+                                             
     {
-#pragma omp parallel for
+      #pragma omp teams distribute parallel for
       for (tid = 0; tid < no_of_nodes; tid++) {
         if (h_graph_mask_gpu[tid] == true) {
           h_graph_mask_gpu[tid] = false;

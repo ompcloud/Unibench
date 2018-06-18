@@ -8,7 +8,6 @@
 
 extern char *strcpy();
 extern void exit();
-
 int layer_size = 0;
 
 void backprop_face() {
@@ -27,8 +26,7 @@ void backprop_face() {
   printf("Training done\n");
 }
 
-int setup(argc, argv) int argc;
-char *argv[];
+int setup(int argc, char **argv)
 {
   if (argc != 2) {
     fprintf(stderr, "usage: backprop <num of input elements>\n");

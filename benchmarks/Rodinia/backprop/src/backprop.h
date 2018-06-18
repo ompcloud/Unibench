@@ -30,13 +30,14 @@ typedef struct {
 } BPNN;
 
 /*** User-level functions ***/
-
+void load(BPNN *net);
 void bpnn_initialize();
 
 BPNN *bpnn_create();
 void bpnn_free();
 
 void bpnn_train();
+void bpnn_train_kernel(BPNN *net, float *eo, float *eh);
 void bpnn_feedforward();
 
 void bpnn_save();

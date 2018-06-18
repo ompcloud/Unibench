@@ -35,7 +35,8 @@ static struct option long_options[] = {
     {"verify", 0, NULL, 'v'},
     {0, 0, 0, 0}};
 
-extern void lud_omp(float *m, int matrix_dim);
+extern void lud_omp_cpu(float *m, int matrix_dim);
+extern void lud_omp_gpu(float *m, int matrix_dim);
 
 int main(int argc, char *argv[]) {
   int matrix_dim = 32; /* default size */
