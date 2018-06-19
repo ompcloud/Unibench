@@ -114,7 +114,7 @@ void correlation(DATA_TYPE *data, DATA_TYPE *mean, DATA_TYPE *stddev,
 void correlation_OMP(DATA_TYPE *data, DATA_TYPE *mean, DATA_TYPE *stddev,
                      DATA_TYPE *symmat) {
   int i, j, k;
-  #pragma omp target enter data map(to: data[:(M+1)*(N+1)], mean[:(M+1)], stddev[:(M+1)]) map(tofrom: symmat[:(M+1)*(N+1)]) device(DEVICE_ID)
+  #pragma omp target data map(to: data[:(M+1)*(N+1)], mean[:(M+1)], stddev[:(M+1)]) map(tofrom: symmat[:(M+1)*(N+1)]) device(DEVICE_ID)
   {
     // Determine mean of column vectors of input data matrix
     #pragma omp target teams distribute  parallel for private(i) device(DEVICE_ID)
