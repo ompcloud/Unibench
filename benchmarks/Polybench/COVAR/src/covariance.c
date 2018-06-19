@@ -130,7 +130,7 @@ void covariance_OMP(DATA_TYPE *data, DATA_TYPE *data2, DATA_TYPE *symmat,
     }
 
     /* Calculate the m * m covariance matrix. */
-    #pragma omp target teams distribute parallel for collapse(2) device(DEVICE_ID)
+    #pragma omp target teams distribute parallel for device(DEVICE_ID)
     for (int j1 = 1; j1 < (M + 1); j1++) {
       for (int j2 = j1; j2 < (M + 1); j2++) {
         symmat[j1 * (M + 1) + j2] = 0.0;
