@@ -82,11 +82,11 @@ void gramschmidt_OMP(DATA_TYPE *A, DATA_TYPE *R, DATA_TYPE *Q) {
         nrm += A[i * N + k] * A[i * N + k];
       }
       R[k * N + k] = sqrt(nrm);
-
+      
       for (i = 0; i < M; i++) {
         Q[i * N + k] = A[i * N + k] / R[k * N + k];
       }
-      #pragma omp update to(Q[:M*N])
+      #pragma omp target update to(Q[:M*N])
       #pragma omp target teams distribute parallel for private(i)
       for (j = k + 1; j < N; j++) {
         R[k * N + j] = 0;

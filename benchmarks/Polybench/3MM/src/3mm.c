@@ -129,7 +129,7 @@ void mm3_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
              DATA_TYPE *E, DATA_TYPE *F, DATA_TYPE *G) {
 
 /* E := A*B */
-#pragma omp target teams map(to : A[ : NI *NK], B[ : NK *NJ], C[ : NJ *NM], D[ : NM *NL]) map(tofrom : ) map(from : E[ : NI *NJ], F[ : NJ *NL], G[ : NI *NL]) device(DEVICE_ID)
+#pragma omp target teams map(to : A[ : NI *NK], B[ : NK *NJ], C[ : NJ *NM], D[ : NM *NL]) map(from : E[ : NI *NJ], F[ : NJ *NL], G[ : NI *NL]) device(DEVICE_ID) thread_limit(128)
   {
     #pragma omp distribute parallel for collapse(2)
     for (int i = 0; i < NI; i++) {
