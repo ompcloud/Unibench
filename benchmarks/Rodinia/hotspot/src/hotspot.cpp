@@ -42,89 +42,82 @@ void single_iteration_gpu(double *result, double *temp, double *power, int row,
   int r, c;
   double amb_temp = 80.0;
 
-#pragma omp target map(to : power[0 : row *col], temp[0 : row *col]) map(      \
-    tofrom : result[0 : row *col]) device(DEVICE_ID)
-  {
-#pragma omp parallel for collapse(2)
-    for (r = 0; r < row; r++) {
-      for (c = 0; c < col; c++) {
-        /*	Corner 1	*/
-        if ((r == 0) && (c == 0)) {
-          delta = (step / Cap) *
-                  (power[0] + (temp[1] - temp[0]) / Rx +
-                   (temp[col] - temp[0]) / Ry + (amb_temp - temp[0]) / Rz);
-        } /*	Corner 2	*/
-        else if ((r == 0) && (c == col - 1)) {
-          delta = (step / Cap) *
-                  (power[c] + (temp[c - 1] - temp[c]) / Rx +
-                   (temp[c + col] - temp[c]) / Ry + (amb_temp - temp[c]) / Rz);
-        } /*	Corner 3	*/
-        else if ((r == row - 1) && (c == col - 1)) {
-          delta = (step / Cap) *
-                  (power[r * col + c] +
-                   (temp[r * col + c - 1] - temp[r * col + c]) / Rx +
-                   (temp[(r - 1) * col + c] - temp[r * col + c]) / Ry +
-                   (amb_temp - temp[r * col + c]) / Rz);
-        } /*	Corner 4	*/
-        else if ((r == row - 1) && (c == 0)) {
-          delta = (step / Cap) *
-                  (power[r * col] + (temp[r * col + 1] - temp[r * col]) / Rx +
-                   (temp[(r - 1) * col] - temp[r * col]) / Ry +
-                   (amb_temp - temp[r * col]) / Rz);
-        } /*	Edge 1	*/
-        else if (r == 0) {
-          delta = (step / Cap) *
-                  (power[c] + (temp[c + 1] + temp[c - 1] - 2.0 * temp[c]) / Rx +
-                   (temp[col + c] - temp[c]) / Ry + (amb_temp - temp[c]) / Rz);
-        } /*	Edge 2	*/
-        else if (c == col - 1) {
-          delta = (step / Cap) *
-                  (power[r * col + c] +
-                   (temp[(r + 1) * col + c] + temp[(r - 1) * col + c] -
-                    2.0 * temp[r * col + c]) /
-                       Ry +
-                   (temp[r * col + c - 1] - temp[r * col + c]) / Rx +
-                   (amb_temp - temp[r * col + c]) / Rz);
-        } /*	Edge 3	*/
-        else if (r == row - 1) {
-          delta = (step / Cap) *
-                  (power[r * col + c] +
-                   (temp[r * col + c + 1] + temp[r * col + c - 1] -
-                    2.0 * temp[r * col + c]) /
-                       Rx +
-                   (temp[(r - 1) * col + c] - temp[r * col + c]) / Ry +
-                   (amb_temp - temp[r * col + c]) / Rz);
-        } /*	Edge 4	*/
-        else if (c == 0) {
-          delta = (step / Cap) * (power[r * col] +
-                                  (temp[(r + 1) * col] + temp[(r - 1) * col] -
-                                   2.0 * temp[r * col]) /
-                                      Ry +
-                                  (temp[r * col + 1] - temp[r * col]) / Rx +
-                                  (amb_temp - temp[r * col]) / Rz);
-        } /*	Inside the chip	*/
-        else {
-          delta = (step / Cap) *
-                  (power[r * col + c] +
-                   (temp[(r + 1) * col + c] + temp[(r - 1) * col + c] -
-                    2.0 * temp[r * col + c]) /
-                       Ry +
-                   (temp[r * col + c + 1] + temp[r * col + c - 1] -
-                    2.0 * temp[r * col + c]) /
-                       Rx +
-                   (amb_temp - temp[r * col + c]) / Rz);
-        }
-
-        /*	Update Temperatures	*/
-        result[r * col + c] = temp[r * col + c] + delta;
+#pragma omp target teams distribute parallel for collapse(2)
+  for (r = 0; r < row; r++) {
+    for (c = 0; c < col; c++) {
+      /*	Corner 1	*/
+      if ((r == 0) && (c == 0)) {
+        delta = (step / Cap) *
+          (power[0] + (temp[1] - temp[0]) / Rx +
+           (temp[col] - temp[0]) / Ry + (amb_temp - temp[0]) / Rz);
+      } /*	Corner 2	*/
+      else if ((r == 0) && (c == col - 1)) {
+        delta = (step / Cap) *
+          (power[c] + (temp[c - 1] - temp[c]) / Rx +
+           (temp[c + col] - temp[c]) / Ry + (amb_temp - temp[c]) / Rz);
+      } /*	Corner 3	*/
+      else if ((r == row - 1) && (c == col - 1)) {
+        delta = (step / Cap) *
+          (power[r * col + c] +
+           (temp[r * col + c - 1] - temp[r * col + c]) / Rx +
+           (temp[(r - 1) * col + c] - temp[r * col + c]) / Ry +
+           (amb_temp - temp[r * col + c]) / Rz);
+      } /*	Corner 4	*/
+      else if ((r == row - 1) && (c == 0)) {
+        delta = (step / Cap) *
+          (power[r * col] + (temp[r * col + 1] - temp[r * col]) / Rx +
+           (temp[(r - 1) * col] - temp[r * col]) / Ry +
+           (amb_temp - temp[r * col]) / Rz);
+      } /*	Edge 1	*/
+      else if (r == 0) {
+        delta = (step / Cap) *
+          (power[c] + (temp[c + 1] + temp[c - 1] - 2.0 * temp[c]) / Rx +
+           (temp[col + c] - temp[c]) / Ry + (amb_temp - temp[c]) / Rz);
+      } /*	Edge 2	*/
+      else if (c == col - 1) {
+        delta = (step / Cap) *
+          (power[r * col + c] +
+           (temp[(r + 1) * col + c] + temp[(r - 1) * col + c] -
+            2.0 * temp[r * col + c]) /
+           Ry +
+           (temp[r * col + c - 1] - temp[r * col + c]) / Rx +
+           (amb_temp - temp[r * col + c]) / Rz);
+      } /*	Edge 3	*/
+      else if (r == row - 1) {
+        delta = (step / Cap) *
+          (power[r * col + c] +
+           (temp[r * col + c + 1] + temp[r * col + c - 1] -
+            2.0 * temp[r * col + c]) /
+           Rx +
+           (temp[(r - 1) * col + c] - temp[r * col + c]) / Ry +
+           (amb_temp - temp[r * col + c]) / Rz);
+      } /*	Edge 4	*/
+      else if (c == 0) {
+        delta = (step / Cap) * (power[r * col] +
+                                (temp[(r + 1) * col] + temp[(r - 1) * col] -
+                                 2.0 * temp[r * col]) /
+                                Ry +
+                                (temp[r * col + 1] - temp[r * col]) / Rx +
+                                (amb_temp - temp[r * col]) / Rz);
+      } /*	Inside the chip	*/
+      else {
+        delta = (step / Cap) *
+          (power[r * col + c] +
+           (temp[(r + 1) * col + c] + temp[(r - 1) * col + c] -
+            2.0 * temp[r * col + c]) /
+           Ry +
+           (temp[r * col + c + 1] + temp[r * col + c - 1] -
+            2.0 * temp[r * col + c]) /
+           Rx +
+           (amb_temp - temp[r * col + c]) / Rz);
       }
+
+      /*	Update Temperatures	*/
+      result[r * col + c] = temp[r * col + c] + delta;
     }
   }
 
-#ifdef _OPENMP
-  omp_set_num_threads(num_omp_threads);
-#pragma omp parallel for shared(result, temp) private(r, c) schedule(static)
-#endif
+  #pragma omp target teams distribute parallel for collapse(2)
   for (r = 0; r < row; r++) {
     for (c = 0; c < col; c++) {
       temp[r * col + c] = result[r * col + c];
@@ -249,17 +242,26 @@ void compute_tran_temp(double *result, int num_iterations, double *temp,
   fprintf(stdout, "Rx: %g\tRy: %g\tRz: %g\tCap: %g\n", Rx, Ry, Rz, Cap);
 #endif
 
-  for (int i = 0; i < num_iterations; i++) {
+  if (dev == 0) {
+    for (int i = 0; i < num_iterations; i++) {
 #ifdef VERBOSE
-    fprintf(stdout, "iteration %d\n", i++);
+      fprintf(stdout, "iteration %d\n", i++);
 #endif
-    if (dev == 0)
-      single_iteration_cpu(result, temp, power, row, col, Cap, Rx, Ry, Rz,
-                           step);
-    else
-      single_iteration_gpu(result, temp, power, row, col, Cap, Rx, Ry, Rz,
-                           step);
+      single_iteration_cpu(result, temp, power, row, col, Cap, Rx, Ry, Rz, step);
+    }
   }
+  else {
+    #pragma omp target data map(to : power[0 : row *col], temp[0 : row *col]) map(tofrom : result[0 : row *col])
+    {
+      for (int i = 0; i < num_iterations; i++) {
+#ifdef VERBOSE
+        fprintf(stdout, "iteration %d\n", i++);
+#endif
+        single_iteration_gpu(result, temp, power, row, col, Cap, Rx, Ry, Rz, step);
+      }
+    }
+  }
+  
 
 #ifdef VERBOSE
   fprintf(stdout, "iteration %d\n", i++);

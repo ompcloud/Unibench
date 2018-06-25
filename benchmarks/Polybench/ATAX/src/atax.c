@@ -98,23 +98,23 @@ void atax_OMP(DATA_TYPE *A, DATA_TYPE *x, DATA_TYPE *y, DATA_TYPE *tmp) {
     y[i] = 0;
   }
 
-#pragma omp target map(to : A[ : NX *NY], x[ : NY]) map(                       \
-    tofrom : tmp[ : NX], y[ : NY]) device(DEVICE_ID)
+  #pragma omp target teams map(to : A[ : NX *NY], x[ : NY]) map(tofrom : tmp[ : NX], y[ : NY]) device(DEVICE_ID)
   {
-#pragma omp parallel for
+    #pragma omp distribute parallel for
     for (int i = 0; i < NX; i++) {
       tmp[i] = 0;
       for (int j = 0; j < NY; j++) {
-        tmp[i] = tmp[i] + A[i * NY + j] * x[j];
+        tmp[i] += A[i * NY + j] * x[j];
       }
     }
 
-// Note that the Loop has been reversed
-#pragma omp parallel for // collapse(1)
-    for (int j = 0; j < NY; j++)
+    // Note that the Loop has been reversed
+    #pragma omp distribute parallel for
+    for (int j = 0; j < NY; j++) {
       for (int i = 0; i < NX; i++) {
-        { y[j] = y[j] + A[i * NY + j] * tmp[i]; }
+        y[j] += A[i * NY + j] * tmp[i];
       }
+    }
   }
 }
 

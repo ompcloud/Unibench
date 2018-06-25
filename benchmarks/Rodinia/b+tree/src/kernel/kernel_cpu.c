@@ -75,10 +75,9 @@ void kernel_gpu(int cores_arg,
     to : keys[ : count],                                                       \
                knodes[ : knodes_elem], records[ : records_elem])               \
                    map(tofrom : offset[ : count],                              \
-                                        ans[ : count], currKnode[ : count])    \
-                                            device(DEVICE_ID)
+                                        ans[ : count], currKnode[ : count])
   {
-#pragma omp parallel for
+    #pragma omp teams distribute parallel for private(i, thid)
     for (bid = 0; bid < count; bid++) {
 
       // process levels of the tree

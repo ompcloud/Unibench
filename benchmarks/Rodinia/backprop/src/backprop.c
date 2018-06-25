@@ -10,6 +10,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <fcntl.h> // for open
 #include "BenchmarksUtil.h"
 #include "backprop.h"
 #include <math.h>
@@ -83,8 +84,7 @@ float **alloc_2d_dbl(m, n) int m, n;
   return (new);
 }
 
-bpnn_randomize_weights(w, m, n) float **w;
-int m, n;
+void bpnn_randomize_weights(float **w, int m, int n)
 {
   int i, j;
 
@@ -96,8 +96,7 @@ int m, n;
   }
 }
 
-bpnn_randomize_row(w, m) float *w;
-int m;
+void bpnn_randomize_row(float *w, int m)
 {
   int i;
   for (i = 0; i <= m; i++) {
@@ -106,8 +105,7 @@ int m;
   }
 }
 
-bpnn_zero_weights(w, m, n) float **w;
-int m, n;
+void bpnn_zero_weights(float **w, int m, int n)
 {
   int i, j;
 
@@ -227,6 +225,7 @@ int compareResults(float *l2, float *l2_gpu, int n2) {
   printf("Non-Matching CPU-GPU Outputs Beyond Error Threshold of %4.2f "
          "Percent: %d\n",
          ERROR_THRESHOLD, fail);
+  return 0;
 }
 
 void bpnn_layerforward(l1, l2, conn, n1, n2) float *l1, *l2, **conn;
@@ -247,13 +246,11 @@ int n1, n2;
 
   /*** Set up thresholding unit ***/
   l1[0] = 1.0;
-
+  fprintf(stdout, "Layer Forward\n");
   t_start = rtclock();
-#pragma omp target map(to : conn_gpu[ : (                                      \
-    n1 + 1) * (n2 + 1)],                                                       \
-    l1[ : n1 + 1]) map(tofrom : l2_gpu[ : n2 + 1]) device(DEVICE_ID)
+   #pragma omp target teams map(to : conn_gpu[ : (n1 + 1) * (n2 + 1)], l1[ : n1 + 1]) map(tofrom : l2_gpu[ : n2 + 1])
   {
-#pragma omp parallel for
+    #pragma omp distribute parallel for private(k)
     for (j = 1; j <= n2; j++) {
       /*** Compute weighted sum of its inputs ***/
       sum = 0.0;
@@ -367,18 +364,15 @@ void bpnn_adjust_weights(delta, ndelta, ly, nly, w, oldw) float *delta, *ly,
   }
 
   int size = (ndelta + 1) * (nly + 1);
-
+  fprintf(stdout, "Adjust Weights\n");
   t_start = rtclock();
-#pragma omp target map(                                                        \
-    to : ly[ : (nly + 1)], delta[ : (ndelta + 1)])                             \
-                               map(tofrom : oldw_gpu[ : size], w_gpu[ : size]) \
-                                       device(DEVICE_ID)
+#pragma omp target teams map(to : ly[ : (nly + 1)], delta[ : (ndelta + 1)]) map(tofrom : oldw_gpu[ : size], w_gpu[ : size])
   {
-#pragma omp parallel for collapse(1)
+#pragma omp distribute parallel for private(k)
     for (j = 1; j <= ndelta; j++) {
       for (k = 0; k <= nly; k++) {
         new_dw =
-            ((ETA * delta[j] * ly[k]) + (MOMENTUM * oldw_gpu[k * ndelta + j]));
+          ((ETA * delta[j] * ly[k]) + (MOMENTUM * oldw_gpu[k * ndelta + j]));
         w_gpu[k * ndelta + j] += new_dw;
         oldw_gpu[k * ndelta + j] = new_dw;
       }

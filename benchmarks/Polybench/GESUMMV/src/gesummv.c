@@ -62,12 +62,8 @@ void gesummv(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *x, DATA_TYPE *y,
 
 void gesummv_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *x, DATA_TYPE *y,
                  DATA_TYPE *tmp) {
-  int i, j;
-
-#pragma omp target map(to : A[ : N *N], B[ : N *N], x[ : N], tmp[ : N])        \
-                                                        map(tofrom : y[ : N])  \
-                                                            device(DEVICE_ID)
-#pragma omp parallel for
+  #pragma omp target map(to : A[ : N *N], B[ : N *N], x[ : N], tmp[ : N]) map(tofrom : y[ : N]) device(DEVICE_ID)
+  #pragma omp teams distribute parallel for
   for (int i = 0; i < N; i++) {
     tmp[i] = 0;
     y[i] = 0;

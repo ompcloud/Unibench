@@ -80,9 +80,7 @@ void conv2D_OMP(DATA_TYPE *A, DATA_TYPE *B) {
   c23 = +0.7;
   c33 = +0.10;
 
-#pragma omp target map(to : A[ : NI *NJ]) map(from : B[ : NI *NJ])             \
-    device(DEVICE_ID)
-#pragma omp parallel for
+  #pragma omp target teams distribute parallel for map(to : A[ : NI *NJ]) map(from : B[ : NI *NJ]) device(DEVICE_ID)
   for (int i = 1; i < NI - 1; ++i) {
     for (int j = 1; j < NJ - 1; ++j) {
       B[i * NJ + j] =

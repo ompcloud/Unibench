@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern layer_size;
+extern int layer_size;
 
-load(net) BPNN *net;
+void load(BPNN *net)
 {
   float *units;
   int nr, nc, imgsize, i, j, k;

@@ -72,28 +72,30 @@ void gramschmidt_OMP(DATA_TYPE *A, DATA_TYPE *R, DATA_TYPE *Q) {
   int i, j, k;
   DATA_TYPE nrm;
 
-#pragma omp target device(DEVICE_ID)
-  for (k = 0; k < N; k++) {
-    // CPU
-    nrm = 0;
-    for (i = 0; i < M; i++) {
-      nrm += A[i * N + k] * A[i * N + k];
-    }
-    R[k * N + k] = sqrt(nrm);
-
-    for (i = 0; i < M; i++) {
-      Q[i * N + k] = A[i * N + k] / R[k * N + k];
-    }
-
-#pragma omp target map(to : R[ : M *N], Q[ : M *N]) map(tofrom : A[ : M *N])
-#pragma omp parallel for schedule(static, 16)
-    for (j = k + 1; j < N; j++) {
-      R[k * N + j] = 0;
+  #pragma omp target data map(to: R[:M*N], Q[:M*N]) map(tofrom: A[:M*N]) device(DEVICE_ID)
+  {
+    for (k = 0; k < N; k++) {
+      // CPU
+      nrm = 0;
+      #pragma omp target update from(A[:M*N])
       for (i = 0; i < M; i++) {
-        R[k * N + j] += Q[i * N + k] * A[i * N + j];
+        nrm += A[i * N + k] * A[i * N + k];
       }
+      R[k * N + k] = sqrt(nrm);
+      
       for (i = 0; i < M; i++) {
-        A[i * N + j] = A[i * N + j] - Q[i * N + k] * R[k * N + j];
+        Q[i * N + k] = A[i * N + k] / R[k * N + k];
+      }
+      #pragma omp target update to(Q[:M*N])
+      #pragma omp target teams distribute parallel for private(i)
+      for (j = k + 1; j < N; j++) {
+        R[k * N + j] = 0;
+        for (i = 0; i < M; i++) {
+          R[k * N + j] += Q[i * N + k] * A[i * N + j];
+        }
+        for (i = 0; i < M; i++) {
+          A[i * N + j] = A[i * N + j] - Q[i * N + k] * R[k * N + j];
+        }
       }
     }
   }

@@ -110,12 +110,9 @@ void covariance_OMP(DATA_TYPE *data, DATA_TYPE *data2, DATA_TYPE *symmat,
 
 /* Determine mean of column vectors of input data matrix */
 
-#pragma omp target map(to : data[ : (M + 1) * (N + 1)]) map(                   \
-    tofrom : mean[ : (M + 1)],                                                 \
-                   data2[ : (M + 1) * (N + 1)]) map(from : symmat[ : (         \
-                       M + 1) * (N + 1)]) device(DEVICE_ID)
+  #pragma omp target  data map(to: data[:(M+1)*(N+1)]) map(alloc: mean[:(M+1)]) map(tofrom: symmat[:(M+1)*(N+1)]) device(DEVICE_ID)
   {
-#pragma omp parallel for
+    #pragma omp target teams distribute parallel for device(DEVICE_ID)
     for (int j = 1; j < (M + 1); j++) {
       mean[j] = 0.0;
       for (int i = 1; i < (N + 1); i++) {
@@ -124,22 +121,22 @@ void covariance_OMP(DATA_TYPE *data, DATA_TYPE *data2, DATA_TYPE *symmat,
       mean[j] /= FLOAT_N;
     }
 
-/* Center the column vectors. */
-#pragma omp parallel for // collapse(2)
+    /* Center the column vectors. */
+    #pragma omp target teams distribute parallel for collapse(2) device(DEVICE_ID)
     for (int i = 1; i < (N + 1); i++) {
       for (int j = 1; j < (M + 1); j++) {
         data2[i * (M + 1) + j] = data[i * (M + 1) + j] - mean[j];
       }
     }
 
-/* Calculate the m * m covariance matrix. */
-#pragma omp parallel for // collapse(2) schedule(dynamic,8)
+    /* Calculate the m * m covariance matrix. */
+    #pragma omp target teams distribute parallel for device(DEVICE_ID)
     for (int j1 = 1; j1 < (M + 1); j1++) {
       for (int j2 = j1; j2 < (M + 1); j2++) {
         symmat[j1 * (M + 1) + j2] = 0.0;
         for (int i = 1; i < N + 1; i++) {
           symmat[j1 * (M + 1) + j2] +=
-              data2[i * (M + 1) + j1] * data2[i * (M + 1) + j2];
+            data2[i * (M + 1) + j1] * data2[i * (M + 1) + j2];
         }
         symmat[j2 * (M + 1) + j1] = symmat[j1 * (M + 1) + j2];
       }

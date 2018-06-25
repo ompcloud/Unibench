@@ -111,15 +111,11 @@ void mm2_cpu(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
   }
 }
 
-void mm2_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
-             DATA_TYPE *E) {
+void mm2_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D, DATA_TYPE *E) {
 
-#pragma omp target map(to : A[ : NI *NK], B[ : NK *NJ], D[ : NJ *NL])          \
-                                              map(tofrom : C[ : NI *NJ])       \
-                                                  map(from : E[ : NI *NJ])     \
-                                                      device(DEVICE_ID)
+#pragma omp target teams map(from: E[:NI*NL], C[:NI*NJ]) map(to: A[:NI*NK], B[:NK*NJ], D[:NJ*NL]) device(DEVICE_ID) 
   {
-#pragma omp parallel for
+    #pragma omp distribute parallel for collapse(2)
     for (int i = 0; i < NI; i++) {
       for (int j = 0; j < NJ; j++) {
         C[i * NJ + j] = 0.0;
@@ -129,7 +125,7 @@ void mm2_OMP(DATA_TYPE *A, DATA_TYPE *B, DATA_TYPE *C, DATA_TYPE *D,
       }
     }
 
-#pragma omp parallel for
+    #pragma omp distribute parallel for collapse(2)
     for (int i = 0; i < NI; i++) {
       for (int j = 0; j < NL; j++) {
         E[i * NL + j] = 0.0;
