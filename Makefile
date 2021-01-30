@@ -1,5 +1,10 @@
 CC=clang
 
+CXXFLAGS=-I./benchmarks/common -DDEVICE_ID=0
+# add this variable to compare the CPU vs GPU performance and outputs
+CXXFLAGS+= -DRUN_TEST
+CFLAGS=$(CXXFLAGS)
+
 PLATFORM_MK=./common/c.mk
 include $(PLATFORM_MK)
 
@@ -55,18 +60,14 @@ compileSimple: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	echo "Compiling" $(BENCH_NAME); \
 	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
-	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(CXXFLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	echo ""
 
 compileGPU: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	echo "Compiling" $(BENCH_NAME); \
 	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
-	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	rm -f _kernel*.cl~
-	mv _kernel* $(BENCH_DIR)/build/; \
+	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(CXXFLAGS) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	echo ""
 
 run: $(BENCH_DIR)/build/$(BENCH_NAME)
