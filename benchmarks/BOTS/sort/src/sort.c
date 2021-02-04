@@ -68,7 +68,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <omp.h>
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
 
 typedef long ELM;
 

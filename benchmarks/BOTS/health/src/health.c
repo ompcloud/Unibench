@@ -41,7 +41,7 @@
 #include <string.h>
 #include <omp.h>
 #include "health.h"
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
 /* global variables */
 int sim_level;
 int sim_cities;

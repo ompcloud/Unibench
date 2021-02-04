@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <omp.h>
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
 
 #define ROWS 64
 #define COLS 64

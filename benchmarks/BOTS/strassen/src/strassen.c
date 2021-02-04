@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <omp.h>
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
 #include "strassen.h"
 
  int cutoff_value =3;
