@@ -36,10 +36,7 @@ for d in dirs:
 	argBench += [d + "/" + k for k in dirs2]
 	benchs[d] = dirs2
 
-def printUsage():
-	print("Usage: ./unibench <Option> <Benchmark>\n")
-	print("\tThe flag -mali must be used when compiling for mobile devices!\n")
-	print("\tOptions:\n\t- clean <all/Benchmark(Case sensitive)>\n\t- compile <all/Benchmark(Case sensitive)>\n\t- list\n\t- run <all/Benchmark(Case sensitive)>\n")
+def printBenchs():
 	print("\tAvailable Benchmarks:")
 	for k in benchs:
 		print("\t" + k + ":")
@@ -47,6 +44,16 @@ def printUsage():
 			print("\t- " + k + "/" + d)
 		print(" ")
 	print("\n")
+
+def printUsage():
+	print("Usage: ./unibench <Option> <Benchmark>\n")
+	print("\tThe flag -mali must be used when compiling for mobile devices!\n")
+	print("\tOptions:")
+	print("\t- clean <all/Benchmark(Case sensitive)>")
+	print("\t- compile <all/Benchmark(Case sensitive)>")
+	print("\t- list")
+	print("\t- run <all/Benchmark(Case sensitive)>")
+
 
 if(len(sys.argv) == 1):
 	printUsage()
@@ -61,12 +68,7 @@ elif(len(sys.argv) == 2):
 	elif(opt1 == "help"):
 		printUsage()
 	elif(opt1 == "list"):
-		print("\tAvailable Benchmarks:")
-		for k in benchs:
-			print("\t" + k + ":")
-			for d in benchs[k]:
-				print("\t- " + k + "/" + d)
-			print(" ")
+		printBenchs()
 	else:
 		printUsage()
 elif(len(sys.argv) == 3):
