@@ -29,11 +29,7 @@ LD_PRELOAD=$(MTSP_LIB)
 endif
 
 $(BENCH_DIR)/build/$(BENCH_NAME):
-ifeq ($(TGT_ARCH),gpu)
 	make compile
-else
-	make compileSimple
-endif
 
 $(BENCH_DIR)/build:
 	mkdir $(BENCH_DIR)/build
@@ -49,26 +45,13 @@ cleanlog:
 
 cleanall: cleanbin cleanlog
 
-compile:
-ifeq ($(TGT_ARCH),gpu)
-	make compileGPU
-else
-	make compileSimple
-endif
-
-compileSimple: $(BENCH_DIR)/build $(BENCH_DIR)/log
+compile: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	echo "Compiling" $(BENCH_NAME); \
-	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo "\n---------------------------------------------------------" > $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(CXXFLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo ""
-
-compileGPU: $(BENCH_DIR)/build $(BENCH_DIR)/log
-	echo "Compiling" $(BENCH_NAME); \
-	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(CXXFLAGS) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo ""
+	cat $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo "\n"
 
 run: $(BENCH_DIR)/build/$(BENCH_NAME)
 	cd $(BENCH_DIR)/build;\

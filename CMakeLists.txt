@@ -18,6 +18,10 @@ option(RUN_BENCHMARK "Use large datasets" OFF)
 option(OMP_OFFLOAD "Offload to accelerator" ON)
 option(OMP_DISABLE "Disable OpenMP" OFF)
 
+#set (CMAKE_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+#set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+#message("DIRS: \n${CMAKE_CURRENT_SOURCE_DIR}\n${CMAKE_BINARY_DIR}\n${CMAKE_RUNTIME_OUTPUT_DIRECTORY}.")
+
 if(RUN_TEST)
   if (RUN_BENCHMARK)
     message(FATAL_ERROR "RUN_TEST and RUN_BENCHMARK are mutually exclusive.")
