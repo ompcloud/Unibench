@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <omp.h>
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
  #include "fft.h"
 
 /* Definitions and operations for complex numbers */

@@ -1,3 +1,4 @@
 SRC_DIR=$(BENCH_DIR)/src
 SRC_OBJS=$(SRC_DIR)/main.c
 INPUT_FLAGS=1000 0.5 1024 1024 4
+BENCH_FLAGS+=-lm -ffast-math

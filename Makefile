@@ -1,5 +1,10 @@
 CC=clang
 
+CXXFLAGS=-I./benchmarks/common -DDEVICE_ID=0
+# add this variable to compare the CPU vs GPU performance and outputs
+CXXFLAGS+= -DRUN_TEST
+CFLAGS=$(CXXFLAGS)
+
 PLATFORM_MK=./common/c.mk
 include $(PLATFORM_MK)
 
@@ -24,11 +29,7 @@ LD_PRELOAD=$(MTSP_LIB)
 endif
 
 $(BENCH_DIR)/build/$(BENCH_NAME):
-ifeq ($(TGT_ARCH),gpu)
 	make compile
-else
-	make compileSimple
-endif
 
 $(BENCH_DIR)/build:
 	mkdir $(BENCH_DIR)/build
@@ -44,30 +45,13 @@ cleanlog:
 
 cleanall: cleanbin cleanlog
 
-compile:
-ifeq ($(TGT_ARCH),gpu)
-	make compileGPU
-else
-	make compileSimple
-endif
-
-compileSimple: $(BENCH_DIR)/build $(BENCH_DIR)/log
+compile: $(BENCH_DIR)/build $(BENCH_DIR)/log
 	echo "Compiling" $(BENCH_NAME); \
-	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo "\n---------------------------------------------------------" > $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
 	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
-	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo ""
-
-compileGPU: $(BENCH_DIR)/build $(BENCH_DIR)/log
-	echo "Compiling" $(BENCH_NAME); \
-	echo "\n---------------------------------------------------------" >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	date >> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	echo "$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME)" 2>> $(BENCH_DIR)/log/$(NAME).compile; \
-	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
-	rm -f _kernel*.cl~
-	mv _kernel* $(BENCH_DIR)/build/; \
-	echo ""
+	$(CC) $(COMMON_FLAGS) $(BENCH_FLAGS) $(CXXFLAGS) $(AUX_SRC) $(SRC_OBJS) -o $(BENCH_DIR)/build/$(BENCH_NAME) 2>> $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	cat $(BENCH_DIR)/log/$(BENCH_NAME).compile; \
+	echo "\n"
 
 run: $(BENCH_DIR)/build/$(BENCH_NAME)
 	cd $(BENCH_DIR)/build;\

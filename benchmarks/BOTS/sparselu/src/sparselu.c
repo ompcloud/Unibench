@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <omp.h>
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
 #include "sparselu.h"
 
 int size = 50, subsize = 100;

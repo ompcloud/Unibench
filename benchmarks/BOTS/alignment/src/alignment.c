@@ -33,7 +33,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <omp.h>
-#include "../../common/BOTSCommonUtils.h"
+#include "BenchmarksUtil.h"
 
 int ktup, window, signif;
 int prot_ktup, prot_window, prot_signif;
